@@ -2,7 +2,11 @@
 
 import { Scene } from '@/components/3d/Scene';
 import { ProjectCard3D } from '@/components/3d/ProjectCard3D';
+import { Portal } from '@/components/3d/Portal';
+import { Collectible } from '@/components/3d/Collectible';
+import { InteractiveControls } from '@/components/3d/InteractiveControls';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { useJourneyStore } from '@/store/journeyStore';
 import type { Project } from '@/types';
 
 interface ProjectsSceneProps {
@@ -10,6 +14,8 @@ interface ProjectsSceneProps {
 }
 
 export default function ProjectsScene({ projects }: ProjectsSceneProps) {
+    const { interactiveMode, collectItem } = useJourneyStore();
+
     // Arrange projects in a circular layout
     const radius = 5;
     const positions: [number, number, number][] = projects.map((_, index) => {
@@ -19,25 +25,33 @@ export default function ProjectsScene({ projects }: ProjectsSceneProps) {
         return [x, 0, z];
     });
 
+    const handleContactPortal = () => {
+        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    };
+
     return (
         <Scene className="w-full h-full">
-            <PerspectiveCamera makeDefault position={[0, 2, 8]} fov={60} />
+            <PerspectiveCamera makeDefault position={[0, 3, 10]} fov={60} />
 
-            {/* Controls - allow user to rotate view */}
-            <OrbitControls
-                enablePan={false}
-                enableZoom={true}
-                minDistance={5}
-                maxDistance={15}
-                maxPolarAngle={Math.PI / 2}
-            />
+            {/* Controls */}
+            {interactiveMode ? (
+                <InteractiveControls enabled />
+            ) : (
+                <OrbitControls
+                    enablePan={false}
+                    enableZoom={true}
+                    minDistance={5}
+                    maxDistance={15}
+                    maxPolarAngle={Math.PI / 2}
+                />
+            )}
 
             {/* Lighting */}
             <ambientLight intensity={0.4} />
             <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
             <pointLight position={[0, 5, 0]} intensity={0.5} color="#0ea5e9" />
 
-            {/* Projects */}
+            {/* Projects arranged in circle */}
             {projects.map((project, index) => (
                 <ProjectCard3D
                     key={project.id}
@@ -46,6 +60,20 @@ export default function ProjectsScene({ projects }: ProjectsSceneProps) {
                     index={index}
                 />
             ))}
+
+            {/* Portal to Contact Section */}
+            <Portal
+                position={[0, 1, 0]}
+                label="Contact Me"
+                color="#8b5cf6"
+                onClick={handleContactPortal}
+            />
+
+            {/* Collectibles scattered around projects */}
+            <Collectible position={[3, 1, 3]} type="star" onCollect={collectItem} />
+            <Collectible position={[-3, 1.5, -3]} type="gem" onCollect={collectItem} />
+            <Collectible position={[0, 2, -5]} type="coin" onCollect={collectItem} />
+            <Collectible position={[5, 1, 0]} type="star" onCollect={collectItem} />
 
             {/* Ground plane for shadows */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>

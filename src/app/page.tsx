@@ -1,9 +1,40 @@
+'use client';
+
+import { useEffect } from 'react';
 import Hero from '@/components/sections/Hero';
 import Projects from '@/components/sections/Projects';
+import { JourneyMap } from '@/components/ui/JourneyMap';
+import { useJourneyStore } from '@/store/journeyStore';
 
 export default function Home() {
+    const { currentSection, setCurrentSection } = useJourneyStore();
+
+    const sections = ['Home', 'Projects', 'Contact'];
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+
+            const sectionIndex = Math.min(
+                Math.floor(scrollPosition / windowHeight),
+                sections.length - 1
+            );
+
+            if (sectionIndex !== currentSection) {
+                setCurrentSection(sectionIndex);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [currentSection, setCurrentSection, sections.length]);
+
     return (
         <main className="relative w-full">
+            {/* Journey Map */}
+            <JourneyMap sections={sections} currentSection={currentSection} />
+
             {/* Hero Section */}
             <Hero />
 

@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { Suspense, useMemo } from 'react';
 import { useAppStore } from '@/store/appStore';
+import { useJourneyStore } from '@/store/journeyStore';
 import { ProjectDetailPanel } from '@/components/ui/ProjectDetailPanel';
 import type { Project } from '@/types';
 import projectsData from '@/data/projects.json';
@@ -25,6 +26,7 @@ export default function Projects() {
     const performanceTier = useAppStore((state) => state.performanceTier);
     const setSelectedProject = useAppStore((state) => state.setSelectedProject);
     const setProjectDetailOpen = useAppStore((state) => state.setProjectDetailOpen);
+    const { interactiveMode, toggleInteractiveMode } = useJourneyStore();
 
     const projects = useMemo(() => projectsData as Project[], []);
 
@@ -40,17 +42,34 @@ export default function Projects() {
         <section id="projects" className="relative min-h-screen w-full py-20 bg-black">
             {/* Section Header */}
             <div className="relative z-10 max-w-7xl mx-auto px-4 mb-12">
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Featured <span className="text-primary-400">Projects</span>
-                </h2>
-                <p className="text-gray-400 text-lg max-w-2xl">
-                    Explore my latest work in 3D web development. Click on any project to learn more.
-                </p>
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                            Featured <span className="text-primary-400">Projects</span>
+                        </h2>
+                        <p className="text-gray-400 text-lg max-w-2xl">
+                            {shouldRender3D
+                                ? '🎮 Explore in 3D • Click projects or portals to navigate'
+                                : 'Click on any project to learn more.'
+                            }
+                        </p>
+                    </div>
+
+                    {/* Interactive Mode Toggle */}
+                    {shouldRender3D && (
+                        <button
+                            onClick={toggleInteractiveMode}
+                            className="px-4 py-2 bg-black/80 backdrop-blur-lg rounded-lg border border-primary-500/30 text-white hover:bg-primary-500/20 transition-colors"
+                        >
+                            {interactiveMode ? '🎮 Interactive' : '👁️ Orbit'}
+                        </button>
+                    )}
+                </div>
             </div>
 
-            {/* 3D Projects View */}
+            {/* 3D Scene or 2D Grid */}
             {shouldRender3D ? (
-                <div className="relative h-[800px] w-full">
+                <div className="absolute inset-0">
                     <Suspense fallback={null}>
                         <ProjectsScene projects={projects} />
                     </Suspense>
