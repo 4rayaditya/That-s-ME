@@ -1,73 +1,112 @@
 [
-  {
-    "id": "project-1",
-    "title": "AI-Powered Dashboard",
-    "description": "Real-time analytics dashboard with 3D data visualization",
-    "longDescription": "A comprehensive analytics platform featuring interactive 3D charts, real-time data streaming, and AI-powered insights. Built with Next.js, React Three Fiber, and WebGL for optimal performance.",
-    "techStack": ["Next.js", "React Three Fiber", "TypeScript", "Tailwind CSS", "WebGL", "Three.js"],
-    "githubUrl": "https://github.com/yourusername/ai-dashboard",
-    "liveDemoUrl": "https://ai-dashboard-demo.vercel.app",
-    "thumbnail": "/images/project-1.jpg",
-    "featured": true,
-    "year": 2024
-  },
-  {
-    "id": "project-2",
-    "title": "E-Commerce 3D Product Viewer",
-    "description": "Interactive 3D product viewer with AR capabilities",
-    "longDescription": "Revolutionary e-commerce experience allowing customers to view products in 3D and AR. Features include real-time customization, photorealistic rendering, and seamless checkout integration.",
-    "techStack": ["React", "Three.js", "WebXR", "GSAP", "Node.js", "MongoDB"],
-    "githubUrl": "https://github.com/yourusername/3d-product-viewer",
-    "liveDemoUrl": "https://product-viewer-demo.vercel.app",
-    "thumbnail": "/images/project-2.jpg",
-    "featured": true,
-    "year": 2024
-  },
-  {
-    "id": "project-3",
-    "title": "Portfolio Template Builder",
-    "description": "No-code 3D portfolio builder for creatives",
-    "longDescription": "A drag-and-drop portfolio builder with 3D scene customization. Users can create stunning portfolios without coding knowledge, featuring customizable 3D environments and animations.",
-    "techStack": ["Next.js", "React Three Fiber", "Zustand", "Tailwind CSS", "PostgreSQL"],
-    "githubUrl": "https://github.com/yourusername/portfolio-builder",
-    "liveDemoUrl": "https://portfolio-builder-demo.vercel.app",
-    "thumbnail": "/images/project-3.jpg",
-    "featured": false,
-    "year": 2023
-  },
-  {
-    "id": "project-4",
-    "title": "Virtual Event Platform",
-    "description": "Immersive 3D virtual event space with networking",
-    "longDescription": "A fully immersive virtual event platform featuring 3D environments, spatial audio, real-time video streaming, and interactive networking spaces. Supports thousands of concurrent users.",
-    "techStack": ["Next.js", "Three.js", "WebRTC", "Socket.io", "Redis", "AWS"],
-    "githubUrl": "https://github.com/yourusername/virtual-events",
-    "liveDemoUrl": "https://virtual-events-demo.vercel.app",
-    "thumbnail": "/images/project-4.jpg",
-    "featured": true,
-    "year": 2023
-  },
-  {
-    "id": "project-5",
-    "title": "3D Game Engine",
-    "description": "Lightweight WebGL game engine for browser games",
-    "longDescription": "A performant, modular game engine built on WebGL. Features include physics simulation, particle systems, skeletal animation, and a visual scene editor.",
-    "techStack": ["TypeScript", "WebGL", "GLSL", "Web Workers", "Vite"],
-    "githubUrl": "https://github.com/yourusername/webgl-engine",
-    "thumbnail": "/images/project-5.jpg",
-    "featured": false,
-    "year": 2023
-  },
-  {
-    "id": "project-6",
-    "title": "NFT Gallery Explorer",
-    "description": "3D gallery for exploring NFT collections",
-    "longDescription": "An immersive 3D gallery experience for browsing NFT collections. Features include wallet integration, real-time market data, and customizable gallery layouts.",
-    "techStack": ["React", "Three.js", "Ethers.js", "IPFS", "The Graph"],
-    "githubUrl": "https://github.com/yourusername/nft-gallery",
-    "liveDemoUrl": "https://nft-gallery-demo.vercel.app",
-    "thumbnail": "/images/project-6.jpg",
-    "featured": false,
-    "year": 2022
-  }
+    {
+        "id": "project-1",
+        "title": "AI-Powered Dashboard",
+        "description": "Real-time analytics dashboard with 3D data visualization",
+        "longDescription": "A comprehensive analytics platform featuring interactive 3D charts, real-time data streaming, and AI-powered insights. Built with Next.js, React Three Fiber, and WebGL for optimal performance.",
+        "techStack": [
+            "Next.js",
+            "React Three Fiber",
+            "TypeScript",
+            "Tailwind CSS",
+            "WebGL",
+            "Three.js"
+        ],
+        "githubUrl": "https://github.com/yourusername/ai-dashboard",
+        "liveDemoUrl": "https://ai-dashboard-demo.vercel.app",
+        "thumbnail": "/images/project-1.jpg",
+        "featured": true,
+        "year": 2024
+    },
+    {
+        "id": "project-2",
+        "title": "E-Commerce 3D Product Viewer",
+        "description": "Interactive 3D product viewer with AR capabilities",
+        "longDescription": "Revolutionary e-commerce experience allowing customers to view products in 3D and AR. Features include real-time customization, photorealistic rendering, and seamless checkout integration.",
+        "techStack": [
+            "React",
+            "Three.js",
+            "WebXR",
+            "GSAP",
+            "Node.js",
+            "MongoDB"
+        ],
+        "githubUrl": "https://github.com/yourusername/3d-product-viewer",
+        "liveDemoUrl": "https://product-viewer-demo.vercel.app",
+        "thumbnail": "/images/project-2.jpg",
+        "featured": true,
+        "year": 2024
+    },
+    {
+        "id": "project-3",
+        "title": "Portfolio Template Builder",
+        "description": "No-code 3D portfolio builder for creatives",
+        "longDescription": "A drag-and-drop portfolio builder with 3D scene customization. Users can create stunning portfolios without coding knowledge, featuring customizable 3D environments and animations.",
+        "techStack": [
+            "Next.js",
+            "React Three Fiber",
+            "Zustand",
+            "Tailwind CSS",
+            "PostgreSQL"
+        ],
+        "githubUrl": "https://github.com/yourusername/portfolio-builder",
+        "liveDemoUrl": "https://portfolio-builder-demo.vercel.app",
+        "thumbnail": "/images/project-3.jpg",
+        "featured": false,
+        "year": 2023
+    },
+    {
+        "id": "project-4",
+        "title": "Virtual Event Platform",
+        "description": "Immersive 3D virtual event space with networking",
+        "longDescription": "A fully immersive virtual event platform featuring 3D environments, spatial audio, real-time video streaming, and interactive networking spaces. Supports thousands of concurrent users.",
+        "techStack": [
+            "Next.js",
+            "Three.js",
+            "WebRTC",
+            "Socket.io",
+            "Redis",
+            "AWS"
+        ],
+        "githubUrl": "https://github.com/yourusername/virtual-events",
+        "liveDemoUrl": "https://virtual-events-demo.vercel.app",
+        "thumbnail": "/images/project-4.jpg",
+        "featured": true,
+        "year": 2023
+    },
+    {
+        "id": "project-5",
+        "title": "3D Game Engine",
+        "description": "Lightweight WebGL game engine for browser games",
+        "longDescription": "A performant, modular game engine built on WebGL. Features include physics simulation, particle systems, skeletal animation, and a visual scene editor.",
+        "techStack": [
+            "TypeScript",
+            "WebGL",
+            "GLSL",
+            "Web Workers",
+            "Vite"
+        ],
+        "githubUrl": "https://github.com/yourusername/webgl-engine",
+        "thumbnail": "/images/project-5.jpg",
+        "featured": false,
+        "year": 2023
+    },
+    {
+        "id": "project-6",
+        "title": "NFT Gallery Explorer",
+        "description": "3D gallery for exploring NFT collections",
+        "longDescription": "An immersive 3D gallery experience for browsing NFT collections. Features include wallet integration, real-time market data, and customizable gallery layouts.",
+        "techStack": [
+            "React",
+            "Three.js",
+            "Ethers.js",
+            "IPFS",
+            "The Graph"
+        ],
+        "githubUrl": "https://github.com/yourusername/nft-gallery",
+        "liveDemoUrl": "https://nft-gallery-demo.vercel.app",
+        "thumbnail": "/images/project-6.jpg",
+        "featured": false,
+        "year": 2022
+    }
 ]
