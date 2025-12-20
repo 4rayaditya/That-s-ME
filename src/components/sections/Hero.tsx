@@ -45,23 +45,6 @@ export default function Hero() {
                     </div>
                 </div>
             )}
-
-            {/* Welcome Message (fades out) */}
-            {shouldRender3D && (
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center pointer-events-none animate-fade-in">
-                    <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 drop-shadow-2xl">
-                        <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                            Space Portfolio
-                        </span>
-                    </h1>
-                    <p className="text-2xl text-gray-300 mb-2">
-                        Welcome, Commander
-                    </p>
-                    <p className="text-lg text-cyan-400 animate-pulse">
-                        Click anywhere to begin your journey
-                    </p>
-                </div>
-            )}
         </section>
     );
 }
