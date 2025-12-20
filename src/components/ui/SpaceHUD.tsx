@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useUniverseStore } from '@/store/universeStore';
 
 export function SpaceHUD() {
-    const { currentSection, exitGalaxy, galaxiesDiscovered, toggleCockpit, showCockpit } = useUniverseStore();
+    const { currentSection, exitGalaxy, galaxiesDiscovered } = useUniverseStore();
     const [showHints, setShowHints] = useState(true);
 
     useEffect(() => {
@@ -50,8 +50,8 @@ export function SpaceHUD() {
                             <span className="text-gray-300">Navigate</span>
                         </div>
                         <div className="flex items-center">
-                            <kbd className="px-3 py-1 bg-gray-800 border border-gray-600 rounded mr-3 font-mono">MOUSE</kbd>
-                            <span className="text-gray-300">Look around (click to lock)</span>
+                            <kbd className="px-3 py-1 bg-gray-800 border border-gray-600 rounded mr-3 font-mono">RIGHT CLICK + DRAG</kbd>
+                            <span className="text-gray-300">Look around</span>
                         </div>
                         <div className="flex items-center">
                             <kbd className="px-3 py-1 bg-gray-800 border border-gray-600 rounded mr-3 font-mono">SPACE</kbd>
@@ -81,14 +81,6 @@ export function SpaceHUD() {
                     </button>
                 )}
 
-                {/* Toggle Cockpit */}
-                <button
-                    onClick={toggleCockpit}
-                    className="bg-black/60 backdrop-blur-md border border-cyan-500/30 hover:border-cyan-500/60 text-white px-6 py-4 rounded-lg font-semibold transition-all pointer-events-auto"
-                >
-                    {showCockpit ? '👁️ Hide Cockpit' : '🚀 Show Cockpit'}
-                </button>
-
                 {/* Show/Hide Hints */}
                 <button
                     onClick={() => setShowHints(!showHints)}
@@ -96,22 +88,6 @@ export function SpaceHUD() {
                 >
                     {showHints ? '📖 Hide Guide' : '❓ Show Guide'}
                 </button>
-            </div>
-
-            {/* Minimap */}
-            <div className="absolute bottom-8 right-8 w-48 h-48 bg-black/80 backdrop-blur-lg border border-cyan-500/40 rounded-lg p-4 pointer-events-auto">
-                <div className="text-cyan-400 text-xs font-mono mb-2 text-center">STAR MAP</div>
-                <div className="relative w-full h-full">
-                    {/* Center (you) */}
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-400 rounded-full animate-pulse" />
-
-                    {/* Galaxy indicators */}
-                    <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-400 rounded-full" title="Home" />
-                    <div className="absolute top-1/3 right-1/4 w-2 h-2 bg-purple-400 rounded-full" title="Projects" />
-                    <div className="absolute bottom-1/3 left-1/4 w-2 h-2 bg-green-400 rounded-full" title="About" />
-                    <div className="absolute bottom-1/4 right-1/3 w-2 h-2 bg-orange-400 rounded-full" title="Skills" />
-                    <div className="absolute top-1/3 left-1/4 w-2 h-2 bg-red-400 rounded-full" title="Contact" />
-                </div>
             </div>
 
             {/* Crosshair (center) */}

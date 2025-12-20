@@ -8,14 +8,26 @@ interface IntroSequenceProps {
 
 export function IntroSequence({ onComplete }: IntroSequenceProps) {
     const [stage, setStage] = useState<'dashboard' | 'mission' | 'launching' | 'complete'>('dashboard');
-    const [progress, setProgress] = useState(0);
-    const [distance, setDistance] = useState(0);
+    const [progress, setProgress] = useState(87); // Start at realistic value
+    const [altitude, setAltitude] = useState(408000); // ISS altitude
     const [showMissionPopup, setShowMissionPopup] = useState(false);
+    
+    // Realistic vital signs
+    const [heartRate, setHeartRate] = useState(72);
+    const [oxygenLevel, setOxygenLevel] = useState(98);
+    const [temperature, setTemperature] = useState(36.7);
+    
+    // Scanner detections
+    const [detections, setDetections] = useState([
+        { id: 1, name: 'ISS', distance: 420, type: 'station', angle: 45 },
+        { id: 2, name: 'DEBRIS-A7', distance: 890, type: 'debris', angle: 120 },
+        { id: 3, name: 'SAT-COM-3', distance: 1240, type: 'satellite', angle: 270 },
+    ]);
 
     useEffect(() => {
         // Dashboard loading animation
         if (stage === 'dashboard') {
-            // Progress animation
+            // Progress animation from 87% to 100%
             const progressInterval = setInterval(() => {
                 setProgress(prev => {
                     if (prev >= 100) {
@@ -23,21 +35,36 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
                         setTimeout(() => setShowMissionPopup(true), 500);
                         return 100;
                     }
-                    return prev + 2;
+                    return prev + 1;
                 });
-            }, 50);
+            }, 150);
 
-            // Distance counter
-            const distanceInterval = setInterval(() => {
-                setDistance(prev => {
-                    if (prev >= 149600000) return 149600000; // Earth to Sun distance in km
-                    return prev + 2500000;
-                });
-            }, 100);
+            // Altitude fluctuation (realistic small changes)
+            const altitudeInterval = setInterval(() => {
+                setAltitude(prev => prev + Math.random() * 100 - 50);
+            }, 500);
+            
+            // Vital signs fluctuation
+            const vitalsInterval = setInterval(() => {
+                setHeartRate(prev => Math.max(65, Math.min(80, prev + Math.random() * 4 - 2)));
+                setOxygenLevel(prev => Math.max(96, Math.min(100, prev + Math.random() * 2 - 1)));
+                setTemperature(prev => Math.max(36.5, Math.min(37.0, prev + Math.random() * 0.2 - 0.1)));
+            }, 1000);
+            
+            // Scanner detections update
+            const scannerInterval = setInterval(() => {
+                setDetections(prev => prev.map(d => ({
+                    ...d,
+                    angle: (d.angle + Math.random() * 5) % 360,
+                    distance: d.distance + Math.random() * 20 - 10
+                })));
+            }, 1500);
 
             return () => {
                 clearInterval(progressInterval);
-                clearInterval(distanceInterval);
+                clearInterval(altitudeInterval);
+                clearInterval(vitalsInterval);
+                clearInterval(scannerInterval);
             };
         }
     }, [stage]);
@@ -113,36 +140,57 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
                             </div>
                         </div>
 
-                        {/* Panel 2: Distance from Earth */}
+                        {/* Panel 2: Crew Vitals & Life Support */}
                         <div className="border-2 border-purple-500/50 bg-black/60 backdrop-blur-sm rounded-lg p-6 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl"></div>
                             <h3 className="text-purple-400 font-mono font-bold text-xl mb-4 flex items-center gap-2">
-                                <span className="text-2xl">🌍</span> DISTANCE TRACKER
+                                <span className="text-2xl">❤️</span> CREW VITALS
                             </h3>
                             <div className="space-y-4 font-mono">
+                                {/* Heart Rate */}
                                 <div>
-                                    <div className="text-gray-400 text-sm mb-2">FROM EARTH SURFACE</div>
-                                    <div className="text-4xl font-bold text-white mb-1">
-                                        {distance.toLocaleString()}
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-gray-400 text-sm">HEART RATE</span>
+                                        <span className="text-red-400 text-xs">NOMINAL</span>
                                     </div>
-                                    <div className="text-purple-400 text-sm">KILOMETERS</div>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-4xl font-bold text-red-400">{Math.round(heartRate)}</span>
+                                        <span className="text-gray-400 text-sm">BPM</span>
+                                    </div>
+                                    <div className="w-full bg-gray-800 h-1 rounded-full overflow-hidden mt-2">
+                                        <div className="h-full bg-red-400 animate-pulse" style={{ width: `${(heartRate / 120) * 100}%` }}></div>
+                                    </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-purple-500/30">
+
+                                {/* Oxygen Level */}
+                                <div className="pt-3 border-t border-purple-500/30">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-gray-400 text-sm">BLOOD OXYGEN</span>
+                                        <span className="text-green-400 text-xs">OPTIMAL</span>
+                                    </div>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-3xl font-bold text-green-400">{oxygenLevel.toFixed(1)}</span>
+                                        <span className="text-gray-400 text-sm">%</span>
+                                    </div>
+                                </div>
+
+                                {/* Temperature & Pressure */}
+                                <div className="grid grid-cols-2 gap-3 pt-3 border-t border-purple-500/30">
                                     <div>
-                                        <div className="text-gray-500 text-xs">TO MOON</div>
-                                        <div className="text-cyan-400 font-bold">384,400 km</div>
+                                        <div className="text-gray-500 text-xs mb-1">BODY TEMP</div>
+                                        <div className="text-cyan-400 font-bold text-lg">{temperature.toFixed(1)}°C</div>
                                     </div>
                                     <div>
-                                        <div className="text-gray-500 text-xs">TO MARS</div>
-                                        <div className="text-orange-400 font-bold">225M km</div>
+                                        <div className="text-gray-500 text-xs mb-1">CABIN PRESS</div>
+                                        <div className="text-yellow-400 font-bold text-lg">101.3 kPa</div>
                                     </div>
                                     <div>
-                                        <div className="text-gray-500 text-xs">TO SUN</div>
-                                        <div className="text-yellow-400 font-bold">149.6M km</div>
+                                        <div className="text-gray-500 text-xs mb-1">ALTITUDE</div>
+                                        <div className="text-blue-400 font-bold text-sm">{Math.round(altitude).toLocaleString()} km</div>
                                     </div>
                                     <div>
-                                        <div className="text-gray-500 text-xs">SPEED</div>
-                                        <div className="text-green-400 font-bold animate-pulse">107,000 km/h</div>
+                                        <div className="text-gray-500 text-xs mb-1">VELOCITY</div>
+                                        <div className="text-green-400 font-bold text-sm animate-pulse">27,600 km/h</div>
                                     </div>
                                 </div>
                             </div>
@@ -179,56 +227,75 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
                             </div>
                         </div>
 
-                        {/* Panel 4: System Status & Radar */}
+                        {/* Panel 4: Deep Space Scanner & Detections */}
                         <div className="border-2 border-blue-500/50 bg-black/60 backdrop-blur-sm rounded-lg p-6 relative overflow-hidden">
                             <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
                             <h3 className="text-blue-400 font-mono font-bold text-xl mb-4 flex items-center gap-2">
-                                <span className="text-2xl">📡</span> SYSTEM STATUS
+                                <span className="text-2xl">📡</span> DEEP SPACE SCANNER
                             </h3>
                             <div className="space-y-3 font-mono text-sm">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">NAVIGATION</span>
-                                    <span className="text-green-400 flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                        ONLINE
-                                    </span>
+                                {/* Radar Display */}
+                                <div className="relative w-full aspect-square border border-blue-500/50 rounded-full bg-blue-900/20 mb-3">
+                                    {/* Center (spacecraft) */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-3 h-3 bg-green-400 rounded-full z-10"></div>
+                                    </div>
+                                    
+                                    {/* Radar sweep */}
+                                    <div className="absolute inset-0 rounded-full" style={{
+                                        background: 'conic-gradient(from 0deg, transparent 0deg, rgba(0, 255, 255, 0.4) 60deg, transparent 120deg)',
+                                        animation: 'spin 3s linear infinite'
+                                    }}></div>
+                                    
+                                    {/* Concentric circles */}
+                                    <div className="absolute inset-[25%] border border-blue-500/20 rounded-full"></div>
+                                    <div className="absolute inset-[50%] border border-blue-500/30 rounded-full"></div>
+                                    
+                                    {/* Detected objects */}
+                                    {detections.map((detection) => {
+                                        const radius = (detection.distance / 1500) * 45; // Scale to percentage
+                                        const angleRad = (detection.angle * Math.PI) / 180;
+                                        const x = 50 + radius * Math.cos(angleRad);
+                                        const y = 50 + radius * Math.sin(angleRad);
+                                        const color = detection.type === 'station' ? 'cyan' : 
+                                                    detection.type === 'satellite' ? 'purple' : 'red';
+                                        
+                                        return (
+                                            <div
+                                                key={detection.id}
+                                                className={`absolute w-2 h-2 bg-${color}-400 rounded-full animate-pulse`}
+                                                style={{
+                                                    left: `${x}%`,
+                                                    top: `${y}%`,
+                                                    transform: 'translate(-50%, -50%)'
+                                                }}
+                                                title={detection.name}
+                                            />
+                                        );
+                                    })}
                                 </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">LIFE SUPPORT</span>
+                                
+                                {/* Detection List */}
+                                <div className="text-xs text-gray-500 mb-2">DETECTED OBJECTS</div>
+                                <div className="space-y-2 max-h-24 overflow-y-auto">
+                                    {detections.map((detection) => (
+                                        <div 
+                                            key={detection.id}
+                                            className="flex justify-between items-center p-2 bg-blue-500/5 border border-blue-500/20 rounded"
+                                        >
+                                            <span className="text-cyan-400 font-bold">{detection.name}</span>
+                                            <span className="text-gray-400">{Math.round(detection.distance)} km</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                {/* Scanner Status */}
+                                <div className="pt-2 border-t border-blue-500/30 flex justify-between items-center">
+                                    <span className="text-gray-400">SCAN MODE</span>
                                     <span className="text-green-400 flex items-center gap-2">
                                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                                         ACTIVE
                                     </span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">SHIELDS</span>
-                                    <span className="text-cyan-400 flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                                        CHARGED
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">FUEL</span>
-                                    <span className="text-yellow-400">87%</span>
-                                </div>
-
-                                {/* Mini Radar */}
-                                <div className="mt-4 pt-4 border-t border-blue-500/30">
-                                    <div className="text-xs text-gray-500 mb-2">DEEP SPACE RADAR</div>
-                                    <div className="relative w-full aspect-square border border-blue-500/50 rounded-full bg-blue-900/20">
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                        </div>
-                                        {/* Radar sweep */}
-                                        <div className="absolute inset-0 rounded-full" style={{
-                                            background: 'conic-gradient(from 0deg, transparent 0deg, rgba(0, 255, 255, 0.3) 60deg, transparent 120deg)',
-                                            animation: 'spin 4s linear infinite'
-                                        }}></div>
-                                        {/* Detected objects */}
-                                        <div className="absolute top-1/4 left-1/3 w-1 h-1 bg-cyan-400 rounded-full animate-pulse"></div>
-                                        <div className="absolute bottom-1/3 right-1/4 w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
-                                        <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-yellow-400 rounded-full animate-pulse"></div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
