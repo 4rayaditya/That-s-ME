@@ -34,8 +34,8 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
             {/* DEDICATED VISIBLE DESKTOP STANDS FOR BOTH MONITORS           */}
             {/* ============================================================ */}
 
-            {/* STAND 1: MAIN HORIZONTAL MONITOR STAND (x = 0.22) */}
-            <group position={[0.22, 0, 0]}>
+            {/* STAND 1: MAIN HORIZONTAL MONITOR STAND (x = 0.28) */}
+            <group position={[0.28, 0, 0]}>
                 {/* Heavy CNC Machined Aluminum Desktop Base (resting flat on oak table at y = -0.69) */}
                 <mesh castShadow receiveShadow position={[0, -0.685, 0.06]}>
                     <boxGeometry args={[0.32, 0.018, 0.24]} />
@@ -67,8 +67,8 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
                 </mesh>
             </group>
 
-            {/* STAND 2: SECOND VERTICAL MONITOR STAND (x = -0.46, angled 0.22 rad) */}
-            <group position={[-0.46, 0, 0.04]} rotation={[0, 0.22, 0]}>
+            {/* STAND 2: SECOND VERTICAL MONITOR STAND (x = -0.56, angled 0.22 rad) */}
+            <group position={[-0.56, 0, 0.04]} rotation={[0, 0.22, 0]}>
                 {/* Heavy Aluminum Desktop Base (resting flat on oak table at y = -0.69) */}
                 <mesh castShadow receiveShadow position={[0, -0.685, 0.06]}>
                     <boxGeometry args={[0.26, 0.018, 0.22]} />
@@ -104,21 +104,21 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
             <pointLight color="#ff1744" intensity={3.5} distance={2.5} decay={2} position={[0, 0.04, -0.12]} />
 
             {/* Physical Red LED Backlight Strips on the rear of monitors */}
-            <mesh position={[0.22, 0.02, -0.04]}>
+            <mesh position={[0.28, 0.02, -0.04]}>
                 <boxGeometry args={[0.95, 0.018, 0.01]} />
                 <meshBasicMaterial color="#ff1744" toneMapped={false} />
             </mesh>
-            <mesh position={[-0.46, 0.04, 0.0]} rotation={[0, 0.22, 0]}>
+            <mesh position={[-0.56, 0.04, 0.0]} rotation={[0, 0.22, 0]}>
                 <boxGeometry args={[0.015, 0.65, 0.01]} />
                 <meshBasicMaterial color="#ff1744" toneMapped={false} />
             </mesh>
 
-            {/* 1. MAIN HORIZONTAL MONITOR (Shorter in length & breadth, clean stealth bezel, Chrome Dino Game) */}
-            <group position={[0.22, 0, 0]}>
-                {/* Outer Beveled Chassis (Shorter in length & breadth: 1.16 x 0.62) */}
+            {/* 1. MAIN HORIZONTAL MONITOR (Positioned at x = 0.28, separated by clean black border) */}
+            <group position={[0.28, 0, 0]}>
+                {/* Outer Beveled Chassis (1.14 x 0.62) */}
                 <mesh castShadow>
-                    <boxGeometry args={[1.16, 0.62, 0.055]} />
-                    <meshStandardMaterial color="#070b14" metalness={0.88} roughness={0.22} />
+                    <boxGeometry args={[1.14, 0.62, 0.055]} />
+                    <meshStandardMaterial color="#050810" metalness={0.92} roughness={0.25} />
                 </mesh>
 
                 {/* Webcam on Top */}
@@ -138,36 +138,48 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
                     </mesh>
                 </group>
 
-                {/* Clean Stealth Bezel Frame - No blue rim */}
+                {/* Outer Matte Black Border Frame */}
                 <mesh position={[0, 0, 0.029]}>
-                    <boxGeometry args={[1.12, 0.58, 0.004]} />
-                    <meshStandardMaterial color="#0b0f19" roughness={0.7} metalness={0.5} />
+                    <boxGeometry args={[1.12, 0.60, 0.006]} />
+                    <meshStandardMaterial color="#03050a" roughness={0.9} metalness={0.1} />
+                </mesh>
+
+                {/* Inner Black Bezel Inset */}
+                <mesh position={[0, 0, 0.031]}>
+                    <boxGeometry args={[1.08, 0.56, 0.002]} />
+                    <meshStandardMaterial color="#070a12" roughness={0.7} metalness={0.3} />
                 </mesh>
 
                 {/* Active Screen Surface: Chrome Offline Dragon Game */}
                 <mesh position={[0, 0, 0.033]}>
-                    <planeGeometry args={[1.10, 0.56]} />
+                    <planeGeometry args={[1.06, 0.54]} />
                     <meshBasicMaterial map={monitorTextures.centerTexture} toneMapped={false} />
                 </mesh>
             </group>
 
-            {/* 2. SECOND CURVED MONITOR VERTICALLY (Portrait Developer Display, angled close to main monitor) */}
-            <group position={[-0.46, 0.04, 0.04]} rotation={[0, 0.22, 0]}>
+            {/* 2. SECOND CURVED MONITOR VERTICALLY (Positioned at x = -0.56, angled 0.22 rad, crisp black border, zero overlap) */}
+            <group position={[-0.56, 0.04, 0.04]} rotation={[0, 0.22, 0]}>
                 {/* Outer Vertical Chassis (Portrait: 0.42 width x 0.78 height) */}
                 <mesh castShadow>
                     <boxGeometry args={[0.42, 0.78, 0.055]} />
-                    <meshStandardMaterial color="#070b14" metalness={0.88} roughness={0.22} />
+                    <meshStandardMaterial color="#050810" metalness={0.92} roughness={0.25} />
                 </mesh>
 
-                {/* Vertical Stealth Bezel Frame */}
+                {/* Outer Matte Black Border Frame */}
                 <mesh position={[0, 0, 0.029]}>
-                    <boxGeometry args={[0.395, 0.755, 0.004]} />
-                    <meshStandardMaterial color="#0b0f19" roughness={0.7} metalness={0.5} />
+                    <boxGeometry args={[0.40, 0.76, 0.006]} />
+                    <meshStandardMaterial color="#03050a" roughness={0.9} metalness={0.1} />
+                </mesh>
+
+                {/* Inner Black Bezel Inset */}
+                <mesh position={[0, 0, 0.031]}>
+                    <boxGeometry args={[0.38, 0.74, 0.002]} />
+                    <meshStandardMaterial color="#070a12" roughness={0.7} metalness={0.3} />
                 </mesh>
 
                 {/* Active Screen Surface: Live TypeScript Matrix IDE & Telemetry Screen */}
                 <mesh position={[0, 0, 0.033]}>
-                    <planeGeometry args={[0.38, 0.74]} />
+                    <planeGeometry args={[0.36, 0.72]} />
                     <meshBasicMaterial map={monitorTextures.leftTexture} toneMapped={false} />
                 </mesh>
             </group>
@@ -2529,8 +2541,8 @@ const CoffeeStation = React.memo(function CoffeeStation() {
 // -------------------------------------------------------------
 const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
     return (
-        <group position={[-2.7, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
-            {/* Solid Warm Oak Low Platform Bed Frame */}
+        <group position={[-2.65, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
+            {/* Solid Warm Oak Low Platform Bed Frame (1.4m x 2.3m) */}
             <mesh castShadow receiveShadow position={[0, 0.16, 0]}>
                 <boxGeometry args={[1.4, 0.32, 2.3]} />
                 <meshStandardMaterial color="#6a4c33" roughness={0.5} />
@@ -2541,45 +2553,59 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
                 <meshBasicMaterial color="#d97706" toneMapped={false} />
             </mesh>
 
-            {/* Crisp Organic Cotton Mattress */}
-            <mesh position={[0, 0.35, 0.1]} castShadow>
-                <boxGeometry args={[1.3, 0.18, 2.1]} />
+            {/* Crisp Organic Cotton Futon Mattress */}
+            <mesh position={[0, 0.35, 0.08]} castShadow>
+                <boxGeometry args={[1.30, 0.20, 2.15]} />
                 <meshStandardMaterial color="#f7f4ed" roughness={0.9} />
             </mesh>
             {/* Soft Oatmeal / Waffle Linen Duvet */}
-            <mesh position={[0, 0.45, 0.3]} castShadow>
-                <boxGeometry args={[1.28, 0.08, 1.4]} />
+            <mesh position={[0, 0.45, 0.34]} castShadow>
+                <boxGeometry args={[1.26, 0.09, 1.45]} />
                 <meshStandardMaterial color="#ebe3d5" roughness={0.88} />
             </mesh>
+            {/* Folded Textured Charcoal Bed Runner / Throw across foot of bed */}
+            <mesh position={[0, 0.50, 0.88]} castShadow>
+                <boxGeometry args={[1.28, 0.035, 0.40]} />
+                <meshStandardMaterial color="#334155" roughness={0.92} />
+            </mesh>
+
             {/* Fluffy Cream Linen Bed Pillows */}
-            <mesh position={[0.3, 0.48, -0.7]} rotation={[0.2, 0, 0]} castShadow>
-                <boxGeometry args={[0.5, 0.14, 0.35]} />
+            <mesh position={[0.32, 0.48, -0.75]} rotation={[0.2, 0, 0]} castShadow>
+                <boxGeometry args={[0.48, 0.15, 0.32]} />
                 <meshStandardMaterial color="#faf6ee" roughness={0.8} />
             </mesh>
-            <mesh position={[-0.3, 0.48, -0.7]} rotation={[0.2, 0, 0]} castShadow>
-                <boxGeometry args={[0.5, 0.14, 0.35]} />
+            <mesh position={[-0.32, 0.48, -0.75]} rotation={[0.2, 0, 0]} castShadow>
+                <boxGeometry args={[0.48, 0.15, 0.32]} />
                 <meshStandardMaterial color="#faf6ee" roughness={0.8} />
+            </mesh>
+            <mesh position={[0.28, 0.52, -0.55]} rotation={[0.26, 0, 0]} castShadow>
+                <boxGeometry args={[0.38, 0.12, 0.24]} />
+                <meshStandardMaterial color="#d6c7b2" roughness={0.85} />
+            </mesh>
+            <mesh position={[-0.28, 0.52, -0.55]} rotation={[0.26, 0, 0]} castShadow>
+                <boxGeometry args={[0.38, 0.12, 0.24]} />
+                <meshStandardMaterial color="#4d6543" roughness={0.88} />
             </mesh>
 
             {/* Bedside Solid Walnut Nightstand */}
-            <group position={[0.9, 0.25, -0.7]}>
+            <group position={[0.95, 0.25, -0.75]}>
                 <mesh castShadow>
-                    <boxGeometry args={[0.4, 0.5, 0.45]} />
+                    <boxGeometry args={[0.40, 0.50, 0.44]} />
                     <meshStandardMaterial color="#553a24" roughness={0.5} />
                 </mesh>
-                {/* Ceramic Water Carafe on Nightstand */}
-                <mesh position={[0, 0.35, 0]} castShadow>
+                {/* Ceramic Water Carafe & Tumbler on Nightstand */}
+                <mesh position={[0, 0.35, -0.06]} castShadow>
                     <cylinderGeometry args={[0.04, 0.05, 0.16, 16]} />
                     <meshStandardMaterial color="#f8fafc" roughness={0.2} />
                 </mesh>
+                <mesh position={[0.08, 0.31, 0.08]} castShadow>
+                    <cylinderGeometry args={[0.028, 0.028, 0.07, 12]} />
+                    <meshStandardMaterial color="#e2e8f0" roughness={0.1} />
+                </mesh>
             </group>
 
-            {/* HANGING PENDANT LIGHT ABOVE THE BED â€” one of the room's 5 accent lights
-                ("above bed"), replacing the old plain bedside point light with a proper
-                hanging fixture centered over the mattress. */}
+            {/* HANGING PENDANT LIGHT ABOVE THE BED */}
             <group position={[0, 2.35, 0.1]}>
-                {/* Recolored off warm-oak/bronze tones only â€” the earlier navy mount + red-orange
-                    shade read as a clashing "red and blue" fixture against the warm room. */}
                 <mesh>
                     <cylinderGeometry args={[0.045, 0.045, 0.014, 14]} />
                     <meshStandardMaterial color="#3d2b1c" metalness={0.6} roughness={0.35} />
@@ -2588,8 +2614,6 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
                     <cylinderGeometry args={[0.004, 0.004, 0.56, 6]} />
                     <meshStandardMaterial color="#241812" roughness={0.85} />
                 </mesh>
-                {/* castShadow removed from this thin open-ended shade: it was producing
-                    flickery shadow-acne artifacts under the directional light's shadow map. */}
                 <mesh position={[0, -0.58, 0]}>
                     <coneGeometry args={[0.16, 0.13, 18, 1, true]} />
                     <meshStandardMaterial color="#a3672b" metalness={0.4} roughness={0.45} side={THREE.DoubleSide} />
@@ -2599,6 +2623,75 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
                     <meshBasicMaterial color="#fff7ed" toneMapped={false} />
                 </mesh>
                 <pointLight color="#fed7aa" intensity={3.2} distance={3.0} decay={2} position={[0, -0.66, 0]} />
+            </group>
+        </group>
+    );
+});
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Minimalist Floor Standing Lamp (Single Light in Corner)
+// Tucked into the front-left corner beside the bed near the screen
+// -------------------------------------------------------------
+const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp() {
+    return (
+        <group position={[-3.18, 0, 2.65]}>
+            {/* Weighted Nero Marquina Marble Circular Base */}
+            <mesh castShadow receiveShadow position={[0, 0.022, 0]}>
+                <cylinderGeometry args={[0.20, 0.22, 0.044, 28]} />
+                <meshStandardMaterial color="#0f1117" roughness={0.3} metalness={0.15} />
+            </mesh>
+            {/* Brushed Brass Perimeter Trim Ring */}
+            <mesh position={[0, 0.044, 0]}>
+                <torusGeometry args={[0.205, 0.007, 12, 28]} />
+                <meshStandardMaterial color="#b45309" metalness={0.92} roughness={0.2} />
+            </mesh>
+            {/* Brass Foot Tap Switch Button */}
+            <mesh position={[0.10, 0.050, 0.07]}>
+                <cylinderGeometry args={[0.016, 0.016, 0.014, 16]} />
+                <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.25} />
+            </mesh>
+
+            {/* Single Slender Vertical Architectural Bronze Stem */}
+            <mesh castShadow position={[0, 0.82, 0]}>
+                <cylinderGeometry args={[0.012, 0.012, 1.60, 16]} />
+                <meshStandardMaterial color="#1f1813" metalness={0.85} roughness={0.3} />
+            </mesh>
+
+            {/* Brass Shade Mount Knuckle Collar */}
+            <mesh position={[0, 1.62, 0]}>
+                <cylinderGeometry args={[0.020, 0.020, 0.035, 16]} />
+                <meshStandardMaterial color="#b45309" metalness={0.92} roughness={0.2} />
+            </mesh>
+
+            {/* Single Fluted Architectural Lampshade */}
+            <group position={[0, 1.68, 0]}>
+                {/* Conical Lampshade Exterior */}
+                <mesh castShadow>
+                    <cylinderGeometry args={[0.10, 0.24, 0.22, 24, 1, true]} />
+                    <meshStandardMaterial
+                        color="#faf5ee"
+                        roughness={0.85}
+                        side={THREE.DoubleSide}
+                    />
+                </mesh>
+                {/* Brushed Brass Top Finial Ring */}
+                <mesh position={[0, 0.11, 0]}>
+                    <cylinderGeometry args={[0.025, 0.025, 0.02, 16]} />
+                    <meshStandardMaterial color="#b45309" metalness={0.92} roughness={0.2} />
+                </mesh>
+                {/* Warm Frosted Opal Glass Diffuser Bulb */}
+                <mesh position={[0, -0.04, 0]}>
+                    <sphereGeometry args={[0.055, 18, 18]} />
+                    <meshBasicMaterial color="#fffbeb" toneMapped={false} />
+                </mesh>
+                {/* Single Cozy Warm Downward Ambient Light */}
+                <pointLight
+                    color="#fef3c7"
+                    intensity={2.6}
+                    distance={3.4}
+                    decay={2}
+                    position={[0, -0.06, 0]}
+                />
             </group>
         </group>
     );
@@ -3013,6 +3106,9 @@ export default function CyberRoomScene({
 
                 {/* Cyber Futon Bed & Chill Zone */}
                 <CyberBedAndChillZone />
+
+                {/* Designer Architectural Arc Floor Standing Lamp & Planter (covers foreground space beside bed) */}
+                <ArchitecturalStandingLamp />
 
                 {/* Shelves & Decor */}
                 <CyberRoomDecor />
