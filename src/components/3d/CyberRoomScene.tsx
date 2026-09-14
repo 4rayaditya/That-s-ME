@@ -1025,7 +1025,7 @@ export default function CyberRoomScene({
         <div className="w-full h-full relative cursor-grab active:cursor-grabbing">
             <Canvas
                 shadows
-                camera={{ position: [3.55, 3.23, 4.05], fov: 38 }}
+                camera={{ position: [4.35, 3.88, 4.76], fov: 38 }}
                 gl={{
                     antialias: true,
                     powerPreference: 'high-performance',
