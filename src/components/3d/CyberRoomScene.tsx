@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
@@ -25,11 +25,11 @@ interface CyberRoomSceneProps {
 }
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Single Ultrawide Curved OLED Monitor
+// SUB-COMPONENT: Dual Monitor Setup (Compact Main + Vertical Curved)
 // -------------------------------------------------------------
 const BattlestationMonitors = React.memo(function BattlestationMonitors({ monitorTextures }: { monitorTextures: MonitorTextures }) {
     return (
-        <group position={[0, 1.45, -0.9]}>
+        <group position={[0, 1.45, -3.20]}>
             {/* Heavy-Duty Heavy Articulated Hydraulic Mounting Arm */}
             <mesh position={[0, -0.42, -0.15]}>
                 <cylinderGeometry args={[0.045, 0.055, 0.84, 16]} />
@@ -39,48 +39,92 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
                 <boxGeometry args={[0.38, 0.04, 0.26]} />
                 <meshStandardMaterial color="#090e18" metalness={0.95} roughness={0.15} />
             </mesh>
-            {/* Articulated VESA Mount Bracket */}
-            <mesh position={[0, 0, -0.06]}>
-                <boxGeometry args={[0.18, 0.18, 0.05]} />
+
+            {/* Dual Heavy-Duty Crossbar Mount */}
+            <mesh position={[-0.12, 0, -0.09]}>
+                <boxGeometry args={[1.22, 0.04, 0.04]} />
+                <meshStandardMaterial color="#090e18" metalness={0.95} roughness={0.15} />
+            </mesh>
+
+            {/* Articulated VESA Mount Knuckles */}
+            <mesh position={[0.22, 0, -0.06]}>
+                <boxGeometry args={[0.14, 0.14, 0.04]} />
+                <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
+            </mesh>
+            <mesh position={[-0.46, 0.04, -0.02]} rotation={[0, 0.22, 0]}>
+                <boxGeometry args={[0.12, 0.14, 0.04]} />
                 <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
             </mesh>
 
-            {/* "BEHIND SETUP" LIGHT (one of the room's 5 accent lights): a single cyan bias-glow
-                behind the monitor, projecting onto the back acoustic wood slats. This replaces
-                what used to be 3 separate lights here (2 ambilight + 1 screen-forward). */}
-            <pointLight color="#00f5d4" intensity={2.6} distance={3.4} decay={2} position={[0, -0.05, -0.35]} />
+            {/* "BEHIND SETUP" RED BIAS LIGHT: contrasting sharply against the black slat wall */}
+            <pointLight color="#ff1744" intensity={3.5} distance={2.5} decay={2} position={[0, 0.04, -0.12]} />
 
-            {/* SINGLE PREMIUM 38" ULTRAWIDE CURVED OLED MONITOR */}
-            <group position={[0, 0, 0]}>
-                {/* Outer Beveled Chassis */}
+            {/* Physical Red LED Backlight Strips on the rear of monitors */}
+            <mesh position={[0.22, 0.02, -0.04]}>
+                <boxGeometry args={[0.95, 0.018, 0.01]} />
+                <meshBasicMaterial color="#ff1744" toneMapped={false} />
+            </mesh>
+            <mesh position={[-0.46, 0.04, 0.0]} rotation={[0, 0.22, 0]}>
+                <boxGeometry args={[0.015, 0.65, 0.01]} />
+                <meshBasicMaterial color="#ff1744" toneMapped={false} />
+            </mesh>
+
+            {/* 1. MAIN HORIZONTAL MONITOR (Shorter in length & breadth, clean stealth bezel, Chrome Dino Game) */}
+            <group position={[0.22, 0, 0]}>
+                {/* Outer Beveled Chassis (Shorter in length & breadth: 1.16 x 0.62) */}
                 <mesh castShadow>
-                    <boxGeometry args={[1.72, 0.82, 0.065]} />
+                    <boxGeometry args={[1.16, 0.62, 0.055]} />
                     <meshStandardMaterial color="#070b14" metalness={0.88} roughness={0.22} />
                 </mesh>
 
-                {/* Webcam & Biometric Sensor Array on Top */}
-                <group position={[0, 0.425, 0.01]}>
+                {/* Webcam on Top */}
+                <group position={[0, 0.325, 0.01]}>
                     <mesh>
-                        <boxGeometry args={[0.18, 0.03, 0.045]} />
+                        <boxGeometry args={[0.14, 0.025, 0.04]} />
                         <meshStandardMaterial color="#03060d" metalness={0.9} roughness={0.2} />
                     </mesh>
-                    <mesh position={[0, 0, 0.024]}>
-                        <sphereGeometry args={[0.009, 12, 12]} />
-                        <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                    <mesh position={[0, 0, 0.022]}>
+                        <sphereGeometry args={[0.007, 12, 12]} />
+                        <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.8} />
+                    </mesh>
+                    {/* Micro red recording indicator dot */}
+                    <mesh position={[0.04, 0, 0.022]}>
+                        <sphereGeometry args={[0.003, 8, 8]} />
+                        <meshBasicMaterial color="#ef4444" toneMapped={false} />
                     </mesh>
                 </group>
 
-                {/* Glowing Screen Bezel Trim */}
-                <mesh position={[0, 0, 0.034]}>
-                    <boxGeometry args={[1.66, 0.76, 0.004]} />
-                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                {/* Clean Stealth Bezel Frame - No blue rim */}
+                <mesh position={[0, 0, 0.029]}>
+                    <boxGeometry args={[1.12, 0.58, 0.004]} />
+                    <meshStandardMaterial color="#0b0f19" roughness={0.7} metalness={0.5} />
                 </mesh>
-                {/* Active Screen Surface (self-illuminating emissive material â€” doesn't need its
-                    own light to read as "lit"; the separate forward point light was removed as
-                    part of the room's lighting budget cut) */}
-                <mesh position={[0, 0, 0.038]}>
-                    <planeGeometry args={[1.63, 0.73]} />
+
+                {/* Active Screen Surface: Chrome Offline Dragon Game */}
+                <mesh position={[0, 0, 0.033]}>
+                    <planeGeometry args={[1.10, 0.56]} />
                     <meshBasicMaterial map={monitorTextures.centerTexture} toneMapped={false} />
+                </mesh>
+            </group>
+
+            {/* 2. SECOND CURVED MONITOR VERTICALLY (Portrait Developer Display, angled close to main monitor) */}
+            <group position={[-0.46, 0.04, 0.04]} rotation={[0, 0.22, 0]}>
+                {/* Outer Vertical Chassis (Portrait: 0.42 width x 0.78 height) */}
+                <mesh castShadow>
+                    <boxGeometry args={[0.42, 0.78, 0.055]} />
+                    <meshStandardMaterial color="#070b14" metalness={0.88} roughness={0.22} />
+                </mesh>
+
+                {/* Vertical Stealth Bezel Frame */}
+                <mesh position={[0, 0, 0.029]}>
+                    <boxGeometry args={[0.395, 0.755, 0.004]} />
+                    <meshStandardMaterial color="#0b0f19" roughness={0.7} metalness={0.5} />
+                </mesh>
+
+                {/* Active Screen Surface: Live TypeScript Matrix IDE & Telemetry Screen */}
+                <mesh position={[0, 0, 0.033]}>
+                    <planeGeometry args={[0.38, 0.74]} />
+                    <meshBasicMaterial map={monitorTextures.leftTexture} toneMapped={false} />
                 </mesh>
             </group>
         </group>
@@ -92,7 +136,7 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
 // -------------------------------------------------------------
 const CpuCabinet = React.memo(function CpuCabinet() {
     return (
-        <group position={[1.18, 0.753, -0.65]} rotation={[0, -0.16, 0]}>
+        <group position={[1.05, 0.02, -2.75]} rotation={[0, -0.22, 0]} scale={[1.20, 1.20, 1.20]}>
             {/* 1. CHASSIS CASE (Dark Anodized Aluminum Mid-Tower Frame) */}
             <mesh position={[0, 0.25, 0]}>
                 <boxGeometry args={[0.22, 0.50, 0.46]} />
@@ -304,8 +348,16 @@ const CpuCabinet = React.memo(function CpuCabinet() {
 // SUB-COMPONENT: Battlestation Desk, Mat, Keyboard, Cables, Lamp
 // -------------------------------------------------------------
 const BattlestationDesk = React.memo(function BattlestationDesk() {
+    const rgbUnderglowRef = useRef<THREE.PointLight>(null);
+    useFrame((state) => {
+        if (rgbUnderglowRef.current) {
+            const hue = (state.clock.elapsedTime * 0.08) % 1;
+            rgbUnderglowRef.current.color.setHSL(hue, 0.95, 0.52);
+        }
+    });
+
     return (
-        <group position={[0, 0, -0.7]}>
+        <group position={[0, 0, -2.95]}>
             {/* Desktop Surface - Aesthetic Solid Warm Oak / Live-Edge Walnut */}
             <mesh receiveShadow castShadow position={[0, 0.72, 0]}>
                 <boxGeometry args={[3.2, 0.065, 1.25]} />
@@ -317,6 +369,25 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
                 <boxGeometry args={[3.2, 0.015, 0.01]} />
                 <meshBasicMaterial color="#d97706" toneMapped={false} />
             </mesh>
+
+            {/* RGB LIGHT FIXTURES & DYNAMIC UNDERGLOW BELOW TABLE */}
+            <mesh position={[0, 0.68, 0.45]}>
+                <boxGeometry args={[2.9, 0.012, 0.02]} />
+                <meshBasicMaterial color="#a855f7" toneMapped={false} />
+            </mesh>
+            <mesh position={[0, 0.68, -0.45]}>
+                <boxGeometry args={[2.9, 0.012, 0.02]} />
+                <meshBasicMaterial color="#06b6d4" toneMapped={false} />
+            </mesh>
+            {/* Dynamic RGB point light below table illuminating the floor, under-desk CPU cabinet & chair base */}
+            <pointLight
+                ref={rgbUnderglowRef}
+                color="#a855f7"
+                intensity={3.4}
+                distance={3.4}
+                decay={2}
+                position={[0, 0.38, 0.0]}
+            />
 
             {/* Solid Oak & Warm Bronze Trestle Legs */}
             <mesh castShadow position={[-1.48, 0.36, 0]}>
@@ -403,26 +474,6 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
                 <mesh position={[0, 0.037, -0.025]} rotation={[Math.PI / 2, 0, 0]}>
                     <cylinderGeometry args={[0.009, 0.009, 0.008, 12]} />
                     <meshBasicMaterial color="#f59e0b" toneMapped={false} />
-                </mesh>
-            </group>
-
-            {/* DESKTOP GREENERY: POTTED CERAMIC SUCCULENT PLANTER */}
-            <group position={[0.72, 0.76, 0.26]}>
-                <mesh position={[0, 0.06, 0]}>
-                    <cylinderGeometry args={[0.07, 0.05, 0.12, 16]} />
-                    <meshStandardMaterial color="#f8fafc" roughness={0.3} />
-                </mesh>
-                <mesh position={[0, 0.12, 0]}>
-                    <cylinderGeometry args={[0.065, 0.065, 0.02, 16]} />
-                    <meshStandardMaterial color="#271c15" roughness={0.9} />
-                </mesh>
-                <mesh position={[0, 0.16, 0]}>
-                    <sphereGeometry args={[0.08, 10, 10]} />
-                    <meshStandardMaterial color="#10b981" roughness={0.6} />
-                </mesh>
-                <mesh position={[0.03, 0.21, 0.02]}>
-                    <sphereGeometry args={[0.055, 8, 8]} />
-                    <meshStandardMaterial color="#34d399" roughness={0.6} />
                 </mesh>
             </group>
 
@@ -762,11 +813,9 @@ const CoffeeStation = React.memo(function CoffeeStation() {
     });
 
     return (
-        <group position={[3.19, 0, 0.27]} rotation={[0, -Math.PI / 2, 0]}>
-            {/* z shifted from 0.55 to 0.27: at 0.55 the counter's footprint (z 0.05-1.05) overlapped
-                the entryway door's frame (z 0.82-1.98) in one corner, so even though the counter's
-                back face was flush with the wall (x=3.5), it visibly clipped through the door casing
-                right there. Shifting it toward the window clears that corner completely. */}
+        <group position={[3.15, 0, -0.43]} rotation={[0, -Math.PI / 2, 0]}>
+            {/* Coffee counter is now moved flush against the tall wooden wardrobe at z=-0.94,
+                sticking them seamlessly together as a custom built-in architectural unit. */}
 
             {/* COUNTER BASE - 1.0 wide, back face flush against the right wall (wall at world x=3.5) */}
             <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
@@ -1180,48 +1229,111 @@ function AnimeFigurine({
 }
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Side Table with an Anime Figurine Collection
+// SUB-COMPONENT: Two-Tier Collector's Figurine Display Pedestal
 // -------------------------------------------------------------
 const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
     return (
-        // Pushed back to z=-3.32 so the table's back edge sits flush against the back
-        // (window) wall's baseboard at z=-3.58, tucked under the window sill's overhang
-        // (the sill sits well above the table, y=0.79+, so there's no actual clipping).
-        <group position={[0.9, 0, -3.32]}>
-            {/* Round Warm Oak Side Table */}
-            <mesh castShadow receiveShadow position={[0, 0.42, 0]}>
-                <cylinderGeometry args={[0.26, 0.24, 0.03, 24]} />
-                <meshStandardMaterial color="#6a4c33" roughness={0.45} />
-            </mesh>
-            {/* Splayed Tripod Legs */}
-            {[0, 120, 240].map((deg, i) => {
-                const rad = (deg * Math.PI) / 180;
-                return (
-                    <mesh
-                        key={i}
-                        castShadow
-                        position={[Math.cos(rad) * 0.18, 0.21, Math.sin(rad) * 0.18]}
-                        rotation={[0.12 * Math.sin(rad), 0, -0.12 * Math.cos(rad)]}
-                    >
-                        <cylinderGeometry args={[0.014, 0.018, 0.42, 8]} />
-                        <meshStandardMaterial color="#4a3220" roughness={0.5} />
+        // Positioned beside the battlestation desk under the warm wall light panel, fully visible
+        <group position={[2.15, 0, -2.70]}>
+            {/* 1. ARCHITECTURAL TWO-TIER DISPLAY FRAMEWORK (Height ~0.84m) */}
+            {/* 4 Sleek Brushed Aluminum & Dark Oak Structural Columns */}
+            {[
+                [-0.20, -0.20],
+                [0.20, -0.20],
+                [-0.20, 0.20],
+                [0.20, 0.20],
+            ].map(([cx, cz], i) => (
+                <group key={i} position={[cx, 0, cz]}>
+                    <mesh castShadow position={[0, 0.42, 0]}>
+                        <cylinderGeometry args={[0.016, 0.018, 0.84, 12]} />
+                        <meshStandardMaterial color="#1e2433" metalness={0.9} roughness={0.2} />
                     </mesh>
-                );
-            })}
-
-            {/* Three Collectible Figurines Displayed on Top */}
-            <AnimeFigurine position={[-0.1, 0.435, 0.05]} primary="#b91c1c" accent="#eab308" cape="#1e3a5f" />
-            <AnimeFigurine position={[0.1, 0.435, 0.06]} primary="#1e3a8a" accent="#cbd5e1" cape="#0f172a" />
-            <AnimeFigurine position={[0, 0.435, -0.12]} primary="#14532d" accent="#22c55e" cape="#111827" />
-
-            {/* Small Stack of Manga Volumes beside the display */}
-            <group position={[-0.15, 0.436, -0.1]} rotation={[0, 0.3, 0]}>
-                {[0, 1, 2].map((i) => (
-                    <mesh key={i} position={[0, i * 0.016, 0]} castShadow>
-                        <boxGeometry args={[0.09, 0.014, 0.13]} />
-                        <meshStandardMaterial color={['#7c3aed', '#f97316', '#0ea5e9'][i]} roughness={0.5} />
+                    {/* Polished Brass Shelf Collars */}
+                    <mesh position={[0, 0.40, 0]}>
+                        <cylinderGeometry args={[0.024, 0.024, 0.02, 12]} />
+                        <meshStandardMaterial color="#eab308" metalness={0.95} roughness={0.15} />
                     </mesh>
-                ))}
+                    <mesh position={[0, 0.80, 0]}>
+                        <cylinderGeometry args={[0.024, 0.024, 0.02, 12]} />
+                        <meshStandardMaterial color="#eab308" metalness={0.95} roughness={0.15} />
+                    </mesh>
+                    {/* Bottom isolation foot */}
+                    <mesh position={[0, 0.008, 0]}>
+                        <cylinderGeometry args={[0.022, 0.022, 0.016, 12]} />
+                        <meshStandardMaterial color="#090d16" roughness={0.8} />
+                    </mesh>
+                </group>
+            ))}
+
+            {/* LOWER TIER (SHELF 1 at y = 0.40m) */}
+            <group position={[0, 0.40, 0]}>
+                {/* Dark Walnut Lower Shelf Deck */}
+                <mesh castShadow receiveShadow>
+                    <cylinderGeometry args={[0.30, 0.29, 0.024, 24]} />
+                    <meshStandardMaterial color="#3e2a1b" roughness={0.5} />
+                </mesh>
+                {/* Brass Beveled Inset Ring */}
+                <mesh position={[0, 0.013, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <ringGeometry args={[0.26, 0.28, 24]} />
+                    <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
+                </mesh>
+
+                {/* FIGURINE 4: Crimson Berserker */}
+                <AnimeFigurine position={[-0.14, 0.015, 0.04]} primary="#b91c1c" accent="#ea580c" cape="#450a0a" />
+
+                {/* FIGURINE 5: Azure Sorceress with Staff */}
+                <AnimeFigurine position={[0.12, 0.015, 0.06]} primary="#1e40af" accent="#67e8f9" cape="#172554" />
+
+                {/* FIGURINE 6: Emerald Scout */}
+                <AnimeFigurine position={[0, 0.015, -0.14]} primary="#15803d" accent="#86efac" cape="#052e16" />
+
+                {/* Manga Volume Stack on Lower Shelf */}
+                <group position={[-0.12, 0.015, -0.10]} rotation={[0, 0.45, 0]}>
+                    {[0, 1, 2, 3].map((i) => (
+                        <mesh key={i} position={[0, i * 0.016 + 0.008, 0]} castShadow>
+                            <boxGeometry args={[0.095, 0.014, 0.135]} />
+                            <meshStandardMaterial color={['#ef4444', '#f59e0b', '#06b6d4', '#8b5cf6'][i]} roughness={0.5} />
+                        </mesh>
+                    ))}
+                </group>
+            </group>
+
+            {/* TOP TIER (SHELF 2 at y = 0.81m) */}
+            <group position={[0, 0.81, 0]}>
+                {/* Solid Warm Oak Frame Ring */}
+                <mesh castShadow receiveShadow>
+                    <cylinderGeometry args={[0.32, 0.31, 0.026, 28]} />
+                    <meshStandardMaterial color="#6a4c33" roughness={0.45} />
+                </mesh>
+                {/* Smoked Tempered Glass Center Inset */}
+                <mesh position={[0, 0.014, 0]}>
+                    <cylinderGeometry args={[0.28, 0.28, 0.004, 28]} />
+                    <meshPhysicalMaterial
+                        color="#0f172a"
+                        transparent
+                        opacity={0.7}
+                        roughness={0.08}
+                        metalness={0.2}
+                        transmission={0.4}
+                    />
+                </mesh>
+                {/* Under-Tier Warm Showcase Ambient Glow washing over Lower Shelf */}
+                <pointLight color="#fde68a" intensity={1.8} distance={1.2} decay={2} position={[0, -0.05, 0]} />
+
+                {/* FIGURINE 1 (Center Hero): Golden Samurai / Ronin */}
+                <AnimeFigurine position={[0, 0.016, 0.08]} primary="#dc2626" accent="#facc15" cape="#7f1d1d" />
+
+                {/* FIGURINE 2 (Left): Cyber Tech-Ninja */}
+                <AnimeFigurine position={[-0.14, 0.016, -0.04]} primary="#0284c7" accent="#00f5d4" cape="#0f172a" />
+
+                {/* FIGURINE 3 (Right): Dark Knight Mecha */}
+                <AnimeFigurine position={[0.14, 0.016, -0.04]} primary="#4c1d95" accent="#ec4899" cape="#1e1b4b" />
+
+                {/* Collector's Acrylic Trophy Stand & Plaque */}
+                <mesh position={[0, 0.022, -0.12]}>
+                    <boxGeometry args={[0.10, 0.03, 0.02]} />
+                    <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
+                </mesh>
             </group>
         </group>
     );
@@ -1301,51 +1413,9 @@ const CyberRoomDecor = React.memo(function CyberRoomDecor() {
                 <pointLight color="#fde68a" intensity={2.2} distance={2.6} decay={2} position={[0, -0.1, 0.4]} />
             </group>
 
-            {/* Atmospheric Cyber Dust Motes */}
-            <CyberDustMotes />
         </group>
     );
 });
-
-// -------------------------------------------------------------
-// SUB-COMPONENT: Floating Cyber Dust Motes
-// -------------------------------------------------------------
-function CyberDustMotes() {
-    // Reduced from 120 to 60 particles - imperceptible visual difference at half the CPU cost
-    const count = 60;
-    const lastDustUpdate = useRef(0);
-    const { geo } = useMemo(() => {
-        const g = new THREE.BufferGeometry();
-        const p = new Float32Array(count * 3);
-        for (let i = 0; i < count; i++) {
-            p[i * 3] = (Math.random() - 0.5) * 6.5;
-            p[i * 3 + 1] = 0.5 + Math.random() * 3.0;
-            p[i * 3 + 2] = (Math.random() - 0.5) * 6.5;
-        }
-        g.setAttribute('position', new THREE.BufferAttribute(p, 3));
-        return { geo: g };
-    }, []);
-
-    useFrame((state) => {
-        // Throttle dust mote updates to ~20 FPS - slow-floating particles don't need 60fps
-        if (state.clock.elapsedTime - lastDustUpdate.current < 0.05) return;
-        lastDustUpdate.current = state.clock.elapsedTime;
-        const p = geo.attributes.position.array as Float32Array;
-        const t = state.clock.elapsedTime;
-        const dt = 0.05; // Fixed timestep for throttled update
-        for (let i = 0; i < count; i++) {
-            p[i * 3 + 1] += Math.sin(t + i) * dt * 0.05;
-            p[i * 3] += Math.cos(t * 0.5 + i) * dt * 0.03;
-        }
-        geo.attributes.position.needsUpdate = true;
-    });
-
-    return (
-        <points geometry={geo}>
-            <pointsMaterial color="#00f5d4" size={0.025} transparent opacity={0.4} toneMapped={false} />
-        </points>
-    );
-}
 
 // -------------------------------------------------------------
 // MAIN SCENE ROOT EXPORT
@@ -1452,8 +1522,6 @@ export default function CyberRoomScene({
                 {/* Autonomous Character Simulation (Aditya Ray) */}
                 <CyberCharacter currentRoutine={currentRoutine} onRoutineChange={onRoutineChange} />
 
-                {/* Corner Server Rack with Patch Cables & LEDs */}
-                <ServerRackTower />
 
                 {/* Night Window (curtained â€” see ArchitecturalRoom for the closed curtain + wall-wash light) */}
                 <DynamicAtmosphereWindow />

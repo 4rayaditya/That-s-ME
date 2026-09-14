@@ -43,7 +43,7 @@ export default function FloatingPoiMarkers({
     return (
         <group>
             {/* 1. SETUP / BATTLESTATION MARKER */}
-            <group ref={setupRef} position={[0, 2.05, -0.2]}>
+            <group ref={setupRef} position={[0, 2.05, -2.45]}>
                 <Html center distanceFactor={7} zIndexRange={[100, 0]}>
                     <button
                         onClick={(e) => {
@@ -67,7 +67,7 @@ export default function FloatingPoiMarkers({
             </group>
 
             {/* 2. ESPRESSO STAND MARKER */}
-            <group ref={coffeeRef} position={[2.94, 1.55, 0.42]}>
+            <group ref={coffeeRef} position={[2.90, 1.55, -0.28]}>
                 <Html center distanceFactor={7} zIndexRange={[100, 0]}>
                     <button
                         onClick={(e) => {

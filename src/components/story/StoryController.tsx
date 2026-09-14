@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import HolographicPortfolio from '@/components/hologram/HolographicPortfolio';
+import WindowsDesktop from '@/components/os/WindowsDesktop';
 import { CharacterRoutine } from '@/components/3d/CyberCharacter';
 import { CameraMode } from '@/components/3d/CameraController';
 import { audio } from '@/lib/audio';
@@ -169,7 +169,7 @@ export default function StoryController() {
                 </button>
             </header>
 
-            {/* 3. 3D HOLOGRAPHIC PORTFOLIO INTERFACE (ON JACK IN) */}
+            {/* 3. WINDOWS 11 WORKSTATION HOMESCREEN (ON JACK IN) */}
             <AnimatePresence>
                 {showHologram && (
                     <motion.div
@@ -179,7 +179,7 @@ export default function StoryController() {
                         transition={{ duration: 0.35, ease: 'easeOut' }}
                         className="absolute inset-0 z-30"
                     >
-                        <HolographicPortfolio onReturnToRoom={handleReturnToRoom} />
+                        <WindowsDesktop onReturnToRoom={handleReturnToRoom} />
                     </motion.div>
                 )}
             </AnimatePresence>

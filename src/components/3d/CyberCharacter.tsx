@@ -36,8 +36,8 @@ export default function CyberCharacter({
     const coffeeCupRef = useRef<THREE.Group>(null);
 
     // Precise spatial coordinates for locations in the room
-    const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, 0.4), []);
-    const COFFEE_POS = useMemo(() => new THREE.Vector3(2.79, 0, 0.42), []); // Directly in front of espresso bar (counter flush against wall, clear of the door)
+    const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, -1.85), []);
+    const COFFEE_POS = useMemo(() => new THREE.Vector3(2.75, 0, -0.28), []); // Directly in front of espresso bar (counter flush against wardrobe)
     const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.85, 0, 0.8), []); // Foot of bed for standing
     const BED_LIE_POS = useMemo(() => new THREE.Vector3(-2.55, 0, 0.8), []); // Flat on futon mattress
 
@@ -358,7 +358,7 @@ export default function CyberCharacter({
     });
 
     return (
-        <group ref={groupRef} position={[0, 0, 0.4]}>
+        <group ref={groupRef} position={[0, 0, -1.85]}>
             {/* ANATOMICALLY UNIFIED SKELETON ROOT (Hips/Pelvis Center) */}
             <group ref={bodyRootRef} position={[0, 0.55, 0]}>
                 {/* Hips / Waist Connector (Anatomical Pelvis in Techwear Cargo Fabric) */}

@@ -20,8 +20,8 @@ export const TOUR_STOPS: TourStop[] = [
         id: 'battlestation',
         name: '⚡ Battlestation // Neural Workspace',
         subtitle: 'Sleek single ultrawide OLED monitor, custom liquid-cooled PC tower with RTX GPU, and mechanical keyboard',
-        camPos: new THREE.Vector3(0, 1.6, 0.75),
-        target: new THREE.Vector3(0, 1.45, -0.85),
+        camPos: new THREE.Vector3(0, 1.6, -1.5),
+        target: new THREE.Vector3(0, 1.45, -3.15),
         duration: 4.2,
     },
     {
@@ -101,8 +101,8 @@ export default function CameraController({
     const currentTourTargetPosRef = useRef(new THREE.Vector3(0, 1.45, -0.70));
 
     // Spatial targets
-    const MONITOR_POS = new THREE.Vector3(0, 1.45, -0.85);
-    const SCREEN_LOCK_POS = new THREE.Vector3(0, 1.45, -0.15);
+    const MONITOR_POS = new THREE.Vector3(0, 1.45, -3.15);
+    const SCREEN_LOCK_POS = new THREE.Vector3(0, 1.45, -2.45);
 
     // Track mode changes
     useEffect(() => {

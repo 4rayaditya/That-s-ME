@@ -137,8 +137,8 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
             </mesh>
 
             {/* LARGE WOVEN SCANDINAVIAN AREA RUG UNDER DESK & CHAIR */}
-            <mesh receiveShadow position={[0, 0.002, 0.2]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[4.8, 3.4]} />
+            <mesh receiveShadow position={[0, 0.002, -1.95]} rotation={[-Math.PI / 2, 0, 0]}>
+                <planeGeometry args={[4.8, 3.2]} />
                 <meshStandardMaterial
                     map={rugTexture || undefined}
                     color={isLight ? '#f7f4ed' : '#332a22'}
@@ -146,9 +146,9 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                 />
             </mesh>
 
-            {/* BEDSIDE COZY TEXTURED RUNNER RUG UNDER FUTON */}
-            <mesh receiveShadow position={[-2.6, 0.003, 0.8]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[1.8, 2.6]} />
+            {/* COZY WOVEN TEXTURED CARPET EXTENDING UNDER FUTON BED */}
+            <mesh receiveShadow position={[-2.4, 0.003, 0.8]} rotation={[-Math.PI / 2, 0, 0]}>
+                <planeGeometry args={[2.8, 3.2]} />
                 <meshStandardMaterial
                     color={isLight ? '#e7e1d5' : '#2d241d'}
                     roughness={0.92}
@@ -355,11 +355,9 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
             <AestheticWoodWardrobe isLight={isLight} />
 
             {/* ============================================================ */}
-            {/* 4. ABUNDANT BOTANICAL GREENERY: MONSTERA & HANGING MACRAME  */}
+            {/* 4. BOTANICAL GREENERY: HANGING MACRAME                      */}
             {/* ============================================================ */}
-            <LargeMonsteraPlant />
             <HangingMacramePlant />
-            <AkariPaperFloorLamp isLight={isLight} />
 
             {/* ============================================================ */}
             {/* 5. PHYSICAL SOLID CEILING & WARM OAK RAFTERS (y = 3.6)       */}
