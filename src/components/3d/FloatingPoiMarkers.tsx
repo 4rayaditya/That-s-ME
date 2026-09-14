@@ -67,7 +67,7 @@ export default function FloatingPoiMarkers({
             </group>
 
             {/* 2. ESPRESSO STAND MARKER */}
-            <group ref={coffeeRef} position={[2.94, 1.55, 0.7]}>
+            <group ref={coffeeRef} position={[2.94, 1.55, 0.42]}>
                 <Html center distanceFactor={7} zIndexRange={[100, 0]}>
                     <button
                         onClick={(e) => {

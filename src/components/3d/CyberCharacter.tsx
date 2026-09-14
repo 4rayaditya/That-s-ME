@@ -37,7 +37,7 @@ export default function CyberCharacter({
 
     // Precise spatial coordinates for locations in the room
     const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, 0.4), []);
-    const COFFEE_POS = useMemo(() => new THREE.Vector3(2.79, 0, 0.7), []); // Directly in front of espresso bar (counter now flush against wall)
+    const COFFEE_POS = useMemo(() => new THREE.Vector3(2.79, 0, 0.42), []); // Directly in front of espresso bar (counter flush against wall, clear of the door)
     const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.85, 0, 0.8), []); // Foot of bed for standing
     const BED_LIE_POS = useMemo(() => new THREE.Vector3(-2.55, 0, 0.8), []); // Flat on futon mattress
 
@@ -294,42 +294,63 @@ export default function CyberCharacter({
             group.rotation.y += diff * damp(5);
 
             // Reclined flat on back via bodyRoot.rotation.x only (ZERO group gimbal lock!)
-            bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.48, damp(5));
+            // Raised from the old 0.48: once the rig is pitched flat, each part's local
+            // depth/radius becomes its VERTICAL thickness, so 0.48 sat the hips low enough
+            // that the leg cylinders' own radius sank below the mattress + duvet surface.
+            // 0.62 clears that while keeping the torso's back resting just on the duvet.
+            bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.62, damp(5));
             bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, -Math.PI / 2, damp(5));
             bodyRoot.rotation.y = 0;
             bodyRoot.rotation.z = 0;
 
-            // Legs straight and relaxed flat along mattress
+            // Legs straight and relaxed flat along mattress â€” lerped into place (not snapped)
+            // so the walking leg-swing settles smoothly into the resting pose instead of popping.
             if (leftLegRef.current) {
-                leftLegRef.current.rotation.set(0.02, 0, -0.05);
+                leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0.02, damp(6));
+                leftLegRef.current.rotation.y = 0;
+                leftLegRef.current.rotation.z = THREE.MathUtils.lerp(leftLegRef.current.rotation.z, -0.05, damp(6));
             }
             if (rightLegRef.current) {
-                rightLegRef.current.rotation.set(0.02, 0, 0.05);
+                rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0.02, damp(6));
+                rightLegRef.current.rotation.y = 0;
+                rightLegRef.current.rotation.z = THREE.MathUtils.lerp(rightLegRef.current.rotation.z, 0.05, damp(6));
             }
             if (leftKneeRef.current) {
-                leftKneeRef.current.rotation.set(0, 0, 0);
+                leftKneeRef.current.rotation.x = THREE.MathUtils.lerp(leftKneeRef.current.rotation.x, 0, damp(6));
+                leftKneeRef.current.rotation.y = 0;
+                leftKneeRef.current.rotation.z = 0;
             }
             if (rightKneeRef.current) {
-                rightKneeRef.current.rotation.set(0, 0, 0);
+                rightKneeRef.current.rotation.x = THREE.MathUtils.lerp(rightKneeRef.current.rotation.x, 0, damp(6));
+                rightKneeRef.current.rotation.y = 0;
+                rightKneeRef.current.rotation.z = 0;
             }
 
             // Torso flat with gentle, deep sleep breathing
             if (torsoRef.current) {
-                torsoRef.current.rotation.set(0, 0, 0);
+                torsoRef.current.rotation.x = THREE.MathUtils.lerp(torsoRef.current.rotation.x, 0, damp(6));
+                torsoRef.current.rotation.y = THREE.MathUtils.lerp(torsoRef.current.rotation.y, 0, damp(6));
+                torsoRef.current.rotation.z = 0;
                 torsoRef.current.position.set(0, 0.28, Math.sin(time * 1.4) * 0.012);
             }
 
             // Head resting comfortably on pillow
             if (headRef.current) {
-                headRef.current.rotation.set(0, 0.12, 0.06);
+                headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, 0, damp(6));
+                headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, 0.12, damp(6));
+                headRef.current.rotation.z = THREE.MathUtils.lerp(headRef.current.rotation.z, 0.06, damp(6));
             }
 
             // Arms resting comfortably on chest / stomach
             if (leftArmRef.current) {
-                leftArmRef.current.rotation.set(-0.35, 0.35, 0.2);
+                leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, -0.35, damp(6));
+                leftArmRef.current.rotation.y = THREE.MathUtils.lerp(leftArmRef.current.rotation.y, 0.35, damp(6));
+                leftArmRef.current.rotation.z = THREE.MathUtils.lerp(leftArmRef.current.rotation.z, 0.2, damp(6));
             }
             if (rightArmRef.current) {
-                rightArmRef.current.rotation.set(-0.35, -0.35, -0.2);
+                rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, -0.35, damp(6));
+                rightArmRef.current.rotation.y = THREE.MathUtils.lerp(rightArmRef.current.rotation.y, -0.35, damp(6));
+                rightArmRef.current.rotation.z = THREE.MathUtils.lerp(rightArmRef.current.rotation.z, -0.2, damp(6));
             }
 
             if (coffeeCupRef.current) coffeeCupRef.current.visible = false;

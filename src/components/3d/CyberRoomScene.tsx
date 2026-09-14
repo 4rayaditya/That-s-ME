@@ -45,9 +45,10 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
                 <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
             </mesh>
 
-            {/* AMBILIGHT BIAS BACKGLOW (Projecting onto back acoustic wood slats) */}
-            <pointLight color="#00f5d4" intensity={2.2} distance={3.2} decay={2} position={[0, 0, -0.35]} />
-            <pointLight color="#fbbf24" intensity={1.4} distance={2.5} decay={2} position={[0, -0.2, -0.35]} />
+            {/* "BEHIND SETUP" LIGHT (one of the room's 5 accent lights): a single cyan bias-glow
+                behind the monitor, projecting onto the back acoustic wood slats. This replaces
+                what used to be 3 separate lights here (2 ambilight + 1 screen-forward). */}
+            <pointLight color="#00f5d4" intensity={2.6} distance={3.4} decay={2} position={[0, -0.05, -0.35]} />
 
             {/* SINGLE PREMIUM 38" ULTRAWIDE CURVED OLED MONITOR */}
             <group position={[0, 0, 0]}>
@@ -74,13 +75,13 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
                     <boxGeometry args={[1.66, 0.76, 0.004]} />
                     <meshBasicMaterial color="#00f5d4" toneMapped={false} />
                 </mesh>
-                {/* Active Screen Surface */}
+                {/* Active Screen Surface (self-illuminating emissive material â€” doesn't need its
+                    own light to read as "lit"; the separate forward point light was removed as
+                    part of the room's lighting budget cut) */}
                 <mesh position={[0, 0, 0.038]}>
                     <planeGeometry args={[1.63, 0.73]} />
                     <meshBasicMaterial map={monitorTextures.centerTexture} toneMapped={false} />
                 </mesh>
-                {/* Screen Forward Cast Light */}
-                <pointLight color="#00f5d4" intensity={2.0} distance={2.8} decay={2} position={[0, 0, 0.4]} />
             </group>
         </group>
     );
@@ -90,18 +91,6 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
 // SUB-COMPONENT: Custom High-End Gaming / Workstation PC Cabinet
 // -------------------------------------------------------------
 const CpuCabinet = React.memo(function CpuCabinet() {
-    const rgbPulseRef = useRef<THREE.PointLight>(null);
-    const lastRgbUpdate = useRef(0);
-
-    useFrame((state) => {
-        // Throttle RGB pulse to ~15 FPS - human eye can't distinguish faster for a glow pulse
-        if (state.clock.elapsedTime - lastRgbUpdate.current < 0.066) return;
-        lastRgbUpdate.current = state.clock.elapsedTime;
-        if (rgbPulseRef.current) {
-            rgbPulseRef.current.intensity = 1.6 + Math.sin(state.clock.elapsedTime * 2.5) * 0.3;
-        }
-    });
-
     return (
         <group position={[1.18, 0.753, -0.65]} rotation={[0, -0.16, 0]}>
             {/* 1. CHASSIS CASE (Dark Anodized Aluminum Mid-Tower Frame) */}
@@ -303,16 +292,10 @@ const CpuCabinet = React.memo(function CpuCabinet() {
                 </mesh>
             </group>
 
-            {/* 7. SOFT INTERNAL STUDIO RGB LIGHTING (Illuminating components through the glass) */}
-            <pointLight
-                ref={rgbPulseRef}
-                color="#00f5d4"
-                intensity={1.8}
-                distance={1.6}
-                decay={2}
-                position={[-0.04, 0.28, 0]}
-            />
-            <pointLight color="#f59e0b" intensity={0.9} distance={1.2} decay={2} position={[0.02, 0.18, 0.05]} />
+            {/* Internal RGB lighting was here (2 point lights lighting the components through
+                the glass) â€” removed as part of the room's lighting budget cut. The RAM strips,
+                GPU logo and fan rings are all already emissive `meshBasicMaterial`, so they
+                still read as glowing without casting extra light onto the room. */}
         </group>
     );
 });
@@ -321,18 +304,6 @@ const CpuCabinet = React.memo(function CpuCabinet() {
 // SUB-COMPONENT: Battlestation Desk, Mat, Keyboard, Cables, Lamp
 // -------------------------------------------------------------
 const BattlestationDesk = React.memo(function BattlestationDesk() {
-    const lampFlickerRef = useRef<THREE.PointLight>(null);
-    const lastLampUpdate = useRef(0);
-
-    useFrame((state) => {
-        // Throttle lamp flicker to ~20 FPS - subtle effect, doesn't need 60fps
-        if (state.clock.elapsedTime - lastLampUpdate.current < 0.05) return;
-        lastLampUpdate.current = state.clock.elapsedTime;
-        if (lampFlickerRef.current) {
-            lampFlickerRef.current.intensity = 2.6 + Math.sin(state.clock.elapsedTime * 14) * 0.15;
-        }
-    });
-
     return (
         <group position={[0, 0, -0.7]}>
             {/* Desktop Surface - Aesthetic Solid Warm Oak / Live-Edge Walnut */}
@@ -485,18 +456,10 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
                     <sphereGeometry args={[0.04, 16, 16]} />
                     <meshBasicMaterial color="#ffb703" toneMapped={false} />
                 </mesh>
-                {/* castShadow removed: a shadow-casting point light renders a 6-face cubemap every
-                    frame (6x the cost of the directional light's single shadow map) for a shadow
-                    that's barely visible on a small desk lamp — the directional light + ContactShadows
-                    already ground every object in the room. */}
-                <pointLight
-                    ref={lampFlickerRef}
-                    color="#ffb703"
-                    intensity={2.8}
-                    distance={3.5}
-                    decay={2}
-                    position={[0.22, 0.36, 0.2]}
-                />
+                {/* Its point light was removed as part of the room's lighting budget cut â€” the
+                    ceiling desk spotlight below (one of the room's 5 accent lights) plus the
+                    "behind setup" monitor bias light now cover this corner, and the bulb's
+                    emissive material still reads as lit on its own. */}
             </group>
 
             {/* REALISTIC HERMAN MILLER AERON-STYLE ERGONOMIC CHAIR (Aligned at world z=0.4) */}
@@ -702,8 +665,8 @@ const ServerRackTower = React.memo(function ServerRackTower() {
                 <sphereGeometry args={[0.014, 8, 8]} />
                 <meshBasicMaterial toneMapped={false} />
             </instancedMesh>
-
-            <pointLight color="#00f5d4" intensity={1.6} distance={2.5} decay={2} position={[0, 1.4, 0.5]} />
+            {/* Its own point light was removed as part of the room's lighting budget cut;
+                the blinking LEDs are emissive and still read as lit on their own. */}
         </group>
     );
 });
@@ -799,7 +762,11 @@ const CoffeeStation = React.memo(function CoffeeStation() {
     });
 
     return (
-        <group position={[3.19, 0, 0.55]} rotation={[0, -Math.PI / 2, 0]}>
+        <group position={[3.19, 0, 0.27]} rotation={[0, -Math.PI / 2, 0]}>
+            {/* z shifted from 0.55 to 0.27: at 0.55 the counter's footprint (z 0.05-1.05) overlapped
+                the entryway door's frame (z 0.82-1.98) in one corner, so even though the counter's
+                back face was flush with the wall (x=3.5), it visibly clipped through the door casing
+                right there. Shifting it toward the window clears that corner completely. */}
 
             {/* COUNTER BASE - 1.0 wide, back face flush against the right wall (wall at world x=3.5) */}
             <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
@@ -928,7 +895,8 @@ const CoffeeStation = React.memo(function CoffeeStation() {
                         <pointsMaterial color="#ffffff" size={0.025} transparent opacity={0.28} toneMapped={false} />
                     </points>
                 </group>
-                <pointLight color="#fef3c7" intensity={3.5} distance={2.6} decay={2} position={[0, 0.28, 0.4]} />
+                {/* Its point light was removed â€” the counter is now lit by the single overhead
+                    pendant below, which is one of the room's 5 accent lights ("above coffee table"). */}
             </group>
 
             {/* WALL SHELF */}
@@ -941,7 +909,6 @@ const CoffeeStation = React.memo(function CoffeeStation() {
                     <boxGeometry args={[0.86, 0.010, 0.016]} />
                     <meshBasicMaterial color="#ffb703" toneMapped={false} />
                 </mesh>
-                <pointLight color="#f59e0b" intensity={1.8} distance={1.8} decay={2} position={[0, -0.05, 0.06]} />
                 {([-0.30, -0.14, 0.16] as number[]).map((mx, idx) => (
                     <group key={idx} position={[mx, 0.052, 0]}>
                         <mesh castShadow>
@@ -966,7 +933,7 @@ const CoffeeStation = React.memo(function CoffeeStation() {
                 </group>
             </group>
 
-            {/* PENDANT LIGHT */}
+            {/* PENDANT LIGHT â€” one of the room's 5 accent lights ("above coffee table") */}
             <group>
                 <mesh position={[0, 2.65, 0]}>
                     <cylinderGeometry args={[0.060, 0.060, 0.018, 14]} />
@@ -1044,8 +1011,32 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
                 </mesh>
             </group>
 
-            {/* Warm Ambient Bedside Reading Light */}
-            <pointLight color="#fed7aa" intensity={1.5} distance={2.8} decay={2} position={[0, 0.8, 0]} />
+            {/* HANGING PENDANT LIGHT ABOVE THE BED â€” one of the room's 5 accent lights
+                ("above bed"), replacing the old plain bedside point light with a proper
+                hanging fixture centered over the mattress. */}
+            <group position={[0, 2.35, 0.1]}>
+                {/* Recolored off warm-oak/bronze tones only â€” the earlier navy mount + red-orange
+                    shade read as a clashing "red and blue" fixture against the warm room. */}
+                <mesh>
+                    <cylinderGeometry args={[0.045, 0.045, 0.014, 14]} />
+                    <meshStandardMaterial color="#3d2b1c" metalness={0.6} roughness={0.35} />
+                </mesh>
+                <mesh position={[0, -0.28, 0]}>
+                    <cylinderGeometry args={[0.004, 0.004, 0.56, 6]} />
+                    <meshStandardMaterial color="#241812" roughness={0.85} />
+                </mesh>
+                {/* castShadow removed from this thin open-ended shade: it was producing
+                    flickery shadow-acne artifacts under the directional light's shadow map. */}
+                <mesh position={[0, -0.58, 0]}>
+                    <coneGeometry args={[0.16, 0.13, 18, 1, true]} />
+                    <meshStandardMaterial color="#a3672b" metalness={0.4} roughness={0.45} side={THREE.DoubleSide} />
+                </mesh>
+                <mesh position={[0, -0.64, 0]}>
+                    <sphereGeometry args={[0.038, 14, 14]} />
+                    <meshBasicMaterial color="#fff7ed" toneMapped={false} />
+                </mesh>
+                <pointLight color="#fed7aa" intensity={3.2} distance={3.0} decay={2} position={[0, -0.66, 0]} />
+            </group>
         </group>
     );
 });
@@ -1110,15 +1101,128 @@ const WallPipelinesAndConduits = React.memo(function WallPipelinesAndConduits() 
                 </mesh>
             ))}
 
-            {/* Warm Ambient Conduit Accents along left wall */}
-            <mesh position={[-3.38, 3.05, 0]}>
-                <cylinderGeometry args={[0.025, 0.025, 6.8, 12]} />
-                <meshBasicMaterial color="#f59e0b" toneMapped={false} />
+            {/* The "Warm Ambient Conduit Accents along left wall" used to live here: two thin
+                emissive rods 6.8 units long centered at y=3.05/2.96 â€” spanning from y=-0.35 (below
+                the floor) to y=6.45 (nearly double the room's own ~3.6 ceiling height). They read
+                as a giant glowing amber/green pole poking through the floor and ceiling. Removed. */}
+        </group>
+    );
+});
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Small Collectible Anime Figurine (generic stylized pose/colorway â€”
+// not any specific copyrighted character, just a "collectible figure on a display base" look)
+// -------------------------------------------------------------
+function AnimeFigurine({
+    position,
+    primary,
+    accent,
+    cape,
+}: {
+    position: [number, number, number];
+    primary: string;
+    accent: string;
+    cape: string;
+}) {
+    return (
+        <group position={position}>
+            {/* Round Display Base */}
+            <mesh castShadow>
+                <cylinderGeometry args={[0.032, 0.032, 0.006, 16]} />
+                <meshStandardMaterial color="#111827" roughness={0.3} metalness={0.3} />
             </mesh>
-            <mesh position={[-3.38, 2.96, 0]}>
-                <cylinderGeometry args={[0.02, 0.02, 6.8, 12]} />
-                <meshBasicMaterial color="#10b981" toneMapped={false} />
+            {/* Legs in a slight action stance */}
+            <mesh position={[-0.009, 0.03, 0]} rotation={[0, 0, 0.12]} castShadow>
+                <cylinderGeometry args={[0.007, 0.008, 0.05, 8]} />
+                <meshStandardMaterial color={primary} roughness={0.45} />
             </mesh>
+            <mesh position={[0.009, 0.028, 0]} rotation={[0, 0, -0.2]} castShadow>
+                <cylinderGeometry args={[0.007, 0.008, 0.05, 8]} />
+                <meshStandardMaterial color={primary} roughness={0.45} />
+            </mesh>
+            {/* Torso */}
+            <mesh position={[0, 0.07, 0]} rotation={[0, 0, 0.08]} castShadow>
+                <boxGeometry args={[0.026, 0.05, 0.016]} />
+                <meshStandardMaterial color={primary} roughness={0.4} />
+            </mesh>
+            {/* Chest Accent Emblem */}
+            <mesh position={[0, 0.075, 0.009]}>
+                <circleGeometry args={[0.008, 12]} />
+                <meshBasicMaterial color={accent} toneMapped={false} />
+            </mesh>
+            {/* Raised Arm (action pose) */}
+            <mesh position={[0.016, 0.1, 0]} rotation={[0, 0, -1.1]} castShadow>
+                <cylinderGeometry args={[0.006, 0.006, 0.045, 8]} />
+                <meshStandardMaterial color={primary} roughness={0.45} />
+            </mesh>
+            {/* Lowered Arm */}
+            <mesh position={[-0.015, 0.06, 0]} rotation={[0, 0, 0.35]} castShadow>
+                <cylinderGeometry args={[0.006, 0.006, 0.045, 8]} />
+                <meshStandardMaterial color={primary} roughness={0.45} />
+            </mesh>
+            {/* Head */}
+            <mesh position={[0.002, 0.115, 0]} castShadow>
+                <sphereGeometry args={[0.014, 12, 12]} />
+                <meshStandardMaterial color="#d4a373" roughness={0.6} />
+            </mesh>
+            {/* Hair / Mask Accent */}
+            <mesh position={[0.002, 0.121, -0.003]}>
+                <sphereGeometry args={[0.0145, 12, 12, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+                <meshStandardMaterial color={accent} roughness={0.4} />
+            </mesh>
+            {/* Flowing Cape Accent */}
+            <mesh position={[0, 0.06, -0.014]} rotation={[0.25, 0, 0]} castShadow>
+                <boxGeometry args={[0.028, 0.08, 0.004]} />
+                <meshStandardMaterial color={cape} roughness={0.6} side={THREE.DoubleSide} />
+            </mesh>
+        </group>
+    );
+}
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Side Table with an Anime Figurine Collection
+// -------------------------------------------------------------
+const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
+    return (
+        // Pushed back to z=-3.32 so the table's back edge sits flush against the back
+        // (window) wall's baseboard at z=-3.58, tucked under the window sill's overhang
+        // (the sill sits well above the table, y=0.79+, so there's no actual clipping).
+        <group position={[0.9, 0, -3.32]}>
+            {/* Round Warm Oak Side Table */}
+            <mesh castShadow receiveShadow position={[0, 0.42, 0]}>
+                <cylinderGeometry args={[0.26, 0.24, 0.03, 24]} />
+                <meshStandardMaterial color="#6a4c33" roughness={0.45} />
+            </mesh>
+            {/* Splayed Tripod Legs */}
+            {[0, 120, 240].map((deg, i) => {
+                const rad = (deg * Math.PI) / 180;
+                return (
+                    <mesh
+                        key={i}
+                        castShadow
+                        position={[Math.cos(rad) * 0.18, 0.21, Math.sin(rad) * 0.18]}
+                        rotation={[0.12 * Math.sin(rad), 0, -0.12 * Math.cos(rad)]}
+                    >
+                        <cylinderGeometry args={[0.014, 0.018, 0.42, 8]} />
+                        <meshStandardMaterial color="#4a3220" roughness={0.5} />
+                    </mesh>
+                );
+            })}
+
+            {/* Three Collectible Figurines Displayed on Top */}
+            <AnimeFigurine position={[-0.1, 0.435, 0.05]} primary="#b91c1c" accent="#eab308" cape="#1e3a5f" />
+            <AnimeFigurine position={[0.1, 0.435, 0.06]} primary="#1e3a8a" accent="#cbd5e1" cape="#0f172a" />
+            <AnimeFigurine position={[0, 0.435, -0.12]} primary="#14532d" accent="#22c55e" cape="#111827" />
+
+            {/* Small Stack of Manga Volumes beside the display */}
+            <group position={[-0.15, 0.436, -0.1]} rotation={[0, 0.3, 0]}>
+                {[0, 1, 2].map((i) => (
+                    <mesh key={i} position={[0, i * 0.016, 0]} castShadow>
+                        <boxGeometry args={[0.09, 0.014, 0.13]} />
+                        <meshStandardMaterial color={['#7c3aed', '#f97316', '#0ea5e9'][i]} roughness={0.5} />
+                    </mesh>
+                ))}
+            </group>
         </group>
     );
 });
@@ -1127,20 +1231,6 @@ const WallPipelinesAndConduits = React.memo(function WallPipelinesAndConduits() 
 // SUB-COMPONENT: Shelves, Collectibles & Neon "THAT'S ME" Sign
 // -------------------------------------------------------------
 const CyberRoomDecor = React.memo(function CyberRoomDecor() {
-    const signFlickerRef = useRef<THREE.MeshBasicMaterial>(null);
-    const lastSignUpdate = useRef(0);
-
-    useFrame((state) => {
-        // Throttle neon sign flicker to ~24 FPS - cinematic enough for a "neon" effect
-        if (state.clock.elapsedTime - lastSignUpdate.current < 0.042) return;
-        lastSignUpdate.current = state.clock.elapsedTime;
-        if (signFlickerRef.current) {
-            const t = state.clock.elapsedTime;
-            const flicker = Math.sin(t * 12) > -0.7 ? 1.0 : 0.2;
-            signFlickerRef.current.opacity = 0.85 * flicker;
-        }
-    });
-
     return (
         <group>
             {/* FLOATING WALL SHELVES (LEFT WALL) */}
@@ -1179,7 +1269,9 @@ const CyberRoomDecor = React.memo(function CyberRoomDecor() {
                 </group>
             </group>
 
-            {/* NEON WALL SIGN: "THAT'S ME // RAY OS" (BACK WALL) */}
+            {/* WALL SIGN: "THAT'S ME // RAY OS" (BACK WALL, next to the window) â€” previously
+                a flickering cyan/blue neon plane, now a steady warm yellowish-white glow with
+                a small real light beside it washing that window-side corner. */}
             <group position={[-2.0, 2.7, -3.45]}>
                 <mesh>
                     <boxGeometry args={[1.6, 0.45, 0.02]} />
@@ -1187,14 +1279,26 @@ const CyberRoomDecor = React.memo(function CyberRoomDecor() {
                 </mesh>
                 <mesh position={[0, 0, 0.015]}>
                     <planeGeometry args={[1.54, 0.4]} />
-                    <meshBasicMaterial
-                        ref={signFlickerRef}
-                        color="#00f5d4"
-                        transparent
-                        opacity={0.9}
-                        toneMapped={false}
-                    />
+                    <meshBasicMaterial color="#fde68a" transparent opacity={0.85} toneMapped={false} />
                 </mesh>
+                {/* One extra accent light, added on request to warmly light this window-side
+                    corner where the flickering sign used to be. */}
+                <pointLight color="#fde68a" intensity={2.2} distance={2.6} decay={2} position={[0, -0.1, 0.4]} />
+            </group>
+
+            {/* MATCHING RECTANGULAR LIGHT PANEL on the opposite side of the window/curtain
+                (mirrored x, exact same box + glow-plane dimensions as the panel above) â€” gives
+                the curtained window a symmetric pair of warm light panels flanking it. */}
+            <group position={[2.0, 2.7, -3.45]}>
+                <mesh>
+                    <boxGeometry args={[1.6, 0.45, 0.02]} />
+                    <meshStandardMaterial color="#050810" roughness={0.9} />
+                </mesh>
+                <mesh position={[0, 0, 0.015]}>
+                    <planeGeometry args={[1.54, 0.4]} />
+                    <meshBasicMaterial color="#fde68a" transparent opacity={0.85} toneMapped={false} />
+                </mesh>
+                <pointLight color="#fde68a" intensity={2.2} distance={2.6} decay={2} position={[0, -0.1, 0.4]} />
             </group>
 
             {/* Atmospheric Cyber Dust Motes */}
@@ -1330,15 +1434,10 @@ export default function CyberRoomScene({
                     shadow-bias={-0.0001}
                 />
 
-                {/* Morning Sunlight Beam (Permanently mounted to prevent shader recompilation stutter on theme switch) */}
-                <spotLight
-                    position={[0, 4.0, -3.8]}
-                    target-position={[0, 0.7, 0]}
-                    intensity={environmentPhase === 'morning' ? 2.6 : 0}
-                    color="#fef08a"
-                    angle={0.85}
-                    penumbra={0.65}
-                />
+                {/* The old "morning sunlight beam" spotlight lived here â€” it only ever lit up
+                    when environmentPhase === 'morning', which can no longer happen now that dark
+                    mode is permanent, so it was a dead light sitting in the shader's light list
+                    for no visual benefit. Removed as part of the room's lighting budget cut. */}
 
                 {/* Real Architectural Room: Hardwood Parquet, Acoustic Slat Walls, Rafter Ceiling, Loft Window */}
                 <ArchitecturalRoom environmentPhase={environmentPhase} />
@@ -1367,6 +1466,9 @@ export default function CyberRoomScene({
 
                 {/* Shelves & Decor */}
                 <CyberRoomDecor />
+
+                {/* Side Table with Anime Figurine Collection (open floor nook in front of the window) */}
+                <SideTableWithFigurines />
 
                 {/* 3D Floating Interactive POI Markers over Bed, Coffee Stand, and Battlestation */}
                 <FloatingPoiMarkers

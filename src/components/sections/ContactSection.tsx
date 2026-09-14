@@ -56,7 +56,7 @@ export default function ContactSection() {
                     Initiate <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple">Contact</span>
                 </h2>
                 <p className="mt-3 text-sm sm:text-base text-zinc-400 max-w-xl mx-auto">
-                    Have an ambitious WebGL concept, high-scale application, or leadership role? Let's build something extraordinary together.
+                    Have an ambitious WebGL concept, high-scale application, or leadership role? Let&apos;s build something extraordinary together.
                 </p>
             </div>
 

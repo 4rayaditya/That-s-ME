@@ -206,11 +206,10 @@ export default function HolographicPortfolio({ onReturnToRoom }: HolographicPort
                             key={tab.id}
                             onClick={() => handleTabChange(tab.id as TabType)}
                             onMouseEnter={() => audio.playHover()}
-                            className={`flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-mono text-xs sm:text-sm transition-all whitespace-nowrap ${
-                                isActive
+                            className={`flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-mono text-xs sm:text-sm transition-all whitespace-nowrap ${isActive
                                     ? 'bg-cyan-500/20 border border-cyan-400 text-cyan-300 shadow-[0_0_20px_rgba(0,245,212,0.4)]'
                                     : 'bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600'
-                            }`}
+                                }`}
                         >
                             <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-cyan-400 animate-pulse' : ''}`} />
                             <span>{tab.label}</span>
@@ -398,7 +397,7 @@ export default function HolographicPortfolio({ onReturnToRoom }: HolographicPort
 
                                     <div>
                                         <span className="text-[10px] font-mono text-cyan-400 uppercase">
-                                            {selectedProject.categoryLabel} // {selectedProject.year}
+                                            {`${selectedProject.categoryLabel} // ${selectedProject.year}`}
                                         </span>
                                         <h2 className="text-2xl font-bold font-mono text-white mt-1">
                                             {selectedProject.title}

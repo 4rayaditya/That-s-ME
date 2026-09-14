@@ -297,13 +297,17 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                     </mesh>
                 </group>
 
-                {/* Architectural Wall Sconce casting warm up/down light */}
+                {/* The "Geek Corner" superhero-poster (bold red/blue diagonal color-streaks in a
+                    frame) used to live here. Removed â€” it read as messy overlapping colored
+                    shapes rather than a poster, not the intended look. */}
+
+                {/* Architectural Wall Sconce (decorative fixture only now â€” its point light was
+                    removed as part of the room's lighting budget cut) */}
                 <group position={[0, 0.6, 0.08]}>
                     <mesh castShadow>
                         <boxGeometry args={[0.12, 0.32, 0.08]} />
                         <meshStandardMaterial color="#785338" metalness={0.7} />
                     </mesh>
-                    <pointLight color="#fed7aa" intensity={1.4} distance={3.2} decay={2} position={[0, 0, 0.1]} />
                 </group>
             </group>
 
@@ -388,7 +392,11 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                         <meshStandardMaterial color="#2d2218" metalness={0.8} />
                     </mesh>
 
-                    {/* Spot 1: Battlestation Desk */}
+                    {/* Spot 1: Battlestation Desk â€” one of the room's 5 accent lights (desk
+                        task spotlight). The rail still shows all 3 fixture heads below (Spot 2 &
+                        3 kept as decorative track heads); only Spot 1 is an actual light now â€”
+                        the coffee counter and bed each already get their own dedicated pendant
+                        light instead, so lighting the same spots twice would be redundant. */}
                     <group position={[0, -0.08, 0]}>
                         <mesh castShadow rotation={[0.4, 0, 0]}>
                             <cylinderGeometry args={[0.045, 0.055, 0.12, 12]} />
@@ -404,36 +412,20 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                         />
                     </group>
 
-                    {/* Spot 2: Coffee Bar & Counter */}
+                    {/* Spot 2: Coffee Bar & Counter (decorative track head only) */}
                     <group position={[1.8, -0.08, 0]}>
                         <mesh castShadow rotation={[0.3, -0.5, 0]}>
                             <cylinderGeometry args={[0.045, 0.055, 0.12, 12]} />
                             <meshStandardMaterial color="#4a3726" metalness={0.7} />
                         </mesh>
-                        <spotLight
-                            position={[0, 0, 0]}
-                            target-position={[3.04, 0.9, 0.7]}
-                            intensity={3.4}
-                            color={warmTrackLight}
-                            angle={0.7}
-                            penumbra={0.5}
-                        />
                     </group>
 
-                    {/* Spot 3: Futon Bed */}
+                    {/* Spot 3: Futon Bed (decorative track head only) */}
                     <group position={[-1.8, -0.08, 0]}>
                         <mesh castShadow rotation={[0.3, 0.5, 0]}>
                             <cylinderGeometry args={[0.045, 0.055, 0.12, 12]} />
                             <meshStandardMaterial color="#4a3726" metalness={0.7} />
                         </mesh>
-                        <spotLight
-                            position={[0, 0, 0]}
-                            target-position={[-2.4, 0.5, 0.8]}
-                            intensity={1.3}
-                            color={warmTrackLight}
-                            angle={0.55}
-                            penumbra={0.5}
-                        />
                     </group>
                 </group>
             </group>
@@ -544,21 +536,20 @@ function CurtainRodWallWashLight({ glowColor }: { glowColor: string }) {
                     <meshStandardMaterial color="#1c1410" metalness={0.7} roughness={0.3} />
                 </mesh>
             ))}
-            {/* Warm Glow washing up onto the acoustic oak slat wall above the curtain,
-                keeping the wood grain visible now that the window itself is closed off. */}
-            {[-1.5, 1.5].map((fx, i) => (
-                <spotLight
-                    key={i}
-                    color={glowColor}
-                    position={[fx, 0.05, 0.05]}
-                    target-position={[fx, 0.35, -0.2]}
-                    intensity={2.4}
-                    angle={0.75}
-                    penumbra={0.7}
-                    distance={2.4}
-                    decay={2}
-                />
-            ))}
+            {/* Warm Glow washing up onto the acoustic oak slat wall above the curtain, keeping
+                the wood grain visible now that the window itself is closed off. One of the
+                room's 5 accent lights â€” a single wide-angle spotlight centered on the rod
+                covers both fixture housings instead of lighting from each one separately. */}
+            <spotLight
+                color={glowColor}
+                position={[0, 0.05, 0.05]}
+                target-position={[0, 0.35, -0.2]}
+                intensity={3.4}
+                angle={1.1}
+                penumbra={0.7}
+                distance={2.8}
+                decay={2}
+            />
         </group>
     );
 }
@@ -1002,13 +993,8 @@ function AkariPaperFloorLamp({ isLight }: { isLight: boolean }) {
                     </mesh>
                 ))}
 
-                {/* Soft Warm Inner Ambient Glow */}
-                <pointLight
-                    color="#fef3c7"
-                    intensity={isLight ? 0.7 : 1.4}
-                    distance={3.8}
-                    decay={2}
-                />
+                {/* Its point light was removed as part of the room's lighting budget cut â€” the
+                    paper shade's emissive material already glows warmly on its own. */}
             </group>
         </group>
     );

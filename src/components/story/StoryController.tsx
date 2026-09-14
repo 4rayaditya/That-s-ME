@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -14,9 +14,18 @@ import {
     getLiveISTTime,
 } from '@/lib/environment';
 
+const LoadingSpinner = () => (
+    <div className="w-full h-full flex items-center justify-center bg-[#020408]">
+        <div className="text-center">
+            <div className="text-sm text-zinc-400 mb-3">Initializing 3D Environment...</div>
+            <div className="w-8 h-8 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mx-auto" />
+        </div>
+    </div>
+);
+
 const CyberRoomScene = dynamic(() => import('@/components/3d/CyberRoomScene'), {
     ssr: false,
-    loading: () => null,
+    loading: LoadingSpinner,
 });
 
 export default function StoryController() {

@@ -153,7 +153,7 @@ export default function LinuxDesktop({ onReturnToRoom }: LinuxDesktopProps) {
                                 <div className="p-6 space-y-8 overflow-y-auto custom-scrollbar">
                                     <div className="space-y-4">
                                         <div className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                                            // PRODUCTION EXPERIENCE
+                                            {/* PRODUCTION EXPERIENCE */}
                                         </div>
                                         {EXPERIENCES.map((exp) => (
                                             <div
@@ -189,7 +189,7 @@ export default function LinuxDesktop({ onReturnToRoom }: LinuxDesktopProps) {
                                     {/* Certifications */}
                                     <div className="space-y-3 pt-4 border-t border-white/10">
                                         <div className="text-xs font-bold text-brand-purple uppercase tracking-wider">
-                                            // VERIFIED HONORS
+                                            {/* VERIFIED HONORS */}
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                             {EDUCATION_CERTS.map((edu, idx) => (
