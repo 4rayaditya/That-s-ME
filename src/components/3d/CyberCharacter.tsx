@@ -67,26 +67,23 @@ export default function CyberCharacter({
         const group = groupRef.current;
         const bodyRoot = bodyRootRef.current;
 
-        // Auto state-machine transitions after long, natural durations
-        if (r === 'coding' && stateTimerRef.current > 35) {
-            onRoutineChange('walking_to_coffee', ROUTINE_LABELS['walking_to_coffee']);
-            stateTimerRef.current = 0;
-        } else if (r === 'brewing_coffee' && stateTimerRef.current > 20) {
-            onRoutineChange('walking_to_bed', ROUTINE_LABELS['walking_to_bed']);
-            stateTimerRef.current = 0;
-        } else if (r === 'resting_bed' && stateTimerRef.current > 25) {
-            onRoutineChange('returning_to_desk', ROUTINE_LABELS['returning_to_desk']);
-            stateTimerRef.current = 0;
-        }
+        // Auto state machine has been stabilized to prevent unwanted mid-session glitching.
+        // Routine transitions are triggered by user interaction (floating POI badges) or live Indian time.
 
         // ============================================================
         // STATE 1: CODING AT DESK (Sitting upright in ergonomic chair)
         // ============================================================
         if (r === 'coding') {
-            group.position.lerp(DESK_POS, delta * 5);
+            group.position.lerp(DESK_POS, delta * 6);
+            group.position.y = THREE.MathUtils.lerp(group.position.y, 0, delta * 8);
             group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, 0, delta * 6);
             group.rotation.z = THREE.MathUtils.lerp(group.rotation.z, 0, delta * 6);
-            group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, Math.PI, delta * 6);
+
+            // Shortest-path angle interpolation to Math.PI (facing screens)
+            let diff = Math.PI - group.rotation.y;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            group.rotation.y += diff * Math.min(1, delta * 6);
 
             // Natural sitting height - whole skeleton stays anchored together
             bodyRoot.position.y = 0.5;
@@ -159,27 +156,32 @@ export default function CyberCharacter({
             const dz = currentNavTarget.z - group.position.z;
             const dist = Math.sqrt(dx * dx + dz * dz);
 
-            if (dist < 0.14) {
+            if (dist < 0.08) {
                 if (currentNavTarget === target) {
                     group.position.copy(target);
                     onRoutineChange(nextState, ROUTINE_LABELS[nextState]);
                     stateTimerRef.current = 0;
                 } else {
-                    // Cleared bed, continue to main target
+                    // Cleared bed waypoint, continue to main target
                     group.position.copy(currentNavTarget);
                 }
             } else {
-                // Move towards destination
+                // Move towards destination smoothly without overshoot
                 const dirX = dx / dist;
                 const dirZ = dz / dist;
-                group.position.x += dirX * delta * 1.5;
-                group.position.z += dirZ * delta * 1.5;
+                const step = Math.min(dist, delta * 1.4);
+                group.position.x += dirX * step;
+                group.position.z += dirZ * step;
 
+                // Shortest-path angle interpolation to prevent 180-degree jitter/flips
                 const moveAngle = Math.atan2(dirX, dirZ);
-                group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, moveAngle, delta * 10);
+                let diff = moveAngle - group.rotation.y;
+                while (diff < -Math.PI) diff += Math.PI * 2;
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                group.rotation.y += diff * Math.min(1, delta * 8);
 
                 // Standing height
-                bodyRoot.position.y = 0.55 + Math.abs(Math.sin(time * 8)) * 0.04;
+                bodyRoot.position.y = 0.55 + Math.abs(Math.sin(time * 8)) * 0.03;
                 bodyRoot.rotation.x = 0;
 
                 if (torsoRef.current) {
@@ -189,7 +191,7 @@ export default function CyberCharacter({
                 if (headRef.current) headRef.current.rotation.set(0, 0, 0);
 
                 // Natural leg walk swing
-                const legSwing = Math.sin(time * 8) * 0.6;
+                const legSwing = Math.sin(time * 8) * 0.5;
                 if (leftLegRef.current) {
                     leftLegRef.current.rotation.x = legSwing;
                     leftLegRef.current.rotation.z = 0;
@@ -201,12 +203,12 @@ export default function CyberCharacter({
 
                 // Opposite arm swing
                 if (leftArmRef.current) {
-                    leftArmRef.current.rotation.x = -legSwing * 0.7;
+                    leftArmRef.current.rotation.x = -legSwing * 0.6;
                     leftArmRef.current.rotation.y = 0;
                     leftArmRef.current.rotation.z = -0.1;
                 }
                 if (rightArmRef.current) {
-                    rightArmRef.current.rotation.x = legSwing * 0.7;
+                    rightArmRef.current.rotation.x = legSwing * 0.6;
                     rightArmRef.current.rotation.y = 0;
                     rightArmRef.current.rotation.z = 0.1;
                 }
@@ -220,9 +222,14 @@ export default function CyberCharacter({
         } else if (r === 'brewing_coffee') {
             // Locked firmly in front of the espresso bar at x=2.15, z=0.7 facing +X
             group.position.lerp(COFFEE_POS, delta * 8);
+            group.position.y = THREE.MathUtils.lerp(group.position.y, 0, delta * 8);
             group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, 0, delta * 8);
             group.rotation.z = THREE.MathUtils.lerp(group.rotation.z, 0, delta * 8);
-            group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, Math.PI / 2, delta * 8); // Facing coffee machine directly
+
+            let diff = Math.PI / 2 - group.rotation.y;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            group.rotation.y += diff * Math.min(1, delta * 8);
 
             bodyRoot.position.y = 0.55;
             bodyRoot.rotation.x = 0;

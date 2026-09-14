@@ -67,29 +67,39 @@ export default function CyberDog({ characterRoutine }: CyberDogProps) {
 
         const group = dogGroupRef.current;
         const dist = group.position.distanceTo(targetPos);
-        const isWalking = dist > 0.08;
+        const isWalking = dist > 0.06;
 
         if (isWalking) {
-            // Trot towards target
+            // Trot towards target smoothly without overshoot
             const dir = new THREE.Vector3().subVectors(targetPos, group.position).normalize();
-            group.position.addScaledVector(dir, delta * 1.5);
+            const step = Math.min(dist, delta * 1.4);
+            group.position.addScaledVector(dir, step);
+
+            // Shortest-path angle interpolation to prevent 180-degree jitter/flips
             const moveAngle = Math.atan2(dir.x, dir.z);
-            group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, moveAngle, delta * 10);
+            let diff = moveAngle - group.rotation.y;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            group.rotation.y += diff * Math.min(1, delta * 8);
 
             // Trotting leg swing
-            const legSwing = Math.sin(time * 14) * 0.45;
+            const legSwing = Math.sin(time * 12) * 0.4;
             if (frontLeftLegRef.current) frontLeftLegRef.current.rotation.x = legSwing;
             if (frontRightLegRef.current) frontRightLegRef.current.rotation.x = -legSwing;
             if (backLeftLegRef.current) backLeftLegRef.current.rotation.x = -legSwing;
             if (backRightLegRef.current) backRightLegRef.current.rotation.x = legSwing;
 
             if (bodyRef.current) {
-                bodyRef.current.position.y = 0.28 + Math.abs(Math.sin(time * 14)) * 0.03;
+                bodyRef.current.position.y = 0.28 + Math.abs(Math.sin(time * 12)) * 0.02;
             }
         } else {
-            // Resting / sitting in place
-            group.position.lerp(targetPos, delta * 4);
-            group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, targetRotY, delta * 5);
+            // Resting / sitting in place without shaking
+            group.position.lerp(targetPos, delta * 6);
+
+            let diff = targetRotY - group.rotation.y;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            group.rotation.y += diff * Math.min(1, delta * 5);
 
             // Sitting pose: back legs tucked, front legs upright
             if (frontLeftLegRef.current) frontLeftLegRef.current.rotation.x = THREE.MathUtils.lerp(frontLeftLegRef.current.rotation.x, 0, delta * 6);
@@ -99,55 +109,59 @@ export default function CyberDog({ characterRoutine }: CyberDogProps) {
 
             // Gentle breathing body bob
             if (bodyRef.current) {
-                bodyRef.current.position.y = 0.26 + Math.sin(time * 3) * 0.01;
+                bodyRef.current.position.y = 0.26 + Math.sin(time * 2.5) * 0.008;
             }
         }
 
         // Tail wagging animation
         if (tailRef.current) {
-            const wagSpeed = isExcited ? 24 : isWalking ? 14 : 7;
-            const wagAmp = isExcited ? 0.6 : 0.35;
+            const wagSpeed = isExcited ? 22 : isWalking ? 12 : 6;
+            const wagAmp = isExcited ? 0.55 : 0.3;
             tailRef.current.rotation.y = Math.sin(time * wagSpeed) * wagAmp;
-            tailRef.current.rotation.z = 0.3 + Math.cos(time * wagSpeed * 0.5) * 0.1;
+            tailRef.current.rotation.z = 0.3 + Math.cos(time * wagSpeed * 0.5) * 0.08;
         }
 
         // Head tilting & curious looking
         if (headRef.current) {
-            const tilt = Math.sin(time * 1.8) * 0.12;
+            const tilt = Math.sin(time * 1.6) * 0.1;
             headRef.current.rotation.z = THREE.MathUtils.lerp(headRef.current.rotation.z, tilt, delta * 4);
-            headRef.current.rotation.x = isExcited ? -0.2 : Math.sin(time * 2) * 0.06;
+            headRef.current.rotation.x = isExcited ? -0.2 : Math.sin(time * 2) * 0.05;
         }
 
         // Ear perk
-        if (leftEarRef.current) leftEarRef.current.rotation.x = Math.sin(time * 4) * 0.08;
-        if (rightEarRef.current) rightEarRef.current.rotation.x = -Math.sin(time * 4) * 0.08;
+        if (leftEarRef.current) leftEarRef.current.rotation.x = Math.sin(time * 3.5) * 0.06;
+        if (rightEarRef.current) rightEarRef.current.rotation.x = -Math.sin(time * 3.5) * 0.06;
     });
 
     return (
-        <group
-            ref={dogGroupRef}
-            position={[1.1, 0, 0.7]}
-            onClick={handleDogClick}
-            onPointerOver={(e) => {
-                e.stopPropagation();
-                setHovered(true);
-                document.body.style.cursor = 'pointer';
-            }}
-            onPointerOut={() => {
-                setHovered(false);
-                document.body.style.cursor = 'auto';
-            }}
-        >
-            {/* CIRCULAR NEON CYBER-PET RUG UNDER THE DOG */}
-            <mesh position={[0, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-                <circleGeometry args={[0.42, 24]} />
-                <meshStandardMaterial color="#080e1a" roughness={0.9} />
-            </mesh>
-            {/* Glowing cyan rim on rug */}
-            <mesh position={[0, 0.008, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <ringGeometry args={[0.4, 0.42, 24]} />
-                <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-            </mesh>
+        <group>
+            {/* STATIONARY CIRCULAR NEON CYBER-PET RUG ANCHORED AT HOME POSITION */}
+            <group position={[1.1, 0, 0.7]}>
+                <mesh position={[0, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+                    <circleGeometry args={[0.42, 24]} />
+                    <meshStandardMaterial color="#080e1a" roughness={0.9} />
+                </mesh>
+                <mesh position={[0, 0.008, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <ringGeometry args={[0.4, 0.42, 24]} />
+                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                </mesh>
+            </group>
+
+            {/* AUTONOMOUS DOG HOUND ENTITY */}
+            <group
+                ref={dogGroupRef}
+                position={[1.1, 0, 0.7]}
+                onClick={handleDogClick}
+                onPointerOver={(e) => {
+                    e.stopPropagation();
+                    setHovered(true);
+                    document.body.style.cursor = 'pointer';
+                }}
+                onPointerOut={() => {
+                    setHovered(false);
+                    document.body.style.cursor = 'auto';
+                }}
+            >
 
             {/* DOG MAIN BODY */}
             <group ref={bodyRef} position={[0, 0.26, 0]}>
@@ -283,6 +297,7 @@ export default function CyberDog({ characterRoutine }: CyberDogProps) {
                     <meshBasicMaterial color="#00f5d4" transparent opacity={0.85} toneMapped={false} />
                 </mesh>
             )}
+        </group>
         </group>
     );
 }

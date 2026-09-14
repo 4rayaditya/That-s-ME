@@ -86,9 +86,9 @@ export default function CameraController({
     // Orbit state variables - LOCKED BY DEFAULT (No auto-rotation!)
     const isDraggingRef = useRef(false);
     const previousPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-    const orbitAngleRef = useRef(0.74); // Initial isometric angle (~42 deg, room-centered)
-    const orbitPitchRef = useRef(0.40); // Elevation angle (frames floor and ceiling evenly)
-    const orbitRadiusRef = useRef(7.0); // Calibrated zoom: comfortable breathing room while keeping corners edge-to-edge
+    const orbitAngleRef = useRef(0.75); // Initial isometric angle (~43 deg, room-centered)
+    const orbitPitchRef = useRef(0.42); // Elevation angle (frames floor and ceiling evenly)
+    const orbitRadiusRef = useRef(7.9); // Slightly zoomed out for optimal room breathing room
 
     // Animation progress for dolly-zoom
     const transitionProgressRef = useRef(0);
@@ -99,10 +99,10 @@ export default function CameraController({
     const tourIndexRef = useRef(0);
     const tourTimeInStopRef = useRef(0);
     const tourTransitionRef = useRef(0);
-    const currentTourTargetPosRef = useRef(new THREE.Vector3(0, 1.25, 0));
+    const currentTourTargetPosRef = useRef(new THREE.Vector3(0, 1.20, 0));
 
     // Spatial targets
-    const ROOM_CENTER = new THREE.Vector3(0, 1.25, 0);
+    const ROOM_CENTER = new THREE.Vector3(0, 1.20, 0);
     const MONITOR_POS = new THREE.Vector3(0, 1.45, -0.85);
     const SHOULDER_POS = new THREE.Vector3(0.28, 1.52, 0.65);
     const SCREEN_LOCK_POS = new THREE.Vector3(0, 1.45, -0.15);
@@ -136,8 +136,8 @@ export default function CameraController({
         const onWheel = (e: WheelEvent) => {
             if (mode !== 'orbit') return;
             e.preventDefault();
-            // Smooth zoom range around 7.0 so room remains edge-to-edge
-            orbitRadiusRef.current = Math.max(5.5, Math.min(8.0, orbitRadiusRef.current + e.deltaY * 0.004));
+            // Smooth zoom range around 7.9 so room remains edge-to-edge
+            orbitRadiusRef.current = Math.max(6.0, Math.min(9.2, orbitRadiusRef.current + e.deltaY * 0.004));
         };
 
         dom.addEventListener('pointerdown', onPointerDown);
@@ -187,7 +187,7 @@ export default function CameraController({
             const r = orbitRadiusRef.current;
 
             const targetX = r * Math.sin(phi) * Math.sin(theta);
-            const targetY = r * Math.cos(phi) + 1.15;
+            const targetY = r * Math.cos(phi) + 1.22;
             const targetZ = r * Math.sin(phi) * Math.cos(theta);
 
             // Smooth damping into target orbit position
@@ -289,7 +289,7 @@ export default function CameraController({
             const r = orbitRadiusRef.current;
             const orbitPos = new THREE.Vector3(
                 r * Math.sin(phi) * Math.sin(theta),
-                r * Math.cos(phi) + 1.15,
+                r * Math.cos(phi) + 1.22,
                 r * Math.sin(phi) * Math.cos(theta)
             );
 
