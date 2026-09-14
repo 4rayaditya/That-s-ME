@@ -86,9 +86,9 @@ export default function CameraController({
     // Orbit state variables - LOCKED BY DEFAULT (No auto-rotation!)
     const isDraggingRef = useRef(false);
     const previousPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-    const orbitAngleRef = useRef(Math.PI / 4); // Initial isometric angle (locked)
-    const orbitPitchRef = useRef(0.48); // Elevation angle (locked)
-    const orbitRadiusRef = useRef(9.2); // Distance from center
+    const orbitAngleRef = useRef(0.72); // Initial isometric angle (~41 deg, room-centered)
+    const orbitPitchRef = useRef(0.38); // Elevation angle (frames floor and ceiling evenly)
+    const orbitRadiusRef = useRef(5.8); // Zoomed distance: aligns room corners with screen edges
 
     // Animation progress for dolly-zoom
     const transitionProgressRef = useRef(0);
@@ -99,10 +99,10 @@ export default function CameraController({
     const tourIndexRef = useRef(0);
     const tourTimeInStopRef = useRef(0);
     const tourTransitionRef = useRef(0);
-    const currentTourTargetPosRef = useRef(new THREE.Vector3(0, 1.2, 0));
+    const currentTourTargetPosRef = useRef(new THREE.Vector3(0, 1.28, 0));
 
     // Spatial targets
-    const ROOM_CENTER = new THREE.Vector3(0, 1.2, 0);
+    const ROOM_CENTER = new THREE.Vector3(0, 1.28, 0);
     const MONITOR_POS = new THREE.Vector3(0, 1.45, -0.85);
     const SHOULDER_POS = new THREE.Vector3(0.28, 1.52, 0.65);
     const SCREEN_LOCK_POS = new THREE.Vector3(0, 1.45, -0.15);
@@ -124,7 +124,7 @@ export default function CameraController({
 
             // Rotate purely on user drag
             orbitAngleRef.current -= dx * 0.005;
-            orbitPitchRef.current = Math.max(0.12, Math.min(Math.PI / 2.3, orbitPitchRef.current + dy * 0.005));
+            orbitPitchRef.current = Math.max(0.18, Math.min(Math.PI / 2.5, orbitPitchRef.current + dy * 0.005));
 
             previousPointerRef.current = { x: e.clientX, y: e.clientY };
         };
@@ -136,7 +136,8 @@ export default function CameraController({
         const onWheel = (e: WheelEvent) => {
             if (mode !== 'orbit') return;
             e.preventDefault();
-            orbitRadiusRef.current = Math.max(6.0, Math.min(13.5, orbitRadiusRef.current + e.deltaY * 0.005));
+            // Tightly bounded zoom so room never exposes external void
+            orbitRadiusRef.current = Math.max(4.8, Math.min(6.6, orbitRadiusRef.current + e.deltaY * 0.004));
         };
 
         dom.addEventListener('pointerdown', onPointerDown);
@@ -186,16 +187,16 @@ export default function CameraController({
             const r = orbitRadiusRef.current;
 
             const targetX = r * Math.sin(phi) * Math.sin(theta);
-            const targetY = r * Math.cos(phi) + 1.0;
+            const targetY = r * Math.cos(phi) + 1.08;
             const targetZ = r * Math.sin(phi) * Math.cos(theta);
 
             // Smooth damping into target orbit position
             camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), delta * 6);
             camera.lookAt(ROOM_CENTER);
 
-            // Natural perspective FOV
+            // Natural perspective FOV (38 degrees for edge-to-edge room framing)
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(camera.fov, 42, delta * 4);
+                camera.fov = THREE.MathUtils.lerp(camera.fov, 38, delta * 4);
                 camera.updateProjectionMatrix();
             }
 
@@ -256,7 +257,7 @@ export default function CameraController({
             camera.lookAt(currentLookTarget);
 
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(42, 28, ease);
+                camera.fov = THREE.MathUtils.lerp(38, 28, ease);
                 camera.updateProjectionMatrix();
             }
 
@@ -288,7 +289,7 @@ export default function CameraController({
             const r = orbitRadiusRef.current;
             const orbitPos = new THREE.Vector3(
                 r * Math.sin(phi) * Math.sin(theta),
-                r * Math.cos(phi) + 1.0,
+                r * Math.cos(phi) + 1.08,
                 r * Math.sin(phi) * Math.cos(theta)
             );
 
@@ -296,7 +297,7 @@ export default function CameraController({
             camera.lookAt(ROOM_CENTER);
 
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(28, 42, ease);
+                camera.fov = THREE.MathUtils.lerp(28, 38, ease);
                 camera.updateProjectionMatrix();
             }
 

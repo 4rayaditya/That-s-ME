@@ -118,7 +118,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
             {/* 1. ACTUAL HARDWOOD PARQUET FLOOR                             */}
             {/* ============================================================ */}
             <mesh receiveShadow position={[0, -0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[7.4, 7.4]} />
+                <planeGeometry args={[11.5, 11.5]} />
                 <meshStandardMaterial
                     map={woodFloorTexture || undefined}
                     color="#26221f"
@@ -129,7 +129,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
 
             {/* LARGE WOVEN DESIGNER AREA RUG UNDER DESK & CHAIR */}
             <mesh receiveShadow position={[0, 0.002, 0.2]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[4.4, 3.2]} />
+                <planeGeometry args={[4.8, 3.4]} />
                 <meshStandardMaterial
                     map={rugTexture || undefined}
                     color="#20222b"
@@ -139,7 +139,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
 
             {/* BEDSIDE RUNNER RUG UNDER FUTON */}
             <mesh receiveShadow position={[-2.6, 0.003, 0.8]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[1.7, 2.5]} />
+                <planeGeometry args={[1.8, 2.6]} />
                 <meshStandardMaterial
                     color="#131722"
                     roughness={0.9}
@@ -148,18 +148,18 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
 
             {/* REAL WOOD SKIRTING BOARDS (BASEBOARDS ALONG PERIMETER) */}
             {/* Back Wall Skirting */}
-            <mesh position={[0, 0.07, -3.48]}>
-                <boxGeometry args={[7.38, 0.14, 0.03]} />
+            <mesh position={[0, 0.07, -3.58]}>
+                <boxGeometry args={[10.5, 0.14, 0.03]} />
                 <meshStandardMaterial color="#141210" roughness={0.6} />
             </mesh>
             {/* Left Wall Skirting */}
-            <mesh position={[-3.48, 0.07, 0]} rotation={[0, Math.PI / 2, 0]}>
-                <boxGeometry args={[7.38, 0.14, 0.03]} />
+            <mesh position={[-3.58, 0.07, 0]} rotation={[0, Math.PI / 2, 0]}>
+                <boxGeometry args={[10.5, 0.14, 0.03]} />
                 <meshStandardMaterial color="#141210" roughness={0.6} />
             </mesh>
             {/* Right Wall Skirting */}
-            <mesh position={[3.48, 0.07, -1.8]} rotation={[0, -Math.PI / 2, 0]}>
-                <boxGeometry args={[3.6, 0.14, 0.03]} />
+            <mesh position={[3.58, 0.07, 0]} rotation={[0, -Math.PI / 2, 0]}>
+                <boxGeometry args={[10.5, 0.14, 0.03]} />
                 <meshStandardMaterial color="#141210" roughness={0.6} />
             </mesh>
 
@@ -168,42 +168,42 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
             {/* ============================================================ */}
 
             {/* --- BACK WALL: LUXURY SCANDINAVIAN ACOUSTIC WOOD SLATS --- */}
-            <group position={[0, 1.8, -3.5]}>
+            <group position={[0, 2.0, -3.6]}>
                 {/* Acoustic Dark Felt Backing Panel */}
                 <mesh receiveShadow position={[0, 0, 0]}>
-                    <planeGeometry args={[7.4, 3.6]} />
+                    <planeGeometry args={[10.8, 4.2]} />
                     <meshStandardMaterial color="#0b0d13" roughness={0.95} />
                 </mesh>
 
                 {/* Vertical Dark Oak Slat Array (spaced evenly across the wall) */}
-                {Array.from({ length: 44 }).map((_, i) => {
-                    const x = -3.4 + i * 0.155;
-                    // Leave gap for the window in center (-1.9 to 1.9)
+                {Array.from({ length: 58 }).map((_, i) => {
+                    const x = -4.5 + i * 0.155;
+                    // Leave gap for the window in center (-1.95 to 1.95)
                     if (x > -1.95 && x < 1.95) return null;
                     return (
                         <mesh key={i} castShadow position={[x, 0, 0.015]}>
-                            <boxGeometry args={[0.075, 3.56, 0.025]} />
+                            <boxGeometry args={[0.075, 4.15, 0.025]} />
                             <meshStandardMaterial color="#221d19" roughness={0.55} />
                         </mesh>
                     );
                 })}
 
                 {/* Overhead Recessed Cove LED Strip Grazing Down Slat Wall */}
-                <mesh position={[0, 1.76, 0.03]}>
-                    <boxGeometry args={[7.3, 0.025, 0.04]} />
+                <mesh position={[0, 2.05, 0.03]}>
+                    <boxGeometry args={[10.2, 0.025, 0.04]} />
                     <meshBasicMaterial color="#00f5d4" toneMapped={false} />
                 </mesh>
             </group>
 
             {/* --- LEFT WALL: MODERN ARCHITECTURAL CHARCOAL PLASTER & ART --- */}
-            <group position={[-3.5, 1.8, 0]} rotation={[0, Math.PI / 2, 0]}>
+            <group position={[-3.5, 2.0, 0]} rotation={[0, Math.PI / 2, 0]}>
                 <mesh receiveShadow position={[0, 0, 0]}>
-                    <planeGeometry args={[7.4, 3.6]} />
+                    <planeGeometry args={[10.5, 4.2]} />
                     <meshStandardMaterial color="#0e131d" roughness={0.85} />
                 </mesh>
 
                 {/* Modern Floating Walnut Display Shelves */}
-                <group position={[-1.2, 0.5, 0.15]}>
+                <group position={[-1.2, 0.3, 0.15]}>
                     <mesh castShadow>
                         <boxGeometry args={[1.6, 0.04, 0.28]} />
                         <meshStandardMaterial color="#2a221b" roughness={0.6} />
@@ -229,7 +229,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
                 </group>
 
                 {/* Framed Cyberpunk / Architectural Canvas Art Prints */}
-                <group position={[1.4, 0.4, 0.04]}>
+                <group position={[1.4, 0.2, 0.04]}>
                     {/* Black aluminum frame */}
                     <mesh castShadow>
                         <boxGeometry args={[1.4, 1.8, 0.04]} />
@@ -252,7 +252,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
                 </group>
 
                 {/* Architectural Wall Sconce casting warm up/down light */}
-                <group position={[0, 0.8, 0.08]}>
+                <group position={[0, 0.6, 0.08]}>
                     <mesh castShadow>
                         <boxGeometry args={[0.12, 0.32, 0.08]} />
                         <meshStandardMaterial color="#0b0f19" metalness={0.8} />
@@ -262,14 +262,15 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
             </group>
 
             {/* --- RIGHT WALL: LOFT BRICK & REAL ENTRYWAY DOOR --- */}
-            <group position={[3.5, 1.8, -1.8]} rotation={[0, -Math.PI / 2, 0]}>
+            <group position={[3.5, 2.0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+                {/* Full-bleed Loft Wall Surface */}
                 <mesh receiveShadow position={[0, 0, 0]}>
-                    <planeGeometry args={[3.6, 3.6]} />
+                    <planeGeometry args={[10.5, 4.2]} />
                     <meshStandardMaterial color="#0f141f" roughness={0.9} />
                 </mesh>
 
                 {/* Real Interior Entryway Door (Wood paneling with steel frame) */}
-                <group position={[0.4, -0.65, 0.04]}>
+                <group position={[1.4, -0.85, 0.04]}>
                     {/* Door Outer Steel Architrave Frame */}
                     <mesh position={[0, 0, 0]}>
                         <boxGeometry args={[1.16, 2.3, 0.08]} />
@@ -308,17 +309,23 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
             {/* 3. ACTUAL ROOF & INDUSTRIAL CEILING RAFTERS (y = 3.6)       */}
             {/* ============================================================ */}
             <group position={[0, 3.6, 0]}>
+                {/* Physical Solid Loft Ceiling Plane overhead */}
+                <mesh position={[0, 0.02, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                    <planeGeometry args={[11.5, 11.5]} />
+                    <meshStandardMaterial color="#080b11" roughness={0.92} />
+                </mesh>
+
                 {/* Exposed Matte-Black Steel Rafters across the ceiling */}
-                {[-2.4, -0.8, 0.8, 2.4].map((rz, i) => (
+                {[-3.0, -1.8, -0.6, 0.6, 1.8, 3.0].map((rz, i) => (
                     <mesh key={i} castShadow position={[0, -0.1, rz]}>
-                        <boxGeometry args={[7.4, 0.2, 0.12]} />
+                        <boxGeometry args={[10.5, 0.2, 0.12]} />
                         <meshStandardMaterial color="#080c14" metalness={0.9} roughness={0.25} />
                     </mesh>
                 ))}
 
                 {/* Longitudal Cross Beam */}
                 <mesh castShadow position={[0, -0.22, 0]} rotation={[0, Math.PI / 2, 0]}>
-                    <boxGeometry args={[7.4, 0.22, 0.14]} />
+                    <boxGeometry args={[10.5, 0.22, 0.14]} />
                     <meshStandardMaterial color="#080c14" metalness={0.9} roughness={0.25} />
                 </mesh>
 
