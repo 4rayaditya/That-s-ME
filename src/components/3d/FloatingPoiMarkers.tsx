@@ -24,8 +24,14 @@ export default function FloatingPoiMarkers({
     const coffeeRef = useRef<THREE.Group>(null);
     const bedRef = useRef<THREE.Group>(null);
 
+    const lastBobUpdate = useRef(0);
+
     useFrame((state) => {
+        if (!visible) return; // Skip all work when markers are hidden
         const t = state.clock.getElapsedTime();
+        // Throttle bobbing to ~24 FPS
+        if (t - lastBobUpdate.current < 0.042) return;
+        lastBobUpdate.current = t;
         // Gentle holographic floating bobbing
         if (setupRef.current) setupRef.current.position.y = 2.05 + Math.sin(t * 2.4) * 0.04;
         if (coffeeRef.current) coffeeRef.current.position.y = 1.55 + Math.sin(t * 2.4 + 1.2) * 0.04;

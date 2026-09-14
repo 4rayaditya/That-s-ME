@@ -91,8 +91,12 @@ function BattlestationMonitors({ monitorTextures }: { monitorTextures: MonitorTe
 // -------------------------------------------------------------
 function CpuCabinet() {
     const rgbPulseRef = useRef<THREE.PointLight>(null);
+    const lastRgbUpdate = useRef(0);
 
     useFrame((state) => {
+        // Throttle RGB pulse to ~15 FPS - human eye can't distinguish faster for a glow pulse
+        if (state.clock.elapsedTime - lastRgbUpdate.current < 0.066) return;
+        lastRgbUpdate.current = state.clock.elapsedTime;
         if (rgbPulseRef.current) {
             rgbPulseRef.current.intensity = 1.6 + Math.sin(state.clock.elapsedTime * 2.5) * 0.3;
         }
@@ -101,7 +105,7 @@ function CpuCabinet() {
     return (
         <group position={[1.18, 0.753, -0.65]} rotation={[0, -0.16, 0]}>
             {/* 1. CHASSIS CASE (Dark Anodized Aluminum Mid-Tower Frame) */}
-            <mesh castShadow position={[0, 0.25, 0]}>
+            <mesh position={[0, 0.25, 0]}>
                 <boxGeometry args={[0.22, 0.50, 0.46]} />
                 <meshStandardMaterial color="#0c101d" metalness={0.9} roughness={0.2} />
             </mesh>
@@ -221,7 +225,7 @@ function CpuCabinet() {
             {/* 5. THE BEAST: HIGH-END GRAPHICS CARD (GPU - RTX 4090 / 5090) */}
             <group position={[0.01, 0.20, 0.02]}>
                 {/* 3.5-Slot Thick GPU Shroud & Aluminum Heatsink Fins */}
-                <mesh castShadow>
+                <mesh>
                     <boxGeometry args={[0.085, 0.11, 0.32]} />
                     <meshStandardMaterial color="#0f172a" metalness={0.88} roughness={0.25} />
                 </mesh>
@@ -318,8 +322,12 @@ function CpuCabinet() {
 // -------------------------------------------------------------
 function BattlestationDesk() {
     const lampFlickerRef = useRef<THREE.PointLight>(null);
+    const lastLampUpdate = useRef(0);
 
     useFrame((state) => {
+        // Throttle lamp flicker to ~20 FPS - subtle effect, doesn't need 60fps
+        if (state.clock.elapsedTime - lastLampUpdate.current < 0.05) return;
+        lastLampUpdate.current = state.clock.elapsedTime;
         if (lampFlickerRef.current) {
             lampFlickerRef.current.intensity = 2.6 + Math.sin(state.clock.elapsedTime * 14) * 0.15;
         }
@@ -592,6 +600,11 @@ function BattlestationDesk() {
 function ServerRackTower() {
     const ledRef = useRef<THREE.InstancedMesh>(null);
     const count = 48;
+    // Reuse dummy to avoid GC allocation every frame
+    const dummy = useMemo(() => new THREE.Object3D(), []);
+    const offColor = useMemo(() => new THREE.Color('#040810'), []);
+    const lastLedUpdate = useRef(0);
+    const matrixInitialized = useRef(false);
 
     const ledData = useMemo(() => {
         const positions: THREE.Vector3[] = [];
@@ -617,19 +630,27 @@ function ServerRackTower() {
     useFrame((state) => {
         if (!ledRef.current) return;
         const time = state.clock.elapsedTime;
-        const dummy = new THREE.Object3D();
+
+        // Set LED positions once on first frame (static, no need to update every frame)
+        if (!matrixInitialized.current) {
+            for (let i = 0; i < count; i++) {
+                dummy.position.copy(ledData.positions[i]);
+                dummy.updateMatrix();
+                ledRef.current.setMatrixAt(i, dummy.matrix);
+            }
+            ledRef.current.instanceMatrix.needsUpdate = true;
+            matrixInitialized.current = true;
+        }
+
+        // Throttle color blink to ~10 FPS - LED blinks are very subtle
+        if (time - lastLedUpdate.current < 0.1) return;
+        lastLedUpdate.current = time;
 
         for (let i = 0; i < count; i++) {
-            dummy.position.copy(ledData.positions[i]);
-            dummy.updateMatrix();
-            ledRef.current.setMatrixAt(i, dummy.matrix);
-
             const blink = Math.sin(time * 10 + i * 1.7) > 0.2;
-            const c = blink ? ledData.colors[i] : new THREE.Color('#040810');
-            ledRef.current.setColorAt(i, c);
+            ledRef.current.setColorAt(i, blink ? ledData.colors[i] : offColor);
         }
         ledRef.current.instanceColor!.needsUpdate = true;
-        ledRef.current.instanceMatrix.needsUpdate = true;
     });
 
     return (
@@ -690,8 +711,6 @@ function ServerRackTower() {
 function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: EnvironmentPhase }) {
     const config = ENVIRONMENT_CONFIGS[environmentPhase];
     const rainRef = useRef<THREE.Points>(null);
-    const treeGroupRef = useRef<THREE.Group>(null);
-    const foregroundTreeRef = useRef<THREE.Group>(null);
 
     const isNight = environmentPhase === 'night';
     const isEvening = environmentPhase === 'evening';
@@ -710,84 +729,36 @@ function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: Envir
         return { rainGeo: geo };
     }, []);
 
-    // High-Resolution Atmospheric Sky Gradient Canvases (Pre-generated once to eliminate mode-switch glitching)
-    const skyTextures = useMemo(() => {
+    // Night sky texture only — we only keep dark mode
+    const skyTexture = useMemo(() => {
         if (typeof document === 'undefined') return null;
-        const renderPhaseSky = (phase: EnvironmentPhase) => {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return null;
-
-            const grad = ctx.createLinearGradient(0, 0, 0, 512);
-            if (phase === 'morning') {
-                grad.addColorStop(0, '#3b82f6'); // Azure blue
-                grad.addColorStop(0.55, '#93c5fd'); // Soft daylight
-                grad.addColorStop(1, '#fef3c7'); // Golden morning horizon
-            } else if (phase === 'afternoon') {
-                grad.addColorStop(0, '#0284c7'); // Clear sky
-                grad.addColorStop(0.65, '#7dd3fc'); // Crisp horizon
-                grad.addColorStop(1, '#e0f2fe'); // White-tinted horizon
-            } else if (phase === 'evening') {
-                grad.addColorStop(0, '#311042'); // Twilight purple
-                grad.addColorStop(0.4, '#701a75'); // Rich magenta
-                grad.addColorStop(0.7, '#ea580c'); // Sunset orange
-                grad.addColorStop(1, '#fed7aa'); // Golden peach horizon
-            } else {
-                grad.addColorStop(0, '#030712'); // Deep space
-                grad.addColorStop(0.6, '#0b1329'); // Night indigo
-                grad.addColorStop(1, '#111827'); // Distant horizon
-            }
-
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 512, 512);
-
-            // Add soft distant sun glow in morning/evening
-            if (phase === 'morning') {
-                const sunGrad = ctx.createRadialGradient(340, 200, 10, 340, 200, 180);
-                sunGrad.addColorStop(0, 'rgba(255, 255, 230, 0.7)');
-                sunGrad.addColorStop(0.4, 'rgba(254, 240, 138, 0.25)');
-                sunGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
-                ctx.fillStyle = sunGrad;
-                ctx.beginPath();
-                ctx.arc(340, 200, 180, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (phase === 'evening') {
-                const sunGrad = ctx.createRadialGradient(180, 290, 8, 180, 290, 160);
-                sunGrad.addColorStop(0, 'rgba(255, 237, 213, 0.85)');
-                sunGrad.addColorStop(0.4, 'rgba(251, 146, 60, 0.35)');
-                sunGrad.addColorStop(1, 'rgba(234, 88, 12, 0)');
-                ctx.fillStyle = sunGrad;
-                ctx.beginPath();
-                ctx.arc(180, 290, 160, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (phase === 'night') {
-                // Tiny twinkling night stars
-                ctx.fillStyle = '#ffffff';
-                for (let s = 0; s < 70; s++) {
-                    const sx = (Math.sin(s * 99) * 0.5 + 0.5) * 512;
-                    const sy = (Math.cos(s * 33) * 0.5 + 0.5) * 320;
-                    ctx.fillRect(sx, sy, s % 3 === 0 ? 2 : 1, s % 3 === 0 ? 2 : 1);
-                }
-            }
-
-            return new THREE.CanvasTexture(canvas);
-        };
-
-        return {
-            morning: renderPhaseSky('morning'),
-            afternoon: renderPhaseSky('afternoon'),
-            evening: renderPhaseSky('evening'),
-            night: renderPhaseSky('night'),
-        };
+        const canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+        const grad = ctx.createLinearGradient(0, 0, 0, 256);
+        grad.addColorStop(0, '#030712');
+        grad.addColorStop(0.6, '#0b1329');
+        grad.addColorStop(1, '#111827');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 256, 256);
+        // Stars
+        ctx.fillStyle = '#ffffff';
+        for (let s = 0; s < 70; s++) {
+            const sx = (Math.sin(s * 99) * 0.5 + 0.5) * 256;
+            const sy = (Math.cos(s * 33) * 0.5 + 0.5) * 200;
+            ctx.fillRect(sx, sy, s % 3 === 0 ? 2 : 1, s % 3 === 0 ? 2 : 1);
+        }
+        return new THREE.CanvasTexture(canvas);
     }, []);
 
-    const skyTexture = skyTextures ? (skyTextures as any)[environmentPhase] || skyTextures.night : null;
-
+    const lastRainUpdate = useRef(0);
     useFrame((state, delta) => {
-        const time = state.clock.elapsedTime;
         if (config.showRain && rainRef.current) {
+            // Throttle rain to 30fps
+            if (state.clock.elapsedTime - lastRainUpdate.current < 0.033) return;
+            lastRainUpdate.current = state.clock.elapsedTime;
             const pos = rainGeo.attributes.position.array as Float32Array;
             for (let i = 0; i < rainCount; i++) {
                 pos[i * 3 + 1] -= delta * (1.5 + (i % 5) * 0.4);
@@ -796,16 +767,6 @@ function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: Envir
                 }
             }
             rainGeo.attributes.position.needsUpdate = true;
-        }
-
-        // Natural breeze swaying the garden trees
-        if (treeGroupRef.current) {
-            treeGroupRef.current.rotation.z = Math.sin(time * 1.2) * 0.018;
-            treeGroupRef.current.rotation.x = Math.cos(time * 0.9) * 0.012;
-        }
-        if (foregroundTreeRef.current) {
-            foregroundTreeRef.current.rotation.z = Math.sin(time * 1.6 + 0.5) * 0.024;
-            foregroundTreeRef.current.rotation.y = Math.cos(time * 1.1) * 0.016;
         }
     });
 
@@ -921,58 +882,15 @@ function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: Envir
                     <meshStandardMaterial color={isNight ? '#0b1a0d' : '#1c3d18'} roughness={0.9} />
                 </mesh>
 
-                {/* Distant Layered Rolling Treeline (Atmospheric Garden Depth) */}
+                {/* Distant Layered Rolling Treeline - replaced with simple dark silhouette planes for performance */}
                 <group position={[0, 0.3, -2.1]}>
                     {[-4.8, -2.4, 0.2, 2.6, 5.0].map((tx, ti) => (
                         <mesh key={ti} position={[tx, (ti % 2) * 0.35, 0]}>
-                            <dodecahedronGeometry args={[1.1 + (ti % 3) * 0.25, 1]} />
-                            <meshStandardMaterial
-                                color={isEvening ? '#9a3412' : isNight ? '#08170c' : '#193f1d'}
-                                roughness={0.85}
-                            />
+                            <dodecahedronGeometry args={[1.1 + (ti % 3) * 0.25, 0]} />
+                            <meshBasicMaterial color="#08170c" />
                         </mesh>
                     ))}
                 </group>
-
-                {/* ======================================================== */}
-                {/* 3. REALISTIC ORGANIC BOTANICAL TREES IN COURTYARD        */}
-                {/* ======================================================== */}
-                {config.showTrees && (
-                    <group ref={treeGroupRef} position={[0, 0, 0]}>
-                        {/* TREE 1: FOREGROUND ARCHING JAPANESE MAPLE / BIRCH (Left) */}
-                        <group ref={foregroundTreeRef} position={[-1.35, -0.7, 1.1]}>
-                            <RealisticBotanicalTree
-                                trunkCurve={[-0.15, 0.25, -0.1]}
-                                isEvening={isEvening}
-                                isNight={isNight}
-                                scale={0.95}
-                                type="foreground_maple"
-                            />
-                        </group>
-
-                        {/* TREE 2: MAJESTIC MIDGROUND OAK / ELM SHADE TREE (Center-Right) */}
-                        <group position={[1.40, -0.6, 0.3]}>
-                            <RealisticBotanicalTree
-                                trunkCurve={[0.1, -0.15, 0.2]}
-                                isEvening={isEvening}
-                                isNight={isNight}
-                                scale={1.25}
-                                type="shade_oak"
-                            />
-                        </group>
-
-                        {/* TREE 3: GARDEN FLOWERING CORNER TREE (Center-Left Depth) */}
-                        <group position={[-0.35, -0.5, -0.7]}>
-                            <RealisticBotanicalTree
-                                trunkCurve={[0.05, 0.1, -0.05]}
-                                isEvening={isEvening}
-                                isNight={isNight}
-                                scale={0.88}
-                                type="garden_accent"
-                            />
-                        </group>
-                    </group>
-                )}
 
                 {/* Window Directional / Ambient Cast Light */}
                 <pointLight
@@ -987,134 +905,7 @@ function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: Envir
     );
 }
 
-// -------------------------------------------------------------
-// HELPER COMPONENT: Realistic Sculpted Botanical Tree
-// -------------------------------------------------------------
-interface BotanicalTreeProps {
-    trunkCurve: [number, number, number];
-    isEvening: boolean;
-    isNight: boolean;
-    scale?: number;
-    type: 'foreground_maple' | 'shade_oak' | 'garden_accent';
-}
 
-function RealisticBotanicalTree({ trunkCurve, isEvening, isNight, scale = 1.0, type }: BotanicalTreeProps) {
-    const barkColor = isNight ? '#14110e' : '#3d2b1c';
-
-    // Botanical leaf colors tailored to lighting condition
-    const leafDeep = isEvening ? '#78350f' : isNight ? '#0b2410' : '#193f1d';
-    const leafMid = isEvening ? '#b45309' : isNight ? '#103317' : '#275828';
-    const leafLight = isEvening ? '#d97706' : isNight ? '#15421e' : '#417a33';
-    const leafTip = isEvening ? '#f59e0b' : isNight ? '#1b5226' : '#5e9444';
-
-    return (
-        <group scale={scale}>
-            {/* 1. SCULPTED ORGANIC TRUNK & SPREADING ROOT BASE */}
-            {/* Root Flare */}
-            <mesh castShadow position={[0, 0.15, 0]}>
-                <cylinderGeometry args={[0.08, 0.16, 0.35, 10]} />
-                <meshStandardMaterial color={barkColor} roughness={0.88} />
-            </mesh>
-
-            {/* Main Lower Trunk */}
-            <mesh castShadow position={[trunkCurve[0] * 0.4, 0.65, trunkCurve[2] * 0.4]} rotation={[trunkCurve[0], 0, trunkCurve[2]]}>
-                <cylinderGeometry args={[0.065, 0.085, 0.75, 10]} />
-                <meshStandardMaterial color={barkColor} roughness={0.88} />
-            </mesh>
-
-            {/* Trunk Fork / Upper Trunk splitting into limbs */}
-            <mesh castShadow position={[trunkCurve[0] * 0.9, 1.2, trunkCurve[2] * 0.9]} rotation={[trunkCurve[0] * 1.4, 0, trunkCurve[2] * 1.4]}>
-                <cylinderGeometry args={[0.045, 0.065, 0.65, 8]} />
-                <meshStandardMaterial color={barkColor} roughness={0.88} />
-            </mesh>
-
-            {/* Left Arching Bough */}
-            <mesh castShadow position={[trunkCurve[0] * 0.9 - 0.25, 1.45, trunkCurve[2] * 0.9 + 0.1]} rotation={[0.4, 0.2, -0.65]}>
-                <cylinderGeometry args={[0.025, 0.042, 0.7, 8]} />
-                <meshStandardMaterial color={barkColor} roughness={0.88} />
-            </mesh>
-
-            {/* Right Arching Bough */}
-            <mesh castShadow position={[trunkCurve[0] * 0.9 + 0.28, 1.5, trunkCurve[2] * 0.9 - 0.1]} rotation={[-0.3, -0.2, 0.6]}>
-                <cylinderGeometry args={[0.025, 0.042, 0.75, 8]} />
-                <meshStandardMaterial color={barkColor} roughness={0.88} />
-            </mesh>
-
-            {/* 2. MULTI-TIERED ORGANIC FOLIAGE CLUSTERS (NO SPHERE BALLS!) */}
-            {/* Cluster 1: Core Center Dense Canopy */}
-            <group position={[trunkCurve[0] * 0.9, 1.75, trunkCurve[2] * 0.9]}>
-                <mesh castShadow>
-                    <dodecahedronGeometry args={[0.48, 1]} />
-                    <meshStandardMaterial color={leafDeep} roughness={0.7} />
-                </mesh>
-                <mesh position={[0.05, 0.15, 0.05]} castShadow>
-                    <dodecahedronGeometry args={[0.40, 1]} />
-                    <meshStandardMaterial color={leafMid} roughness={0.68} />
-                </mesh>
-            </group>
-
-            {/* Cluster 2: Left Arching Foliage Cloud */}
-            <group position={[trunkCurve[0] * 0.9 - 0.52, 1.65, trunkCurve[2] * 0.9 + 0.18]}>
-                <mesh castShadow>
-                    <dodecahedronGeometry args={[0.44, 1]} />
-                    <meshStandardMaterial color={leafMid} roughness={0.7} />
-                </mesh>
-                <mesh position={[-0.1, 0.12, 0.08]} castShadow>
-                    <dodecahedronGeometry args={[0.34, 1]} />
-                    <meshStandardMaterial color={leafLight} roughness={0.65} />
-                </mesh>
-                {/* Sunlight-Kissed Leaf Tip Highlights */}
-                <mesh position={[-0.18, 0.22, 0.14]}>
-                    <dodecahedronGeometry args={[0.22, 1]} />
-                    <meshStandardMaterial color={leafTip} roughness={0.6} />
-                </mesh>
-            </group>
-
-            {/* Cluster 3: Right Upper Foliage Cloud */}
-            <group position={[trunkCurve[0] * 0.9 + 0.55, 1.78, trunkCurve[2] * 0.9 - 0.15]}>
-                <mesh castShadow>
-                    <dodecahedronGeometry args={[0.46, 1]} />
-                    <meshStandardMaterial color={leafDeep} roughness={0.7} />
-                </mesh>
-                <mesh position={[0.12, 0.14, -0.06]} castShadow>
-                    <dodecahedronGeometry args={[0.38, 1]} />
-                    <meshStandardMaterial color={leafLight} roughness={0.65} />
-                </mesh>
-                <mesh position={[0.22, 0.24, -0.1]}>
-                    <dodecahedronGeometry args={[0.24, 1]} />
-                    <meshStandardMaterial color={leafTip} roughness={0.6} />
-                </mesh>
-            </group>
-
-            {/* Cluster 4: Crown Canopy Top */}
-            <group position={[trunkCurve[0] * 0.9 + 0.08, 2.15, trunkCurve[2] * 0.9]}>
-                <mesh castShadow>
-                    <dodecahedronGeometry args={[0.38, 1]} />
-                    <meshStandardMaterial color={leafLight} roughness={0.65} />
-                </mesh>
-                <mesh position={[0, 0.12, 0.04]}>
-                    <dodecahedronGeometry args={[0.26, 1]} />
-                    <meshStandardMaterial color={leafTip} roughness={0.6} />
-                </mesh>
-            </group>
-
-            {/* Distinct Features for Maple vs Oak */}
-            {type === 'foreground_maple' && (
-                <group position={[0.2, 1.3, 0.3]}>
-                    {/* Graceful weeping bough dipping near the window */}
-                    <mesh castShadow rotation={[0.6, 0.4, 0.2]}>
-                        <cylinderGeometry args={[0.015, 0.025, 0.5, 6]} />
-                        <meshStandardMaterial color={barkColor} roughness={0.88} />
-                    </mesh>
-                    <mesh position={[0.12, -0.15, 0.18]}>
-                        <dodecahedronGeometry args={[0.26, 1]} />
-                        <meshStandardMaterial color={leafLight} roughness={0.65} />
-                    </mesh>
-                </group>
-            )}
-        </group>
-    );
-}
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: High-Tech Coffee Station / Espresso Bar
@@ -1133,11 +924,17 @@ function CoffeeStation() {
         return geo;
     }, []);
 
-    useFrame((_, delta) => {
+    const lastSteamUpdate = useRef(0);
+    useFrame((state) => {
+        // Throttle coffee steam to ~20 FPS - slow rising particles don't need 60fps
+        const now = state.clock.elapsedTime;
+        const dt = now - lastSteamUpdate.current;
+        if (dt < 0.05) return;
+        lastSteamUpdate.current = now;
         const pos = steamGeo.attributes.position.array as Float32Array;
         for (let i = 0; i < 32; i++) {
-            pos[i * 3 + 1] += delta * 0.22;
-            pos[i * 3] += (Math.random() - 0.5) * delta * 0.05;
+            pos[i * 3 + 1] += dt * 0.22;
+            pos[i * 3] += (Math.random() - 0.5) * dt * 0.05;
             if (pos[i * 3 + 1] > 1.35) {
                 pos[i * 3 + 1] = 0.96;
                 pos[i * 3] = (Math.random() - 0.5) * 0.06;
@@ -1377,14 +1174,7 @@ function IndustrialCeilingVent() {
                 ))}
             </group>
 
-            {/* Warm Golden Spotlight beaming down through the fan */}
-            <spotLight
-                position={[0, 0.2, 0]}
-                angle={0.7}
-                penumbra={0.85}
-                intensity={1.2}
-                color="#fef3c7"
-            />
+            {/* Warm Golden Spotlight removed - expensive shadow pass, fan is too high to notice */}
         </group>
     );
 }
@@ -1426,8 +1216,12 @@ function WallPipelinesAndConduits() {
 // -------------------------------------------------------------
 function CyberRoomDecor() {
     const signFlickerRef = useRef<THREE.MeshBasicMaterial>(null);
+    const lastSignUpdate = useRef(0);
 
     useFrame((state) => {
+        // Throttle neon sign flicker to ~24 FPS - cinematic enough for a "neon" effect
+        if (state.clock.elapsedTime - lastSignUpdate.current < 0.042) return;
+        lastSignUpdate.current = state.clock.elapsedTime;
         if (signFlickerRef.current) {
             const t = state.clock.elapsedTime;
             const flicker = Math.sin(t * 12) > -0.7 ? 1.0 : 0.2;
@@ -1501,7 +1295,9 @@ function CyberRoomDecor() {
 // SUB-COMPONENT: Floating Cyber Dust Motes
 // -------------------------------------------------------------
 function CyberDustMotes() {
-    const count = 120;
+    // Reduced from 120 to 60 particles - imperceptible visual difference at half the CPU cost
+    const count = 60;
+    const lastDustUpdate = useRef(0);
     const { geo } = useMemo(() => {
         const g = new THREE.BufferGeometry();
         const p = new Float32Array(count * 3);
@@ -1514,12 +1310,16 @@ function CyberDustMotes() {
         return { geo: g };
     }, []);
 
-    useFrame((state, delta) => {
+    useFrame((state) => {
+        // Throttle dust mote updates to ~20 FPS - slow-floating particles don't need 60fps
+        if (state.clock.elapsedTime - lastDustUpdate.current < 0.05) return;
+        lastDustUpdate.current = state.clock.elapsedTime;
         const p = geo.attributes.position.array as Float32Array;
         const t = state.clock.elapsedTime;
+        const dt = 0.05; // Fixed timestep for throttled update
         for (let i = 0; i < count; i++) {
-            p[i * 3 + 1] += Math.sin(t + i) * delta * 0.05;
-            p[i * 3] += Math.cos(t * 0.5 + i) * delta * 0.03;
+            p[i * 3 + 1] += Math.sin(t + i) * dt * 0.05;
+            p[i * 3] += Math.cos(t * 0.5 + i) * dt * 0.03;
         }
         geo.attributes.position.needsUpdate = true;
     });

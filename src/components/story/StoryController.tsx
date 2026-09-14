@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, Sun, Moon } from 'lucide-react';
+import { Volume2, VolumeX, Moon } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import HolographicPortfolio from '@/components/hologram/HolographicPortfolio';
 import { CharacterRoutine } from '@/components/3d/CyberCharacter';
@@ -24,28 +24,8 @@ export default function StoryController() {
     const [cameraMode, setCameraMode] = useState<CameraMode>('orbit');
     const [showHologram, setShowHologram] = useState(false);
 
-    // Default to Dark Mode (Cozy Ambient Night)
-    const [activePhase, setActivePhase] = useState<EnvironmentPhase>(() => {
-        if (typeof window !== 'undefined') {
-            try {
-                const saved = localStorage.getItem('portfolio_theme_mode');
-                if (saved === 'light') return 'morning';
-                if (saved === 'dark') return 'night';
-            } catch {}
-        }
-        return 'night'; // Default is Dark Mode
-    });
-
-    const [isLightMode, setIsLightMode] = useState<boolean>(() => {
-        if (typeof window !== 'undefined') {
-            try {
-                const saved = localStorage.getItem('portfolio_theme_mode');
-                if (saved === 'light') return true;
-                if (saved === 'dark') return false;
-            } catch {}
-        }
-        return false; // Default is Dark Mode
-    });
+    // Always dark mode (night)
+    const [activePhase] = useState<EnvironmentPhase>('night');
 
     // Character life simulation status
     const [currentRoutine, setCurrentRoutine] = useState<CharacterRoutine>('coding');
@@ -54,32 +34,6 @@ export default function StoryController() {
     // Sound state
     const [isMuted, setIsMuted] = useState(false);
 
-    // Check localStorage on mount (defaults to dark mode unless previously toggled to light)
-    useEffect(() => {
-        try {
-            const saved = localStorage.getItem('portfolio_theme_mode');
-            if (saved === 'light') {
-                setIsLightMode(true);
-                setActivePhase('morning');
-            } else {
-                setIsLightMode(false);
-                setActivePhase('night');
-            }
-        } catch {}
-    }, []);
-
-    const handleToggleTheme = () => {
-        audio.playClick();
-        setIsLightMode((prev) => {
-            const next = !prev;
-            const newPhase: EnvironmentPhase = next ? 'morning' : 'night';
-            setActivePhase(newPhase);
-            try {
-                localStorage.setItem('portfolio_theme_mode', next ? 'light' : 'dark');
-            } catch {}
-            return next;
-        });
-    };
 
     // Audio & Global Key Listeners
     useEffect(() => {
@@ -188,27 +142,13 @@ export default function StoryController() {
                 />
             </div>
 
-            {/* 2. HEADER CONTROLS: THEME SWITCH (LIGHT/DARK) & AUDIO TOGGLE */}
+            {/* 2. HEADER CONTROLS: AUDIO TOGGLE + DARK MODE BADGE */}
             <header className="absolute top-4 right-4 z-20 pointer-events-auto flex items-center gap-2.5">
-                <button
-                    onClick={handleToggleTheme}
-                    onMouseEnter={() => audio.playHover()}
-                    className="flex items-center gap-2 px-3 py-2 rounded-full bg-zinc-950/70 border border-zinc-700/80 hover:border-amber-400/90 text-zinc-300 hover:text-amber-300 transition-all shadow-md backdrop-blur-md cursor-pointer group"
-                    title={isLightMode ? 'Switch to Cozy Dark Mode' : 'Switch to Sunlit Light Mode'}
-                    aria-label="Toggle Dark / Light Mode"
-                >
-                    {isLightMode ? (
-                        <>
-                            <Sun className="w-4 h-4 text-amber-400 group-hover:rotate-45 transition-transform" />
-                            <span className="text-xs font-mono font-medium text-amber-200">Light Mode</span>
-                        </>
-                    ) : (
-                        <>
-                            <Moon className="w-4 h-4 text-amber-300 group-hover:-rotate-12 transition-transform" />
-                            <span className="text-xs font-mono font-medium text-amber-200">Dark Mode</span>
-                        </>
-                    )}
-                </button>
+                {/* Static dark mode indicator */}
+                <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-zinc-950/70 border border-zinc-700/80 text-zinc-300 backdrop-blur-md">
+                    <Moon className="w-4 h-4 text-amber-300" />
+                    <span className="text-xs font-mono font-medium text-amber-200">Dark Mode</span>
+                </div>
 
                 <button
                     onClick={handleToggleSound}
