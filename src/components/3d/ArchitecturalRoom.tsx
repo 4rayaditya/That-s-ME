@@ -205,12 +205,12 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
                         return (
                             <React.Fragment key={i}>
                                 {/* Top Slat above window */}
-                                <mesh castShadow position={[x, 1.55, 0.015]}>
+                                <mesh position={[x, 1.55, 0.015]}>
                                     <boxGeometry args={[0.075, 1.1, 0.025]} />
                                     <meshStandardMaterial color={slatWoodColor} roughness={0.5} />
                                 </mesh>
                                 {/* Bottom Slat below window */}
-                                <mesh castShadow position={[x, -1.6, 0.015]}>
+                                <mesh position={[x, -1.6, 0.015]}>
                                     <boxGeometry args={[0.075, 1.0, 0.025]} />
                                     <meshStandardMaterial color={slatWoodColor} roughness={0.5} />
                                 </mesh>
@@ -218,7 +218,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
                         );
                     }
                     return (
-                        <mesh key={i} castShadow position={[x, 0, 0.015]}>
+                        <mesh key={i} position={[x, 0, 0.015]}>
                             <boxGeometry args={[0.075, 4.15, 0.025]} />
                             <meshStandardMaterial color={slatWoodColor} roughness={0.5} />
                         </mesh>

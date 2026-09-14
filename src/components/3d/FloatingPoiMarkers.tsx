@@ -11,7 +11,6 @@ interface FloatingPoiMarkersProps {
     onSelectSetup: () => void;
     onSelectCoffee: () => void;
     onSelectBed: () => void;
-    onPetDog: () => void;
     visible: boolean;
 }
 
@@ -19,13 +18,11 @@ export default function FloatingPoiMarkers({
     onSelectSetup,
     onSelectCoffee,
     onSelectBed,
-    onPetDog,
     visible,
 }: FloatingPoiMarkersProps) {
     const setupRef = useRef<THREE.Group>(null);
     const coffeeRef = useRef<THREE.Group>(null);
     const bedRef = useRef<THREE.Group>(null);
-    const dogRef = useRef<THREE.Group>(null);
 
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
@@ -33,7 +30,6 @@ export default function FloatingPoiMarkers({
         if (setupRef.current) setupRef.current.position.y = 2.05 + Math.sin(t * 2.4) * 0.04;
         if (coffeeRef.current) coffeeRef.current.position.y = 1.55 + Math.sin(t * 2.4 + 1.2) * 0.04;
         if (bedRef.current) bedRef.current.position.y = 1.25 + Math.sin(t * 2.4 + 2.4) * 0.04;
-        if (dogRef.current) dogRef.current.position.y = 0.8 + Math.sin(t * 2.4 + 3.6) * 0.03;
     });
 
     if (!visible) return null;
@@ -107,28 +103,6 @@ export default function FloatingPoiMarkers({
                         {/* Tooltip on hover */}
                         <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md bg-zinc-950/90 border border-rose-500/50 text-[10px] font-mono text-rose-200 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
                             Cyber Futon // Sleep
-                        </div>
-                    </button>
-                </Html>
-            </group>
-
-            {/* 4. CYBER-DOG (BYTE) MARKER - OVER DEDICATED DOG BED */}
-            <group ref={dogRef} position={[1.15, 0.88, 0.75]}>
-                <Html center distanceFactor={7} zIndexRange={[100, 0]}>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onPetDog();
-                        }}
-                        onMouseEnter={() => audio.playHover()}
-                        className="group relative flex items-center justify-center p-2 rounded-full bg-zinc-950/80 border border-teal-400 text-teal-300 shadow-[0_0_12px_rgba(45,212,191,0.5)] hover:shadow-[0_0_20px_rgba(45,212,191,0.9)] hover:scale-115 transition-all duration-200 cursor-pointer backdrop-blur-md"
-                        title="Byte // Click to Pet"
-                    >
-                        <Sparkles className="w-3.5 h-3.5 text-teal-300 group-hover:text-white transition-colors" />
-
-                        {/* Tooltip on hover */}
-                        <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-zinc-950/90 border border-teal-500/50 text-[10px] font-mono text-teal-200 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
-                            Byte // Pet Me! 🐕
                         </div>
                     </button>
                 </Html>

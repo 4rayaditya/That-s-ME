@@ -42,6 +42,7 @@ export class MonitorTextures {
 
     private lineOffset = 0;
     private lastCodeUpdate = 0;
+    private lastRenderTime = 0;
 
     constructor() {
         const isClient = typeof document !== 'undefined';
@@ -55,43 +56,41 @@ export class MonitorTextures {
         this.centerTexture.minFilter = THREE.LinearFilter;
         this.centerTexture.magFilter = THREE.LinearFilter;
 
-        // 2. Left Monitor: System Telemetry, Radar, Network Pings
+        // 2. Left & Right Monitor (Lightweight dummy textures for interface compatibility)
         this.leftCanvas = isClient ? document.createElement('canvas') : ({} as HTMLCanvasElement);
-        this.leftCanvas.width = 512;
-        this.leftCanvas.height = 512;
+        this.leftCanvas.width = 16;
+        this.leftCanvas.height = 16;
         this.leftCtx = isClient ? this.leftCanvas.getContext('2d')! : ({} as CanvasRenderingContext2D);
         this.leftTexture = new THREE.CanvasTexture(this.leftCanvas);
-        this.leftTexture.minFilter = THREE.LinearFilter;
-        this.leftTexture.magFilter = THREE.LinearFilter;
 
-        // 3. Right Monitor: Audio Waveform Spectrum & Live Terminal Logs
         this.rightCanvas = isClient ? document.createElement('canvas') : ({} as HTMLCanvasElement);
-        this.rightCanvas.width = 512;
-        this.rightCanvas.height = 512;
+        this.rightCanvas.width = 16;
+        this.rightCanvas.height = 16;
         this.rightCtx = isClient ? this.rightCanvas.getContext('2d')! : ({} as CanvasRenderingContext2D);
         this.rightTexture = new THREE.CanvasTexture(this.rightCanvas);
-        this.rightTexture.minFilter = THREE.LinearFilter;
-        this.rightTexture.magFilter = THREE.LinearFilter;
 
         if (isClient) {
-            this.renderAll(0);
+            this.renderCenter(0);
         }
     }
 
     public update(time: number) {
-        // Update code scroll every 150ms
-        if (time - this.lastCodeUpdate > 0.15) {
+        // Performance optimization: Throttle procedural canvas rendering and GPU texture uploads to ~15 FPS (every 66ms).
+        // This eliminates 75% of CPU 2D canvas rasterization and PCIe bus texture upload traffic.
+        if (time - this.lastRenderTime < 0.066) {
+            return;
+        }
+        this.lastRenderTime = time;
+
+        // Update code scroll
+        if (time - this.lastCodeUpdate > 0.18) {
             this.lineOffset = (this.lineOffset + 1) % this.codeLines.length;
             this.lastCodeUpdate = time;
         }
 
+        // Only update active single ultrawide center texture
         this.renderCenter(time);
-        this.renderLeft(time);
-        this.renderRight(time);
-
         this.centerTexture.needsUpdate = true;
-        this.leftTexture.needsUpdate = true;
-        this.rightTexture.needsUpdate = true;
     }
 
     private renderAll(time: number) {
@@ -162,18 +161,18 @@ export class MonitorTextures {
             ctx.fillRect(w - 200, startY + 15 * lineHeight - 18, 12, 22);
         }
 
-        // CRT Scanline overlay effect
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-        for (let y = 0; y < h; y += 4) {
-            ctx.fillRect(0, y, w, 2);
+        // CRT Scanline overlay effect (efficient 8px stepping)
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
+        for (let y = 0; y < h; y += 8) {
+            ctx.fillRect(0, y, w, 3);
         }
 
         // Screen edge vignette glow
-        const gradient = ctx.createRadialGradient(w / 2, h / 2, h / 3, w / 2, h / 2, w / 1.5);
-        gradient.addColorStop(0, 'transparent');
-        gradient.addColorStop(1, 'rgba(0, 245, 212, 0.08)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = 'rgba(0, 245, 212, 0.04)';
+        ctx.fillRect(0, 0, w, 6);
+        ctx.fillRect(0, h - 6, w, 6);
+        ctx.fillRect(0, 0, 6, h);
+        ctx.fillRect(w - 6, 0, 6, h);
     }
 
     private renderLeft(time: number) {

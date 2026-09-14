@@ -3,9 +3,8 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { ContactShadows } from '@react-three/drei';
+import { ContactShadows, AdaptiveDpr, AdaptiveEvents } from '@react-three/drei';
 import CyberCharacter, { CharacterRoutine } from './CyberCharacter';
-import CyberDog from './CyberDog';
 import CameraController, { CameraMode } from './CameraController';
 import { MonitorTextures } from './MonitorTextures';
 import { EnvironmentPhase, ENVIRONMENT_CONFIGS } from '@/lib/environment';
@@ -378,9 +377,10 @@ function BattlestationDesk() {
             </group>
 
             {/* HIGH-END CNC MECHANICAL KEYBOARD WITH WARM RETRO CAPS */}
+            {/* KEYBOARD WITH KEYCAP ROWS */}
             <group position={[0, 0.76, 0.15]} rotation={[0.08, 0, 0]}>
                 {/* Dark Walnut & Aluminum Frame */}
-                <mesh castShadow>
+                <mesh>
                     <boxGeometry args={[0.56, 0.024, 0.20]} />
                     <meshStandardMaterial color="#3a271a" roughness={0.4} metalness={0.4} />
                 </mesh>
@@ -390,17 +390,17 @@ function BattlestationDesk() {
                     <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
                 </mesh>
                 {/* Sculpted Keycap Row Tier 1 (Number Row) */}
-                <mesh position={[0, 0.016, -0.055]} castShadow>
+                <mesh position={[0, 0.016, -0.055]}>
                     <boxGeometry args={[0.51, 0.012, 0.03]} />
                     <meshStandardMaterial color="#332216" roughness={0.5} />
                 </mesh>
                 {/* Sculpted Keycap Row Tier 2 & 3 (QWERTY & Home Alphas - Cream) */}
-                <mesh position={[0, 0.017, -0.015]} castShadow>
+                <mesh position={[0, 0.017, -0.015]}>
                     <boxGeometry args={[0.51, 0.013, 0.045]} />
                     <meshStandardMaterial color="#f8fafc" roughness={0.4} />
                 </mesh>
                 {/* Spacebar & Modifiers Row */}
-                <mesh position={[0, 0.015, 0.045]} castShadow>
+                <mesh position={[0, 0.015, 0.045]}>
                     <boxGeometry args={[0.51, 0.011, 0.035]} />
                     <meshStandardMaterial color="#332216" roughness={0.5} />
                 </mesh>
@@ -413,7 +413,7 @@ function BattlestationDesk() {
 
             {/* ERGONOMIC MOUSE ON LEATHER MAT */}
             <group position={[0.48, 0.76, 0.16]}>
-                <mesh castShadow position={[0, 0.02, 0]} rotation={[0, -0.06, 0]}>
+                <mesh position={[0, 0.02, 0]} rotation={[0, -0.06, 0]}>
                     <boxGeometry args={[0.075, 0.035, 0.135]} />
                     <meshStandardMaterial color="#2d2218" metalness={0.4} roughness={0.4} />
                 </mesh>
@@ -429,7 +429,7 @@ function BattlestationDesk() {
 
             {/* DESKTOP GREENERY: POTTED CERAMIC SUCCULENT PLANTER */}
             <group position={[0.72, 0.76, 0.26]}>
-                <mesh castShadow position={[0, 0.06, 0]}>
+                <mesh position={[0, 0.06, 0]}>
                     <cylinderGeometry args={[0.07, 0.05, 0.12, 16]} />
                     <meshStandardMaterial color="#f8fafc" roughness={0.3} />
                 </mesh>
@@ -437,11 +437,11 @@ function BattlestationDesk() {
                     <cylinderGeometry args={[0.065, 0.065, 0.02, 16]} />
                     <meshStandardMaterial color="#271c15" roughness={0.9} />
                 </mesh>
-                <mesh position={[0, 0.16, 0]} castShadow>
+                <mesh position={[0, 0.16, 0]}>
                     <sphereGeometry args={[0.08, 10, 10]} />
                     <meshStandardMaterial color="#10b981" roughness={0.6} />
                 </mesh>
-                <mesh position={[0.03, 0.21, 0.02]} castShadow>
+                <mesh position={[0.03, 0.21, 0.02]}>
                     <sphereGeometry args={[0.055, 8, 8]} />
                     <meshStandardMaterial color="#34d399" roughness={0.6} />
                 </mesh>
@@ -449,7 +449,7 @@ function BattlestationDesk() {
 
             {/* AESTHETIC DESK ACCESSORIES (MOLESKINE JOURNAL & WOOD TRAY) */}
             <group position={[-1.2, 0.76, 0.2]}>
-                <mesh castShadow position={[0, 0.01, 0]} rotation={[0, 0.15, 0]}>
+                <mesh position={[0, 0.01, 0]} rotation={[0, 0.15, 0]}>
                     <boxGeometry args={[0.22, 0.02, 0.3]} />
                     <meshStandardMaterial color="#2d2219" roughness={0.6} />
                 </mesh>
@@ -458,20 +458,6 @@ function BattlestationDesk() {
                     <meshStandardMaterial color="#faf6ee" roughness={0.8} />
                 </mesh>
             </group>
-
-            {/* Tangled Glowing Neon Cables Snaking Under Desk */}
-            <mesh position={[0.3, 0.08, -0.2]} rotation={[0, 0.5, 0]}>
-                <torusGeometry args={[0.6, 0.02, 8, 32, Math.PI * 1.2]} />
-                <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-            </mesh>
-            <mesh position={[-0.4, 0.06, -0.1]} rotation={[0, -0.8, 0]}>
-                <torusGeometry args={[0.8, 0.025, 8, 32, Math.PI * 0.9]} />
-                <meshBasicMaterial color="#f72585" toneMapped={false} />
-            </mesh>
-            <mesh position={[0.8, 0.04, 0.1]} rotation={[0, 1.2, 0]}>
-                <torusGeometry args={[0.5, 0.018, 8, 32, Math.PI * 1.4]} />
-                <meshBasicMaterial color="#ffb703" toneMapped={false} />
-            </mesh>
 
             {/* ARTICULATED DESK LAMP WITH WARM AMBER GLOW */}
             <group position={[-1.25, 0.75, -0.3]}>
@@ -1231,9 +1217,7 @@ function CoffeeStation() {
                     <meshBasicMaterial color="#fffbeb" toneMapped={false} />
                 </mesh>
                 {/* Primary Warm Downward Pool of Light (Casting 2700K onto espresso machine & countertop) */}
-                <pointLight color="#fef08a" intensity={4.8} distance={4.5} decay={1.8} position={[0, 1.78, 0]} />
-                {/* Ambient Warm Golden Countertop Glow */}
-                <pointLight color="#fbbf24" intensity={2.8} distance={3.2} decay={2} position={[0, 1.25, 0.15]} />
+                <pointLight color="#fef3c7" intensity={5.4} distance={4.2} decay={1.8} position={[0, 1.75, 0.05]} />
             </group>
 
             {/* 2. FLOATING OAK WALL SHELF WITH COFFEE ACCESSORIES & UNDER-SHELF WARM LED */}
@@ -1400,7 +1384,6 @@ function IndustrialCeilingVent() {
                 penumbra={0.85}
                 intensity={1.2}
                 color="#fef3c7"
-                castShadow
             />
         </group>
     );
@@ -1564,7 +1547,6 @@ export default function CyberRoomScene({
 }: CyberRoomSceneProps) {
     const monitorTextures = useMemo(() => new MonitorTextures(), []);
     const envConfig = ENVIRONMENT_CONFIGS[environmentPhase];
-    const [dogPetCount, setDogPetCount] = useState(0);
 
     useEffect(() => {
         return () => monitorTextures.destroy();
@@ -1589,13 +1571,20 @@ export default function CyberRoomScene({
             <Canvas
                 shadows
                 camera={{ position: [0, 1.75, 4.55], fov: 55 }}
+                dpr={[1, 1.5]}
+                performance={{ min: 0.5 }}
+                frameloop={cameraMode === 'at_screen' ? 'demand' : 'always'}
                 gl={{
                     antialias: true,
                     powerPreference: 'high-performance',
+                    stencil: false,
+                    depth: true,
                     toneMapping: THREE.ACESFilmicToneMapping,
                 }}
             >
                 <SceneLoop />
+                <AdaptiveDpr pixelated={false} />
+                <AdaptiveEvents />
 
                 {/* Camera Choreography (Locked manual orbit or guided room tour) */}
                 <CameraController
@@ -1606,14 +1595,15 @@ export default function CyberRoomScene({
                     onTourComplete={onTourComplete}
                 />
 
-                {/* Realistic Contact Shadows for all objects */}
+                {/* Realistic Contact Shadows for all objects - cached to 1 frame for high FPS */}
                 <ContactShadows
                     position={[0, 0.003, 0]}
                     opacity={0.75}
                     scale={10}
                     blur={2.0}
                     far={4.5}
-                    resolution={1024}
+                    resolution={512}
+                    frames={1}
                     color="#000000"
                 />
 
@@ -1624,7 +1614,7 @@ export default function CyberRoomScene({
                     position={envConfig.sunPosition}
                     intensity={envConfig.sunIntensity}
                     color={envConfig.sunColor}
-                    shadow-mapSize={[2048, 2048]}
+                    shadow-mapSize={[1024, 1024]}
                     shadow-bias={-0.0001}
                 />
 
@@ -1636,7 +1626,6 @@ export default function CyberRoomScene({
                     color="#fef08a"
                     angle={0.85}
                     penumbra={0.65}
-                    castShadow
                 />
 
                 {/* Real Architectural Room: Hardwood Parquet, Acoustic Slat Walls, Rafter Ceiling, Loft Window */}
@@ -1651,9 +1640,6 @@ export default function CyberRoomScene({
 
                 {/* Autonomous Character Simulation (Aditya Ray) */}
                 <CyberCharacter currentRoutine={currentRoutine} onRoutineChange={onRoutineChange} />
-
-                {/* ANIMATED CYBER-DOG COMPANION ("Byte") */}
-                <CyberDog characterRoutine={currentRoutine} petTrigger={dogPetCount} />
 
                 {/* Corner Server Rack with Patch Cables & LEDs */}
                 <ServerRackTower />
@@ -1670,7 +1656,7 @@ export default function CyberRoomScene({
                 {/* Shelves & Decor */}
                 <CyberRoomDecor />
 
-                {/* 3D Floating Interactive POI Markers over Bed, Coffee Stand, Setup, and Dog */}
+                {/* 3D Floating Interactive POI Markers over Bed, Coffee Stand, and Battlestation */}
                 <FloatingPoiMarkers
                     visible={cameraMode === 'orbit'}
                     onSelectSetup={() => {
@@ -1682,10 +1668,6 @@ export default function CyberRoomScene({
                     }}
                     onSelectCoffee={() => onRoutineChange('walking_to_coffee', 'Heading to Neon Espresso Bar...')}
                     onSelectBed={() => onRoutineChange('walking_to_bed', 'Heading to Cyber Futon to Sleep...')}
-                    onPetDog={() => {
-                        setDogPetCount((c) => c + 1);
-                        audio.playDogBark();
-                    }}
                 />
             </Canvas>
         </div>

@@ -33,14 +33,6 @@ export const TOUR_STOPS: TourStop[] = [
         duration: 4.0,
     },
     {
-        id: 'dog',
-        name: '🐕 Cyber-Dog "Byte" // Companion Hound',
-        subtitle: 'Cybernetic Shiba Inu with illuminated collar & optical visor',
-        camPos: new THREE.Vector3(0.9, 1.05, 1.1),
-        target: new THREE.Vector3(1.1, 0.45, 0.3),
-        duration: 3.8,
-    },
-    {
         id: 'bed',
         name: '🛏️ Cyber Futon // Sleep & Recharge Pod',
         subtitle: 'Futon platform with memory mattress, headphones, and floating clock',
