@@ -648,6 +648,42 @@ class AudioManager {
     public playTerminal() {
         this.playKeypress();
     }
+
+    public playDogBark() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+        try {
+            const now = ctx.currentTime;
+            // First yip
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.type = 'triangle';
+            osc1.frequency.setValueAtTime(520, now);
+            osc1.frequency.exponentialRampToValueAtTime(240, now + 0.08);
+            gain1.gain.setValueAtTime(0.04, now);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+            osc1.connect(gain1);
+            gain1.connect(ctx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.09);
+
+            // Second playful yip
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(640, now + 0.1);
+            osc2.frequency.exponentialRampToValueAtTime(320, now + 0.19);
+            gain2.gain.setValueAtTime(0.045, now + 0.1);
+            gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.start(now + 0.1);
+            osc2.stop(now + 0.2);
+        } catch {
+            // Graceful fallback
+        }
+    }
 }
 
 export const audio = new AudioManager();
