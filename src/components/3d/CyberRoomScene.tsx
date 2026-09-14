@@ -10,6 +10,7 @@ import CameraController, { CameraMode } from './CameraController';
 import { MonitorTextures } from './MonitorTextures';
 import { EnvironmentPhase, ENVIRONMENT_CONFIGS } from '@/lib/environment';
 import FloatingPoiMarkers from './FloatingPoiMarkers';
+import ArchitecturalRoom from './ArchitecturalRoom';
 import { audio } from '@/lib/audio';
 
 interface CyberRoomSceneProps {
@@ -993,52 +994,6 @@ function CyberDustMotes() {
 }
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Diorama Architecture (Walls, Reflective Grid)
-// -------------------------------------------------------------
-function DioramaRoomGeometry({ accentColor = '#00f5d4' }: { accentColor?: string }) {
-    return (
-        <group>
-            {/* Dark Reflective Grid Floor */}
-            <mesh receiveShadow position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[7.2, 7.2]} />
-                <meshStandardMaterial color="#040710" roughness={0.25} metalness={0.7} />
-            </mesh>
-
-            {/* Glowing Floor Grid Lines (Synchronized to time of day accent) */}
-            <gridHelper args={[7.2, 24, accentColor, '#0d1d36']} position={[0, 0.005, 0]} />
-
-            {/* Back Wall */}
-            <mesh receiveShadow position={[0, 1.8, -3.5]}>
-                <planeGeometry args={[7.2, 3.6]} />
-                <meshStandardMaterial color="#060a14" roughness={0.8} />
-            </mesh>
-
-            {/* Left Wall */}
-            <mesh receiveShadow position={[-3.5, 1.8, 0]} rotation={[0, Math.PI / 2, 0]}>
-                <planeGeometry args={[7.2, 3.6]} />
-                <meshStandardMaterial color="#050812" roughness={0.8} />
-            </mesh>
-
-            {/* Right Wall (Partial cutaway) */}
-            <mesh receiveShadow position={[3.5, 1.8, -1.8]} rotation={[0, -Math.PI / 2, 0]}>
-                <planeGeometry args={[3.6, 3.6]} />
-                <meshStandardMaterial color="#050812" roughness={0.8} />
-            </mesh>
-
-            {/* Baseboard Neon Light Strips */}
-            <mesh position={[0, 0.02, -3.48]}>
-                <boxGeometry args={[7.2, 0.03, 0.02]} />
-                <meshBasicMaterial color={accentColor} toneMapped={false} />
-            </mesh>
-            <mesh position={[-3.48, 0.02, 0]} rotation={[0, Math.PI / 2, 0]}>
-                <boxGeometry args={[7.2, 0.03, 0.02]} />
-                <meshBasicMaterial color="#f72585" toneMapped={false} />
-            </mesh>
-        </group>
-    );
-}
-
-// -------------------------------------------------------------
 // MAIN SCENE ROOT EXPORT
 // -------------------------------------------------------------
 export default function CyberRoomScene({
@@ -1124,8 +1079,8 @@ export default function CyberRoomScene({
                     />
                 )}
 
-                {/* Architecture & Detailing */}
-                <DioramaRoomGeometry accentColor={envConfig.accentColor} />
+                {/* Real Architectural Room: Hardwood Parquet, Acoustic Slat Walls, Rafter Ceiling, Loft Window */}
+                <ArchitecturalRoom environmentPhase={environmentPhase} />
                 <WallPipelinesAndConduits />
                 <IndustrialCeilingVent />
 
