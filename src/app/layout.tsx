@@ -1,49 +1,62 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Outfit, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import { PerformanceDetector } from '@/components/PerformanceDetector';
+import MagneticCursor from '@/components/ui/MagneticCursor';
 
-const inter = Inter({ subsets: ['latin'] });
+const outfit = Outfit({
+    subsets: ['latin'],
+    variable: '--font-outfit',
+    display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+    subsets: ['latin'],
+    variable: '--font-mono',
+    display: 'swap',
+});
 
 export const metadata: Metadata = {
-    title: '3D Portfolio | Your Name - Frontend Engineer',
-    description: 'Senior Frontend Engineer specializing in high-performance 3D web experiences. Explore my projects built with Next.js, React Three Fiber, and WebGL.',
-    keywords: ['portfolio', '3D web development', 'React Three Fiber', 'WebGL', 'Next.js', 'Frontend Engineer'],
-    authors: [{ name: 'Your Name' }],
-    creator: 'Your Name',
+    metadataBase: new URL('https://adityaray.dev'),
+    title: 'Aditya Ray | Creative Technologist & Full-Stack 3D Engineer',
+    description:
+        'Portfolio of Aditya Ray (@4rayaditya). Crafting high-performance digital worlds at the intersection of creative WebGL engineering and distributed cloud systems.',
+    keywords: [
+        'Aditya Ray',
+        '4rayaditya',
+        'Creative Technologist',
+        'WebGL Developer',
+        'Three.js Portfolio',
+        'React Three Fiber',
+        'Next.js 14',
+        'GLSL Shaders',
+        'Frontend Engineer',
+        'Full-Stack Developer',
+    ],
+    authors: [{ name: 'Aditya Ray', url: 'https://github.com/4rayaditya' }],
+    creator: 'Aditya Ray',
     openGraph: {
         type: 'website',
         locale: 'en_US',
-        url: 'https://yourportfolio.com',
-        siteName: '3D Portfolio',
-        title: '3D Portfolio | Your Name - Frontend Engineer',
-        description: 'Senior Frontend Engineer specializing in high-performance 3D web experiences.',
+        url: 'https://github.com/4rayaditya',
+        siteName: 'Aditya Ray Portfolio',
+        title: 'Aditya Ray | Creative Technologist & Full-Stack 3D Engineer',
+        description:
+            'Interactive 3D WebGL developer portfolio featuring real-time physics simulations, shader playgrounds, and high-scale full-stack platforms.',
         images: [
             {
-                url: '/og-image.jpg',
+                url: '/images/projects/nexus-ai.jpg',
                 width: 1200,
-                height: 630,
-                alt: 'Portfolio Preview',
+                height: 675,
+                alt: 'Aditya Ray 3D Portfolio',
             },
         ],
     },
     twitter: {
         card: 'summary_large_image',
-        title: '3D Portfolio | Your Name',
-        description: 'Senior Frontend Engineer specializing in high-performance 3D web experiences.',
-        images: ['/og-image.jpg'],
-        creator: '@yourhandle',
-    },
-    robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-            index: true,
-            follow: true,
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-        },
+        title: 'Aditya Ray | Creative Technologist',
+        description: 'Interactive 3D WebGL developer portfolio featuring real-time physics and high-scale platforms.',
+        images: ['/images/projects/nexus-ai.jpg'],
+        creator: '@4rayaditya',
     },
 };
 
@@ -53,9 +66,9 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en" className="dark">
-            <body className={inter.className}>
-                <PerformanceDetector />
+        <html lang="en" className={`dark ${outfit.variable} ${jetbrainsMono.variable}`}>
+            <body className="bg-[#030508] text-zinc-100 min-h-screen">
+                <MagneticCursor />
                 {children}
             </body>
         </html>

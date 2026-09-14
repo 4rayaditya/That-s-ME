@@ -6,69 +6,66 @@ const config: Config = {
         './src/components/**/*.{js,ts,jsx,tsx,mdx}',
         './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     ],
+    darkMode: 'class',
     theme: {
         extend: {
             colors: {
-                primary: {
-                    50: '#f0f9ff',
-                    100: '#e0f2fe',
-                    200: '#bae6fd',
-                    300: '#7dd3fc',
-                    400: '#38bdf8',
-                    500: '#0ea5e9',
-                    600: '#0284c7',
-                    700: '#0369a1',
-                    800: '#075985',
-                    900: '#0c4a6e',
+                brand: {
+                    cyan: '#00f5d4',
+                    blue: '#00b4d8',
+                    purple: '#9d4edd',
+                    violet: '#7b2cbf',
+                    pink: '#ff007f',
+                    amber: '#ffb703',
                 },
+                space: {
+                    950: '#030508',
+                    900: '#060911',
+                    850: '#0a0e1c',
+                    800: '#0f172a',
+                    700: '#1e293b',
+                },
+            },
+            fontFamily: {
+                sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+                display: ['var(--font-space)', 'system-ui', 'sans-serif'],
+                mono: ['var(--font-mono)', 'monospace'],
             },
             animation: {
                 'float': 'float 6s ease-in-out infinite',
-                'fade-in': 'fade-in 0.5s ease-out',
-                'slide-up': 'slide-up 0.5s ease-out',
-                'tv-static': 'tv-noise 0.2s steps(10) infinite',
-                'scan-line': 'scan 8s linear infinite',
-                'typing': 'typing 0.5s steps(20)',
-                'progress': 'progress 3s ease-in-out',
-                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'float-slow': 'float 9s ease-in-out infinite',
+                'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+                'shimmer': 'shimmer 2.5s linear infinite',
+                'spin-slow': 'spin 20s linear infinite',
+                'aurora': 'aurora 15s ease infinite alternate',
+                'radar': 'radar 4s linear infinite',
             },
             keyframes: {
                 float: {
                     '0%, 100%': { transform: 'translateY(0px)' },
-                    '50%': { transform: 'translateY(-20px)' },
+                    '50%': { transform: 'translateY(-14px)' },
                 },
-                'fade-in': {
-                    '0%': { opacity: '0' },
-                    '100%': { opacity: '1' },
+                pulseGlow: {
+                    '0%, 100%': { opacity: '0.4', filter: 'blur(20px)' },
+                    '50%': { opacity: '0.8', filter: 'blur(30px)' },
                 },
-                'slide-up': {
-                    '0%': { transform: 'translateY(20px)', opacity: '0' },
-                    '100%': { transform: 'translateY(0)', opacity: '1' },
+                shimmer: {
+                    '0%': { backgroundPosition: '-200% 0' },
+                    '100%': { backgroundPosition: '200% 0' },
                 },
-                'tv-noise': {
-                    '0%, 100%': { transform: 'translate(0, 0)' },
-                    '10%': { transform: 'translate(-5%, -5%)' },
-                    '20%': { transform: 'translate(-10%, 5%)' },
-                    '30%': { transform: 'translate(5%, -10%)' },
-                    '40%': { transform: 'translate(-5%, 15%)' },
-                    '50%': { transform: 'translate(-10%, 5%)' },
-                    '60%': { transform: 'translate(15%, 0)' },
-                    '70%': { transform: 'translate(0, 10%)' },
-                    '80%': { transform: 'translate(-15%, 0)' },
-                    '90%': { transform: 'translate(10%, 5%)' },
+                aurora: {
+                    '0%': { backgroundPosition: '0% 50%' },
+                    '50%': { backgroundPosition: '100% 50%' },
+                    '100%': { backgroundPosition: '0% 50%' },
                 },
-                'scan': {
-                    '0%': { transform: 'translateY(-100%)' },
-                    '100%': { transform: 'translateY(100%)' },
+                radar: {
+                    '0%': { transform: 'rotate(0deg)' },
+                    '100%': { transform: 'rotate(360deg)' },
                 },
-                'typing': {
-                    '0%': { opacity: '0', transform: 'translateX(-10px)' },
-                    '100%': { opacity: '1', transform: 'translateX(0)' },
-                },
-                'progress': {
-                    '0%': { width: '0%' },
-                    '100%': { width: '100%' },
-                },
+            },
+            backgroundImage: {
+                'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                'cyber-grid': 'radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0)',
             },
         },
     },

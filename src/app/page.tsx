@@ -1,19 +1,10 @@
-'use client';
-
-import { useState } from 'react';
-import Hero from '@/components/sections/Hero';
-import { IntroSequence } from '@/components/intro/IntroSequence';
+import StoryController from '@/components/story/StoryController';
 
 export default function Home() {
-    const [showIntro, setShowIntro] = useState(true);
-
     return (
-        <main className="relative w-full h-screen overflow-hidden">
-            {/* Intro Sequence - TV Static & Mission Briefing */}
-            {showIntro && <IntroSequence onComplete={() => setShowIntro(false)} />}
-            
-            {/* Single Page - Space Universe */}
-            <Hero />
+        <main className="relative w-full h-screen overflow-hidden bg-space-950 text-zinc-100 selection:bg-brand-cyan selection:text-space-950">
+            {/* Cyberpunk Developer Room -> 360° Spiral Transition -> Linux Desktop Workstation */}
+            <StoryController />
         </main>
     );
 }
