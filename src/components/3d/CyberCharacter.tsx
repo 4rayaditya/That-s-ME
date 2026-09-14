@@ -329,158 +329,360 @@ export default function CyberCharacter({
         <group ref={groupRef} position={[0, 0, 0.4]}>
             {/* ANATOMICALLY UNIFIED SKELETON ROOT (Hips/Pelvis Center) */}
             <group ref={bodyRootRef} position={[0, 0.55, 0]}>
-                {/* Hips / Waist Connector (Permanently bridges upper body and legs!) */}
+                {/* Hips / Waist Connector (Anatomical Pelvis in Techwear Cargo Fabric) */}
                 <mesh castShadow position={[0, 0, 0]}>
-                    <boxGeometry args={[0.38, 0.16, 0.26]} />
-                    <meshStandardMaterial color="#070c14" roughness={0.8} />
+                    <boxGeometry args={[0.36, 0.16, 0.26]} />
+                    <meshStandardMaterial color="#0b0f19" roughness={0.85} />
+                </mesh>
+                {/* Techwear Utility Belt with Metallic Buckle */}
+                <mesh position={[0, 0.06, 0]}>
+                    <boxGeometry args={[0.375, 0.04, 0.27]} />
+                    <meshStandardMaterial color="#05070d" metalness={0.8} roughness={0.3} />
+                </mesh>
+                <mesh position={[0, 0.06, 0.138]}>
+                    <boxGeometry args={[0.07, 0.05, 0.015]} />
+                    <meshStandardMaterial color="#00f5d4" metalness={0.9} roughness={0.2} toneMapped={false} />
                 </mesh>
 
                 {/* UPPER BODY: TORSO + HEAD + ARMS (Attached directly to Hips) */}
                 <group ref={torsoRef} position={[0, 0.28, 0]}>
-                    {/* Tech Streetwear Cyber Bomber Jacket */}
+                    {/* Inner Techwear Hoodie (Deep Charcoal Textured Fabric) */}
                     <mesh castShadow position={[0, 0, 0]}>
-                        <boxGeometry args={[0.46, 0.44, 0.3]} />
-                        <meshStandardMaterial color="#0b1320" roughness={0.7} metalness={0.2} />
+                        <boxGeometry args={[0.44, 0.42, 0.28]} />
+                        <meshStandardMaterial color="#111520" roughness={0.8} />
                     </mesh>
 
-                    {/* Cyberpunk Emissive Trim - Neon Cyan Chest Stripes */}
-                    <mesh position={[0, 0.05, 0.155]}>
-                        <planeGeometry args={[0.34, 0.04]} />
+                    {/* Ribbed Bottom Hem Band */}
+                    <mesh position={[0, -0.19, 0]}>
+                        <boxGeometry args={[0.42, 0.06, 0.27]} />
+                        <meshStandardMaterial color="#0b0e17" roughness={0.9} />
+                    </mesh>
+
+                    {/* Outer Techwear Bomber Vest with Tactical Shoulder Pads */}
+                    <mesh castShadow position={[0, 0.02, 0.01]}>
+                        <boxGeometry args={[0.46, 0.38, 0.29]} />
+                        <meshStandardMaterial color="#090d16" roughness={0.65} metalness={0.25} />
+                    </mesh>
+
+                    {/* Weather-Sealed Center Zipper Line */}
+                    <mesh position={[0, 0.02, 0.16]}>
+                        <boxGeometry args={[0.018, 0.36, 0.01]} />
+                        <meshStandardMaterial color="#94a3b8" metalness={0.95} roughness={0.15} />
+                    </mesh>
+
+                    {/* Tactical Chest Cargo Pockets */}
+                    <mesh position={[-0.12, 0.04, 0.16]} castShadow>
+                        <boxGeometry args={[0.11, 0.13, 0.03]} />
+                        <meshStandardMaterial color="#05080f" roughness={0.7} />
+                    </mesh>
+                    <mesh position={[0.12, 0.04, 0.16]} castShadow>
+                        <boxGeometry args={[0.11, 0.13, 0.03]} />
+                        <meshStandardMaterial color="#05080f" roughness={0.7} />
+                    </mesh>
+
+                    {/* Cyber Neon Accent Stripes on Pocket Flaps */}
+                    <mesh position={[-0.12, 0.09, 0.178]}>
+                        <planeGeometry args={[0.08, 0.014]} />
                         <meshBasicMaterial color="#00f5d4" toneMapped={false} />
                     </mesh>
-                    <mesh position={[0, -0.07, 0.155]}>
-                        <planeGeometry args={[0.26, 0.03]} />
+                    <mesh position={[0.12, 0.09, 0.178]}>
+                        <planeGeometry args={[0.08, 0.014]} />
                         <meshBasicMaterial color="#f72585" toneMapped={false} />
                     </mesh>
 
-                    {/* Glowing Tech Collar */}
-                    <mesh position={[0, 0.25, 0]}>
-                        <cylinderGeometry args={[0.13, 0.15, 0.08, 16]} />
-                        <meshStandardMaterial color="#080e18" roughness={0.6} />
+                    {/* 3D Draped Hood Folds Behind Neck */}
+                    <mesh position={[0, 0.19, -0.12]} rotation={[-0.28, 0, 0]} castShadow>
+                        <boxGeometry args={[0.32, 0.14, 0.15]} />
+                        <meshStandardMaterial color="#0b0e17" roughness={0.85} />
                     </mesh>
 
-                    {/* HEAD & HAIR & CYBER HEADSET */}
+                    {/* Anatomical Neck */}
+                    <mesh position={[0, 0.24, 0]}>
+                        <cylinderGeometry args={[0.075, 0.085, 0.1, 16]} />
+                        <meshStandardMaterial color="#d4a373" roughness={0.7} />
+                    </mesh>
+
+                    {/* HEAD, SCULPTED FACE, LAYERED HAIR & STUDIO HEADPHONES */}
                     <group ref={headRef} position={[0, 0.38, 0]}>
-                        {/* Face */}
+                        {/* Anatomical Cranium Base (Natural Skin Tone) */}
                         <mesh castShadow position={[0, 0, 0]}>
-                            <boxGeometry args={[0.24, 0.26, 0.24]} />
-                            <meshStandardMaterial color="#d4a373" roughness={0.8} />
+                            <boxGeometry args={[0.22, 0.23, 0.22]} />
+                            <meshStandardMaterial color="#d4a373" roughness={0.7} />
                         </mesh>
 
-                        {/* Cyberpunk Dark Hair */}
-                        <mesh position={[0, 0.12, 0.02]}>
-                            <boxGeometry args={[0.26, 0.12, 0.26]} />
-                            <meshStandardMaterial color="#1a1c23" roughness={0.9} />
-                        </mesh>
-                        <mesh position={[-0.04, 0.16, 0.08]}>
-                            <coneGeometry args={[0.08, 0.12, 4]} />
-                            <meshStandardMaterial color="#111317" roughness={0.9} />
+                        {/* Tapered Lower Jaw & Chin */}
+                        <mesh castShadow position={[0, -0.08, 0.03]}>
+                            <boxGeometry args={[0.17, 0.09, 0.17]} />
+                            <meshStandardMaterial color="#d4a373" roughness={0.7} />
                         </mesh>
 
-                        {/* Cyber Visor / Goggles */}
-                        <mesh position={[0, 0.04, 0.125]}>
-                            <boxGeometry args={[0.22, 0.08, 0.04]} />
+                        {/* Nose Bridge */}
+                        <mesh position={[0, -0.01, 0.125]}>
+                            <boxGeometry args={[0.03, 0.065, 0.035]} />
+                            <meshStandardMaterial color="#c68b59" roughness={0.7} />
+                        </mesh>
+
+                        {/* Ears */}
+                        <mesh position={[-0.115, -0.02, 0]} rotation={[0, 0, 0.15]}>
+                            <boxGeometry args={[0.025, 0.06, 0.04]} />
+                            <meshStandardMaterial color="#c68b59" roughness={0.7} />
+                        </mesh>
+                        <mesh position={[0.115, -0.02, 0]} rotation={[0, 0, -0.15]}>
+                            <boxGeometry args={[0.025, 0.06, 0.04]} />
+                            <meshStandardMaterial color="#c68b59" roughness={0.7} />
+                        </mesh>
+
+                        {/* Layered Cyberpunk Dark Hair with Volume and Bangs */}
+                        {/* Top Hair Volume */}
+                        <mesh position={[0, 0.11, -0.01]}>
+                            <boxGeometry args={[0.24, 0.1, 0.25]} />
+                            <meshStandardMaterial color="#161820" roughness={0.85} />
+                        </mesh>
+                        {/* Front Bangs (Parted fringe) */}
+                        <mesh position={[-0.05, 0.06, 0.12]} rotation={[0.1, 0, 0.15]}>
+                            <boxGeometry args={[0.11, 0.08, 0.035]} />
+                            <meshStandardMaterial color="#11131a" roughness={0.85} />
+                        </mesh>
+                        <mesh position={[0.06, 0.06, 0.12]} rotation={[0.1, 0, -0.15]}>
+                            <boxGeometry args={[0.1, 0.07, 0.035]} />
+                            <meshStandardMaterial color="#11131a" roughness={0.85} />
+                        </mesh>
+                        {/* Back Tapered Hair */}
+                        <mesh position={[0, 0.01, -0.095]}>
+                            <boxGeometry args={[0.23, 0.15, 0.08]} />
+                            <meshStandardMaterial color="#161820" roughness={0.85} />
+                        </mesh>
+
+                        {/* Slim Cyber Optical Smart Visor with HUD Emissive Reflection */}
+                        <mesh position={[0, 0.03, 0.122]}>
+                            <boxGeometry args={[0.19, 0.048, 0.025]} />
                             <meshStandardMaterial
                                 color="#00f5d4"
                                 emissive="#00f5d4"
-                                emissiveIntensity={1.8}
+                                emissiveIntensity={1.4}
                                 roughness={0.1}
-                                metalness={0.8}
+                                metalness={0.9}
                                 toneMapped={false}
                             />
                         </mesh>
 
-                        {/* Cyber Headset */}
+                        {/* Realistic Studio Over-Ear Headphones (Sony/Bose Style) */}
+                        {/* Metallic Telescoping Headband */}
                         <mesh position={[0, 0.12, 0]}>
-                            <torusGeometry args={[0.14, 0.02, 8, 24, Math.PI]} />
-                            <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
+                            <torusGeometry args={[0.13, 0.014, 8, 24, Math.PI]} />
+                            <meshStandardMaterial color="#27272a" metalness={0.9} roughness={0.15} />
                         </mesh>
-                        <mesh position={[-0.14, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-                            <cylinderGeometry args={[0.05, 0.05, 0.04, 16]} />
-                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                        </mesh>
-                        <mesh position={[0.14, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-                            <cylinderGeometry args={[0.05, 0.05, 0.04, 16]} />
-                            <meshBasicMaterial color="#f72585" toneMapped={false} />
-                        </mesh>
-                    </group>
-
-                    {/* LEFT ARM */}
-                    <group ref={leftArmRef} position={[-0.28, 0.16, 0]}>
-                        <mesh castShadow position={[0, -0.16, 0]}>
-                            <boxGeometry args={[0.12, 0.34, 0.14]} />
-                            <meshStandardMaterial color="#0e1726" roughness={0.7} />
-                        </mesh>
-                        <mesh position={[-0.065, -0.16, 0]} rotation={[0, -Math.PI / 2, 0]}>
-                            <planeGeometry args={[0.02, 0.28]} />
-                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                        </mesh>
-                        <mesh position={[0, -0.34, 0]}>
-                            <boxGeometry args={[0.09, 0.1, 0.1]} />
-                            <meshStandardMaterial color="#c68b59" roughness={0.8} />
-                        </mesh>
-                    </group>
-
-                    {/* RIGHT ARM */}
-                    <group ref={rightArmRef} position={[0.28, 0.16, 0]}>
-                        <mesh castShadow position={[0, -0.16, 0]}>
-                            <boxGeometry args={[0.12, 0.34, 0.14]} />
-                            <meshStandardMaterial color="#0e1726" roughness={0.7} />
-                        </mesh>
-                        <mesh position={[0.065, -0.16, 0]} rotation={[0, Math.PI / 2, 0]}>
-                            <planeGeometry args={[0.02, 0.28]} />
-                            <meshBasicMaterial color="#f72585" toneMapped={false} />
-                        </mesh>
-                        <mesh position={[0, -0.34, 0]}>
-                            <boxGeometry args={[0.09, 0.1, 0.1]} />
-                            <meshStandardMaterial color="#c68b59" roughness={0.8} />
-                        </mesh>
-
-                        {/* Coffee Cup Item */}
-                        <group ref={coffeeCupRef} position={[0, -0.42, 0.08]} visible={false}>
-                            <mesh>
-                                <cylinderGeometry args={[0.05, 0.04, 0.1, 12]} />
-                                <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.6} />
+                        {/* Left Padded Ear Cup */}
+                        <group position={[-0.135, -0.015, 0]}>
+                            <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+                                <cylinderGeometry args={[0.055, 0.06, 0.035, 16]} />
+                                <meshStandardMaterial color="#18181b" roughness={0.4} metalness={0.6} />
                             </mesh>
-                            <mesh position={[0, 0, 0.05]}>
-                                <planeGeometry args={[0.04, 0.04]} />
-                                <meshBasicMaterial color="#ffb703" toneMapped={false} />
+                            {/* Memory Foam Cushion Ring */}
+                            <mesh position={[-0.016, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+                                <torusGeometry args={[0.045, 0.012, 8, 16]} />
+                                <meshStandardMaterial color="#09090b" roughness={0.95} />
+                            </mesh>
+                            {/* Status LED */}
+                            <mesh position={[0, 0.04, 0.02]}>
+                                <sphereGeometry args={[0.006, 8, 8]} />
+                                <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                            </mesh>
+                        </group>
+                        {/* Right Padded Ear Cup */}
+                        <group position={[0.135, -0.015, 0]}>
+                            <mesh castShadow rotation={[0, 0, -Math.PI / 2]}>
+                                <cylinderGeometry args={[0.055, 0.06, 0.035, 16]} />
+                                <meshStandardMaterial color="#18181b" roughness={0.4} metalness={0.6} />
+                            </mesh>
+                            <mesh position={[0.016, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+                                <torusGeometry args={[0.045, 0.012, 8, 16]} />
+                                <meshStandardMaterial color="#09090b" roughness={0.95} />
+                            </mesh>
+                            <mesh position={[0, 0.04, 0.02]}>
+                                <sphereGeometry args={[0.006, 8, 8]} />
+                                <meshBasicMaterial color="#f72585" toneMapped={false} />
+                            </mesh>
+                        </group>
+                    </group>
+
+                    {/* ARTICULATED LEFT ARM (Shoulder + Bicep + Forearm + Modeled Hand) */}
+                    <group ref={leftArmRef} position={[-0.27, 0.16, 0]}>
+                        {/* Deltoid / Shoulder Pad */}
+                        <mesh castShadow position={[0, 0, 0]}>
+                            <sphereGeometry args={[0.075, 12, 12]} />
+                            <meshStandardMaterial color="#0e1422" roughness={0.7} />
+                        </mesh>
+                        {/* Bicep Sleeve */}
+                        <mesh castShadow position={[0, -0.1, 0]}>
+                            <cylinderGeometry args={[0.062, 0.055, 0.16, 12]} />
+                            <meshStandardMaterial color="#0e1422" roughness={0.75} />
+                        </mesh>
+                        {/* Forearm with Ribbed Wrist Cuff */}
+                        <mesh castShadow position={[0, -0.24, 0.02]}>
+                            <cylinderGeometry args={[0.054, 0.046, 0.16, 12]} />
+                            <meshStandardMaterial color="#111728" roughness={0.8} />
+                        </mesh>
+                        {/* Cyan Cyber Trim on Sleeve */}
+                        <mesh position={[-0.055, -0.22, 0.02]} rotation={[0, -Math.PI / 2, 0]}>
+                            <planeGeometry args={[0.015, 0.12]} />
+                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                        </mesh>
+                        {/* Modeled Left Hand (Palm + Curled Fingers on Keyboard) */}
+                        <group position={[0, -0.34, 0.04]}>
+                            {/* Palm */}
+                            <mesh castShadow>
+                                <boxGeometry args={[0.075, 0.035, 0.08]} />
+                                <meshStandardMaterial color="#d4a373" roughness={0.7} />
+                            </mesh>
+                            {/* Thumb */}
+                            <mesh position={[0.04, -0.005, 0.02]} rotation={[0, -0.4, 0]}>
+                                <boxGeometry args={[0.024, 0.02, 0.04]} />
+                                <meshStandardMaterial color="#c68b59" roughness={0.7} />
+                            </mesh>
+                            {/* Curled Fingers typing over keyboard keys */}
+                            <mesh position={[0, -0.015, 0.045]} rotation={[-0.3, 0, 0]}>
+                                <boxGeometry args={[0.068, 0.022, 0.04]} />
+                                <meshStandardMaterial color="#c68b59" roughness={0.7} />
+                            </mesh>
+                        </group>
+                    </group>
+
+                    {/* ARTICULATED RIGHT ARM (Shoulder + Bicep + Forearm + Modeled Hand) */}
+                    <group ref={rightArmRef} position={[0.27, 0.16, 0]}>
+                        <mesh castShadow position={[0, 0, 0]}>
+                            <sphereGeometry args={[0.075, 12, 12]} />
+                            <meshStandardMaterial color="#0e1422" roughness={0.7} />
+                        </mesh>
+                        <mesh castShadow position={[0, -0.1, 0]}>
+                            <cylinderGeometry args={[0.062, 0.055, 0.16, 12]} />
+                            <meshStandardMaterial color="#0e1422" roughness={0.75} />
+                        </mesh>
+                        <mesh castShadow position={[0, -0.24, 0.02]}>
+                            <cylinderGeometry args={[0.054, 0.046, 0.16, 12]} />
+                            <meshStandardMaterial color="#111728" roughness={0.8} />
+                        </mesh>
+                        <mesh position={[0.055, -0.22, 0.02]} rotation={[0, Math.PI / 2, 0]}>
+                            <planeGeometry args={[0.015, 0.12]} />
+                            <meshBasicMaterial color="#f72585" toneMapped={false} />
+                        </mesh>
+                        {/* Modeled Right Hand (Resting on Mouse / Typing) */}
+                        <group position={[0, -0.34, 0.04]}>
+                            <mesh castShadow>
+                                <boxGeometry args={[0.075, 0.035, 0.08]} />
+                                <meshStandardMaterial color="#d4a373" roughness={0.7} />
+                            </mesh>
+                            <mesh position={[-0.04, -0.005, 0.02]} rotation={[0, 0.4, 0]}>
+                                <boxGeometry args={[0.024, 0.02, 0.04]} />
+                                <meshStandardMaterial color="#c68b59" roughness={0.7} />
+                            </mesh>
+                            <mesh position={[0, -0.015, 0.045]} rotation={[-0.3, 0, 0]}>
+                                <boxGeometry args={[0.068, 0.022, 0.04]} />
+                                <meshStandardMaterial color="#c68b59" roughness={0.7} />
+                            </mesh>
+                        </group>
+
+                        {/* Coffee Cup Item (Held during brewing routine) */}
+                        <group ref={coffeeCupRef} position={[0, -0.42, 0.08]} visible={false}>
+                            <mesh castShadow>
+                                <cylinderGeometry args={[0.05, 0.04, 0.1, 14]} />
+                                <meshStandardMaterial color="#18181b" roughness={0.3} metalness={0.7} />
+                            </mesh>
+                            {/* Coffee Cup Handle */}
+                            <mesh position={[0.05, 0, 0]}>
+                                <torusGeometry args={[0.025, 0.008, 8, 12]} />
+                                <meshStandardMaterial color="#18181b" roughness={0.3} />
+                            </mesh>
+                            {/* Steaming Coffee Surface */}
+                            <mesh position={[0, 0.045, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                                <circleGeometry args={[0.045, 12]} />
+                                <meshStandardMaterial color="#451a03" roughness={0.2} />
                             </mesh>
                         </group>
                     </group>
                 </group>
 
-                {/* LOWER BODY: LEGS & SNEAKERS (Attached directly to Hips) */}
+                {/* LOWER BODY: ARTICULATED LEGS & HIGH-TOP CYBER SNEAKERS */}
                 {/* Left Leg */}
                 <group ref={leftLegRef} position={[-0.13, -0.06, 0]}>
-                    <mesh castShadow position={[0, -0.22, 0]}>
-                        <boxGeometry args={[0.13, 0.44, 0.15]} />
-                        <meshStandardMaterial color="#070c14" roughness={0.8} />
+                    {/* Upper Thigh in Tapered Dark Cargo Joggers */}
+                    <mesh castShadow position={[0, -0.12, 0]}>
+                        <cylinderGeometry args={[0.075, 0.068, 0.22, 12]} />
+                        <meshStandardMaterial color="#080c14" roughness={0.85} />
                     </mesh>
-                    <mesh position={[0, -0.46, 0.04]} castShadow>
-                        <boxGeometry args={[0.14, 0.1, 0.22]} />
-                        <meshStandardMaterial color="#ffffff" roughness={0.3} />
+                    {/* Cargo Flap Pocket on Outer Thigh */}
+                    <mesh position={[-0.075, -0.12, 0]}>
+                        <boxGeometry args={[0.02, 0.1, 0.09]} />
+                        <meshStandardMaterial color="#05080f" roughness={0.8} />
                     </mesh>
-                    <mesh position={[0, -0.51, 0.04]}>
-                        <boxGeometry args={[0.145, 0.02, 0.23]} />
-                        <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+
+                    {/* Articulated Knee & Shin */}
+                    <mesh castShadow position={[0, -0.28, 0]}>
+                        <cylinderGeometry args={[0.065, 0.052, 0.2, 12]} />
+                        <meshStandardMaterial color="#080c14" roughness={0.85} />
                     </mesh>
+
+                    {/* High-Top Cyber Streetwear Sneaker */}
+                    <group position={[0, -0.42, 0.04]}>
+                        {/* Sneaker Ankle Collar & Tongue */}
+                        <mesh castShadow position={[0, 0.04, -0.02]}>
+                            <boxGeometry args={[0.11, 0.08, 0.12]} />
+                            <meshStandardMaterial color="#18181b" roughness={0.6} />
+                        </mesh>
+                        {/* Sneaker Leather Upper */}
+                        <mesh castShadow position={[0, 0, 0.02]}>
+                            <boxGeometry args={[0.115, 0.07, 0.18]} />
+                            <meshStandardMaterial color="#f8fafc" roughness={0.3} />
+                        </mesh>
+                        {/* Sneaker Contoured Rubber Sole with Tread */}
+                        <mesh position={[0, -0.045, 0.02]} receiveShadow>
+                            <boxGeometry args={[0.125, 0.03, 0.21]} />
+                            <meshStandardMaterial color="#090d16" roughness={0.7} />
+                        </mesh>
+                        {/* Cyan Air-Bubble Heel Piping */}
+                        <mesh position={[0, -0.035, -0.07]}>
+                            <boxGeometry args={[0.11, 0.015, 0.02]} />
+                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                        </mesh>
+                    </group>
                 </group>
 
                 {/* Right Leg */}
                 <group ref={rightLegRef} position={[0.13, -0.06, 0]}>
-                    <mesh castShadow position={[0, -0.22, 0]}>
-                        <boxGeometry args={[0.13, 0.44, 0.15]} />
-                        <meshStandardMaterial color="#070c14" roughness={0.8} />
+                    <mesh castShadow position={[0, -0.12, 0]}>
+                        <cylinderGeometry args={[0.075, 0.068, 0.22, 12]} />
+                        <meshStandardMaterial color="#080c14" roughness={0.85} />
                     </mesh>
-                    <mesh position={[0, -0.46, 0.04]} castShadow>
-                        <boxGeometry args={[0.14, 0.1, 0.22]} />
-                        <meshStandardMaterial color="#ffffff" roughness={0.3} />
+                    <mesh position={[0.075, -0.12, 0]}>
+                        <boxGeometry args={[0.02, 0.1, 0.09]} />
+                        <meshStandardMaterial color="#05080f" roughness={0.8} />
                     </mesh>
-                    <mesh position={[0, -0.51, 0.04]}>
-                        <boxGeometry args={[0.145, 0.02, 0.23]} />
-                        <meshBasicMaterial color="#f72585" toneMapped={false} />
+
+                    <mesh castShadow position={[0, -0.28, 0]}>
+                        <cylinderGeometry args={[0.065, 0.052, 0.2, 12]} />
+                        <meshStandardMaterial color="#080c14" roughness={0.85} />
                     </mesh>
+
+                    {/* High-Top Cyber Streetwear Sneaker */}
+                    <group position={[0, -0.42, 0.04]}>
+                        <mesh castShadow position={[0, 0.04, -0.02]}>
+                            <boxGeometry args={[0.11, 0.08, 0.12]} />
+                            <meshStandardMaterial color="#18181b" roughness={0.6} />
+                        </mesh>
+                        <mesh castShadow position={[0, 0, 0.02]}>
+                            <boxGeometry args={[0.115, 0.07, 0.18]} />
+                            <meshStandardMaterial color="#f8fafc" roughness={0.3} />
+                        </mesh>
+                        <mesh position={[0, -0.45, 0.02]} receiveShadow>
+                            <boxGeometry args={[0.125, 0.03, 0.21]} />
+                            <meshStandardMaterial color="#090d16" roughness={0.7} />
+                        </mesh>
+                        {/* Magenta Air-Bubble Heel Piping */}
+                        <mesh position={[0, -0.035, -0.07]}>
+                            <boxGeometry args={[0.11, 0.015, 0.02]} />
+                            <meshBasicMaterial color="#f72585" toneMapped={false} />
+                        </mesh>
+                    </group>
                 </group>
             </group>
         </group>

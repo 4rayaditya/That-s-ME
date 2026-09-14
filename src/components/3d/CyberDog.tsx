@@ -15,8 +15,8 @@ export default function CyberDog({ characterRoutine }: CyberDogProps) {
     const bodyRef = useRef<THREE.Group>(null);
     const headRef = useRef<THREE.Group>(null);
     const tailRef = useRef<THREE.Group>(null);
-    const leftEarRef = useRef<THREE.Mesh>(null);
-    const rightEarRef = useRef<THREE.Mesh>(null);
+    const leftEarRef = useRef<THREE.Group>(null);
+    const rightEarRef = useRef<THREE.Group>(null);
 
     // Legs for trotting & sitting
     const frontLeftLegRef = useRef<THREE.Group>(null);
@@ -163,129 +163,245 @@ export default function CyberDog({ characterRoutine }: CyberDogProps) {
                 }}
             >
 
-            {/* DOG MAIN BODY */}
+            {/* REALISTIC CANINE ANATOMY (Shiba Inu / Cybernetic Companion) */}
             <group ref={bodyRef} position={[0, 0.26, 0]}>
-                {/* Torso */}
-                <mesh castShadow position={[0, 0, 0]}>
-                    <boxGeometry args={[0.22, 0.22, 0.38]} />
-                    <meshStandardMaterial color="#c68a4c" roughness={0.7} />
+                {/* 1. Muscular Deep Barrel Chest (Two-Tone Ginger & Cream Underbelly) */}
+                <mesh castShadow position={[0, 0, -0.05]} rotation={[Math.PI / 2, 0, 0]}>
+                    <cylinderGeometry args={[0.13, 0.11, 0.22, 16]} />
+                    <meshStandardMaterial color="#c68a4c" roughness={0.75} />
+                </mesh>
+                {/* Cream Chest Fur / Throat Shield (Urajiro Marking) */}
+                <mesh position={[0, -0.05, -0.06]} rotation={[Math.PI / 2, 0, 0]}>
+                    <cylinderGeometry args={[0.115, 0.095, 0.19, 14]} />
+                    <meshStandardMaterial color="#fdf6eb" roughness={0.9} />
                 </mesh>
 
-                {/* Cyber Armor Plate on Back / Shoulders */}
-                <mesh castShadow position={[0, 0.115, 0.02]}>
-                    <boxGeometry args={[0.21, 0.03, 0.28]} />
-                    <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.2} />
+                {/* 2. Tapered Flank & Haunches (Hind Waist) */}
+                <mesh castShadow position={[0, 0.015, 0.12]} rotation={[Math.PI / 2, 0, 0]}>
+                    <cylinderGeometry args={[0.095, 0.11, 0.16, 16]} />
+                    <meshStandardMaterial color="#c68a4c" roughness={0.75} />
                 </mesh>
-                {/* Cyber Armor Neon Accent Line */}
-                <mesh position={[0, 0.132, 0.02]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <planeGeometry args={[0.16, 0.02]} />
-                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                </mesh>
-
-                {/* Creamy Underbelly */}
-                <mesh position={[0, -0.06, 0]}>
-                    <boxGeometry args={[0.18, 0.12, 0.32]} />
-                    <meshStandardMaterial color="#faeed6" roughness={0.9} />
+                {/* Cream Belly Marking */}
+                <mesh position={[0, -0.045, 0.11]} rotation={[Math.PI / 2, 0, 0]}>
+                    <cylinderGeometry args={[0.08, 0.095, 0.14, 14]} />
+                    <meshStandardMaterial color="#fdf6eb" roughness={0.9} />
                 </mesh>
 
-                {/* CYBERNETIC COLLAR WITH GLOWING CYBER-TAG */}
-                <group position={[0, 0.08, -0.16]}>
-                    <mesh>
-                        <boxGeometry args={[0.23, 0.04, 0.08]} />
-                        <meshStandardMaterial color="#090d16" metalness={0.9} />
+                {/* 3. TACTICAL CYBER-HARNESS & BACK SADDLE */}
+                <group position={[0, 0.09, 0.01]}>
+                    {/* Carbon Fiber Saddle Plate */}
+                    <mesh castShadow>
+                        <boxGeometry args={[0.22, 0.035, 0.28]} />
+                        <meshStandardMaterial color="#090d16" metalness={0.85} roughness={0.25} />
                     </mesh>
-                    <mesh position={[0, 0, -0.042]}>
-                        <boxGeometry args={[0.18, 0.02, 0.01]} />
+                    {/* Harness Straps Wrapping Under Chest */}
+                    <mesh position={[0, -0.06, -0.08]}>
+                        <torusGeometry args={[0.135, 0.015, 8, 20]} />
+                        <meshStandardMaterial color="#030712" roughness={0.8} />
+                    </mesh>
+                    <mesh position={[0, -0.06, 0.08]}>
+                        <torusGeometry args={[0.12, 0.015, 8, 20]} />
+                        <meshStandardMaterial color="#030712" roughness={0.8} />
+                    </mesh>
+                    {/* Dual Tactical Battery Micro-Packs on Sides */}
+                    <mesh position={[-0.12, -0.01, 0]}>
+                        <boxGeometry args={[0.03, 0.06, 0.12]} />
+                        <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
+                    </mesh>
+                    <mesh position={[0.12, -0.01, 0]}>
+                        <boxGeometry args={[0.03, 0.06, 0.12]} />
+                        <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
+                    </mesh>
+                    {/* Glowing Telemetry Diodes */}
+                    <mesh position={[-0.138, 0, 0.02]}>
+                        <sphereGeometry args={[0.007, 8, 8]} />
                         <meshBasicMaterial color="#00f5d4" toneMapped={false} />
                     </mesh>
-                    {/* Glowing Dog Tag (Pulsing Cyan) */}
-                    <mesh position={[0, -0.05, -0.045]}>
-                        <cylinderGeometry args={[0.02, 0.02, 0.01, 8]} />
+                    <mesh position={[0.138, 0, 0.02]}>
+                        <sphereGeometry args={[0.007, 8, 8]} />
                         <meshBasicMaterial color="#f72585" toneMapped={false} />
                     </mesh>
-                </group>
-
-                {/* HEAD & EXPRESSIVE EARS */}
-                <group ref={headRef} position={[0, 0.18, -0.22]}>
-                    {/* Head Skull */}
-                    <mesh castShadow position={[0, 0, 0]}>
-                        <boxGeometry args={[0.2, 0.18, 0.18]} />
-                        <meshStandardMaterial color="#c68a4c" roughness={0.7} />
+                    {/* Miniature Tactical Antenna Angled Backwards */}
+                    <mesh position={[0.08, 0.07, 0.08]} rotation={[-0.35, 0, 0.1]}>
+                        <cylinderGeometry args={[0.004, 0.006, 0.14, 8]} />
+                        <meshStandardMaterial color="#e2e8f0" metalness={0.95} roughness={0.1} />
                     </mesh>
-
-                    {/* Muzzle / Snout */}
-                    <mesh castShadow position={[0, -0.04, -0.12]}>
-                        <boxGeometry args={[0.12, 0.09, 0.12]} />
-                        <meshStandardMaterial color="#faeed6" roughness={0.8} />
-                    </mesh>
-                    {/* Black Nose */}
-                    <mesh position={[0, -0.01, -0.185]}>
-                        <boxGeometry args={[0.04, 0.03, 0.02]} />
-                        <meshStandardMaterial color="#111827" roughness={0.3} />
-                    </mesh>
-
-                    {/* Cyber Visor / Glowing Cyan Eyes */}
-                    <mesh position={[0, 0.03, -0.095]}>
-                        <boxGeometry args={[0.17, 0.04, 0.02]} />
-                        <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                    </mesh>
-
-                    {/* Left Perked Ear */}
-                    <mesh ref={leftEarRef} position={[-0.08, 0.12, -0.02]} rotation={[0, 0, -0.2]} castShadow>
-                        <coneGeometry args={[0.05, 0.1, 4]} />
-                        <meshStandardMaterial color="#c68a4c" roughness={0.7} />
-                    </mesh>
-
-                    {/* Right Perked Ear */}
-                    <mesh ref={rightEarRef} position={[0.08, 0.12, -0.02]} rotation={[0, 0, 0.2]} castShadow>
-                        <coneGeometry args={[0.05, 0.1, 4]} />
-                        <meshStandardMaterial color="#c68a4c" roughness={0.7} />
-                    </mesh>
-                </group>
-
-                {/* WAGGING CYBER TAIL */}
-                <group ref={tailRef} position={[0, 0.08, 0.19]}>
-                    <mesh castShadow position={[0, 0.08, 0.06]} rotation={[0.5, 0, 0]}>
-                        <cylinderGeometry args={[0.03, 0.04, 0.18, 8]} />
-                        <meshStandardMaterial color="#c68a4c" roughness={0.7} />
-                    </mesh>
-                    {/* Cyber Tail Tip */}
-                    <mesh position={[0, 0.17, 0.11]}>
-                        <sphereGeometry args={[0.028, 8, 8]} />
+                    <mesh position={[0.08, 0.14, 0.06]}>
+                        <sphereGeometry args={[0.008, 8, 8]} />
                         <meshBasicMaterial color="#00f5d4" toneMapped={false} />
                     </mesh>
                 </group>
 
-                {/* 4 ARTICULATED LEGS */}
-                {/* Front Left */}
-                <group ref={frontLeftLegRef} position={[-0.09, -0.1, -0.12]}>
-                    <mesh castShadow position={[0, -0.08, 0]}>
-                        <boxGeometry args={[0.06, 0.18, 0.06]} />
-                        <meshStandardMaterial color="#faeed6" roughness={0.8} />
+                {/* 4. CYBERNETIC COLLAR WITH PULSING HOLOGRAPHIC ID TAG */}
+                <group position={[0, 0.08, -0.17]}>
+                    <mesh rotation={[Math.PI / 2, 0, 0]}>
+                        <torusGeometry args={[0.11, 0.018, 8, 20]} />
+                        <meshStandardMaterial color="#030712" metalness={0.8} />
+                    </mesh>
+                    {/* Neon Collar Trim Ring */}
+                    <mesh rotation={[Math.PI / 2, 0, 0]}>
+                        <torusGeometry args={[0.112, 0.006, 8, 20]} />
+                        <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                    </mesh>
+                    {/* Hexagonal Cyber Dog Tag */}
+                    <mesh position={[0, -0.08, -0.04]} rotation={[0, 0, Math.PI / 6]}>
+                        <cylinderGeometry args={[0.024, 0.024, 0.006, 6]} />
+                        <meshStandardMaterial color="#f72585" emissive="#f72585" emissiveIntensity={1.2} toneMapped={false} />
                     </mesh>
                 </group>
 
-                {/* Front Right */}
-                <group ref={frontRightLegRef} position={[0.09, -0.1, -0.12]}>
-                    <mesh castShadow position={[0, -0.08, 0]}>
-                        <boxGeometry args={[0.06, 0.18, 0.06]} />
-                        <meshStandardMaterial color="#faeed6" roughness={0.8} />
+                {/* 5. EXPRESSIVE CANINE HEAD & EARS */}
+                <group ref={headRef} position={[0, 0.20, -0.22]}>
+                    {/* Cranium & Forehead */}
+                    <mesh castShadow position={[0, 0.01, 0]}>
+                        <sphereGeometry args={[0.115, 14, 14]} />
+                        <meshStandardMaterial color="#c68a4c" roughness={0.75} />
                     </mesh>
+                    {/* Fluffy Cheek Tufts (Cream Fur on Sides of Face) */}
+                    <mesh position={[-0.09, -0.02, 0]} rotation={[0, 0, 0.2]}>
+                        <sphereGeometry args={[0.055, 8, 8]} />
+                        <meshStandardMaterial color="#fdf6eb" roughness={0.85} />
+                    </mesh>
+                    <mesh position={[0.09, -0.02, 0]} rotation={[0, 0, -0.2]}>
+                        <sphereGeometry args={[0.055, 8, 8]} />
+                        <meshStandardMaterial color="#fdf6eb" roughness={0.85} />
+                    </mesh>
+
+                    {/* Tapered Muzzle / Snout (Cream Shiba Fur with Defined Bridge) */}
+                    <group position={[0, -0.035, -0.11]}>
+                        <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
+                            <cylinderGeometry args={[0.048, 0.075, 0.12, 12]} />
+                            <meshStandardMaterial color="#fdf6eb" roughness={0.85} />
+                        </mesh>
+                        {/* Moist Black Nose with Nostrils */}
+                        <mesh position={[0, 0.018, -0.07]}>
+                            <boxGeometry args={[0.042, 0.03, 0.025]} />
+                            <meshStandardMaterial color="#09090b" roughness={0.2} metalness={0.1} />
+                        </mesh>
+                        {/* Black Mouth Cleft Line */}
+                        <mesh position={[0, -0.02, -0.06]}>
+                            <boxGeometry args={[0.01, 0.015, 0.04]} />
+                            <meshStandardMaterial color="#18181b" roughness={0.5} />
+                        </mesh>
+                    </group>
+
+                    {/* Cyber Visor / Glowing Cyan Optical Eyes */}
+                    <mesh position={[0, 0.03, -0.09]}>
+                        <boxGeometry args={[0.165, 0.036, 0.025]} />
+                        <meshStandardMaterial
+                            color="#00f5d4"
+                            emissive="#00f5d4"
+                            emissiveIntensity={1.8}
+                            roughness={0.1}
+                            metalness={0.8}
+                            toneMapped={false}
+                        />
+                    </mesh>
+
+                    {/* Triangular Perked Shiba Ears with Soft Inner Ear Pink/Cream */}
+                    <group ref={leftEarRef} position={[-0.075, 0.11, -0.01]} rotation={[0, 0, -0.25]}>
+                        {/* Outer Fur Shell */}
+                        <mesh castShadow>
+                            <coneGeometry args={[0.048, 0.11, 4]} />
+                            <meshStandardMaterial color="#c68a4c" roughness={0.8} />
+                        </mesh>
+                        {/* Inner Ear Fuzz */}
+                        <mesh position={[0, -0.01, -0.012]} rotation={[0.1, 0, 0]}>
+                            <coneGeometry args={[0.034, 0.085, 4]} />
+                            <meshStandardMaterial color="#fdf6eb" roughness={0.9} />
+                        </mesh>
+                    </group>
+
+                    <group ref={rightEarRef} position={[0.075, 0.11, -0.01]} rotation={[0, 0, 0.25]}>
+                        <mesh castShadow>
+                            <coneGeometry args={[0.048, 0.11, 4]} />
+                            <meshStandardMaterial color="#c68a4c" roughness={0.8} />
+                        </mesh>
+                        <mesh position={[0, -0.01, -0.012]} rotation={[0.1, 0, 0]}>
+                            <coneGeometry args={[0.034, 0.085, 4]} />
+                            <meshStandardMaterial color="#fdf6eb" roughness={0.9} />
+                        </mesh>
+                    </group>
                 </group>
 
-                {/* Back Left (with Titanium Cyber Joint) */}
-                <group ref={backLeftLegRef} position={[-0.09, -0.1, 0.12]}>
-                    <mesh castShadow position={[0, -0.08, 0]}>
-                        <boxGeometry args={[0.07, 0.18, 0.07]} />
-                        <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.2} />
-                    </mesh>
-                </group>
-
-                {/* Back Right */}
-                <group ref={backRightLegRef} position={[0.09, -0.1, 0.12]}>
-                    <mesh castShadow position={[0, -0.08, 0]}>
-                        <boxGeometry args={[0.07, 0.18, 0.07]} />
+                {/* 6. FLUFFY SICKLE TAIL WITH GLOWING CYBER-TIP */}
+                <group ref={tailRef} position={[0, 0.09, 0.18]}>
+                    {/* Tail Base Segment Curling Upwards */}
+                    <mesh castShadow position={[0, 0.07, 0.04]} rotation={[0.65, 0, 0]}>
+                        <cylinderGeometry args={[0.038, 0.045, 0.14, 10]} />
                         <meshStandardMaterial color="#c68a4c" roughness={0.8} />
+                    </mesh>
+                    {/* Tail Mid Fluff Arc (Cream Underside) */}
+                    <mesh castShadow position={[0, 0.16, 0.07]} rotation={[1.1, 0, 0]}>
+                        <cylinderGeometry args={[0.034, 0.042, 0.12, 10]} />
+                        <meshStandardMaterial color="#fdf6eb" roughness={0.85} />
+                    </mesh>
+                    {/* Tail Curled Tip with Cyan Neon Emissive Cap */}
+                    <mesh position={[0, 0.22, 0.05]}>
+                        <sphereGeometry args={[0.026, 10, 10]} />
+                        <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                    </mesh>
+                </group>
+
+                {/* 7. FOUR DIGITIGRADE LEGS & DETAILED PAWS WITH PADS */}
+                {/* Front Left Leg */}
+                <group ref={frontLeftLegRef} position={[-0.09, -0.08, -0.12]}>
+                    {/* Forearm */}
+                    <mesh castShadow position={[0, -0.06, 0]}>
+                        <cylinderGeometry args={[0.036, 0.03, 0.14, 10]} />
+                        <meshStandardMaterial color="#fdf6eb" roughness={0.85} />
+                    </mesh>
+                    {/* Modeled Paw with Pads */}
+                    <mesh castShadow position={[0, -0.135, -0.02]}>
+                        <boxGeometry args={[0.055, 0.03, 0.075]} />
+                        <meshStandardMaterial color="#faeed6" roughness={0.9} />
+                    </mesh>
+                </group>
+
+                {/* Front Right Leg */}
+                <group ref={frontRightLegRef} position={[0.09, -0.08, -0.12]}>
+                    <mesh castShadow position={[0, -0.06, 0]}>
+                        <cylinderGeometry args={[0.036, 0.03, 0.14, 10]} />
+                        <meshStandardMaterial color="#fdf6eb" roughness={0.85} />
+                    </mesh>
+                    <mesh castShadow position={[0, -0.135, -0.02]}>
+                        <boxGeometry args={[0.055, 0.03, 0.075]} />
+                        <meshStandardMaterial color="#faeed6" roughness={0.9} />
+                    </mesh>
+                </group>
+
+                {/* Back Left Leg (Muscular Haunch with Titanium Cyber Joint) */}
+                <group ref={backLeftLegRef} position={[-0.09, -0.07, 0.12]}>
+                    {/* Upper Thigh Haunch */}
+                    <mesh castShadow position={[0, -0.04, 0]}>
+                        <sphereGeometry args={[0.055, 10, 10]} />
+                        <meshStandardMaterial color="#c68a4c" roughness={0.8} />
+                    </mesh>
+                    {/* Hock Joint (Cyber Armor Plating) */}
+                    <mesh position={[0, -0.08, 0]}>
+                        <boxGeometry args={[0.045, 0.09, 0.045]} />
+                        <meshStandardMaterial color="#0f172a" metalness={0.85} roughness={0.25} />
+                    </mesh>
+                    {/* Back Paw */}
+                    <mesh castShadow position={[0, -0.135, -0.015]}>
+                        <boxGeometry args={[0.054, 0.03, 0.072]} />
+                        <meshStandardMaterial color="#faeed6" roughness={0.9} />
+                    </mesh>
+                </group>
+
+                {/* Back Right Leg */}
+                <group ref={backRightLegRef} position={[0.09, -0.07, 0.12]}>
+                    <mesh castShadow position={[0, -0.04, 0]}>
+                        <sphereGeometry args={[0.055, 10, 10]} />
+                        <meshStandardMaterial color="#c68a4c" roughness={0.8} />
+                    </mesh>
+                    <mesh position={[0, -0.08, 0]}>
+                        <boxGeometry args={[0.045, 0.09, 0.045]} />
+                        <meshStandardMaterial color="#c68a4c" roughness={0.8} />
+                    </mesh>
+                    <mesh castShadow position={[0, -0.135, -0.015]}>
+                        <boxGeometry args={[0.054, 0.03, 0.072]} />
+                        <meshStandardMaterial color="#faeed6" roughness={0.9} />
                     </mesh>
                 </group>
             </group>

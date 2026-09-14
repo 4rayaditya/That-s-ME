@@ -159,44 +159,68 @@ function BattlestationDesk() {
                 ))}
             </group>
 
-            {/* EXTENDED CYBER CIRCUIT DESK MAT */}
+            {/* EXTENDED CYBER CIRCUIT DESK MAT (Stitched Edge Finish) */}
             <group position={[0, 0.753, 0.12]}>
                 <mesh receiveShadow>
                     <boxGeometry args={[1.9, 0.005, 0.68]} />
-                    <meshStandardMaterial color="#040710" roughness={0.8} />
+                    <meshStandardMaterial color="#070a14" roughness={0.88} />
                 </mesh>
-                {/* Glowing turquoise perimeter trim */}
+                {/* Glowing turquoise perimeter stitched trim */}
                 <mesh position={[0, 0.003, 0]}>
                     <boxGeometry args={[1.92, 0.002, 0.7]} />
                     <meshBasicMaterial color="#00f5d4" toneMapped={false} />
                 </mesh>
             </group>
 
-            {/* RGB Mechanical Keyboard with Sculpted Keycaps */}
-            <group position={[0, 0.76, 0.15]}>
+            {/* HIGH-END CNC MECHANICAL KEYBOARD WITH SCULPTED KEYCAP ROWS */}
+            <group position={[0, 0.76, 0.15]} rotation={[0.08, 0, 0]}>
+                {/* Anodized Aluminum 65% Beveled Chassis */}
                 <mesh castShadow>
-                    <boxGeometry args={[0.58, 0.025, 0.22]} />
-                    <meshStandardMaterial color="#0e1626" roughness={0.4} metalness={0.6} />
+                    <boxGeometry args={[0.56, 0.024, 0.20]} />
+                    <meshStandardMaterial color="#0b101d" roughness={0.3} metalness={0.8} />
                 </mesh>
-                {/* Glowing Keycaps Array */}
-                <mesh position={[0, 0.018, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <planeGeometry args={[0.54, 0.18]} />
+                {/* Brass Weight Inset Bar on back */}
+                <mesh position={[0, 0.013, -0.08]}>
+                    <boxGeometry args={[0.48, 0.003, 0.025]} />
+                    <meshStandardMaterial color="#eab308" metalness={0.95} roughness={0.15} />
+                </mesh>
+                {/* Sculpted Keycap Row Tier 1 (Number Row) */}
+                <mesh position={[0, 0.016, -0.055]} castShadow>
+                    <boxGeometry args={[0.51, 0.012, 0.03]} />
+                    <meshStandardMaterial color="#1e293b" roughness={0.6} />
+                </mesh>
+                {/* Sculpted Keycap Row Tier 2 & 3 (QWERTY & Home Alphas) */}
+                <mesh position={[0, 0.017, -0.015]} castShadow>
+                    <boxGeometry args={[0.51, 0.013, 0.045]} />
+                    <meshStandardMaterial color="#0f172a" roughness={0.6} />
+                </mesh>
+                {/* Spacebar & Modifiers Row */}
+                <mesh position={[0, 0.015, 0.045]} castShadow>
+                    <boxGeometry args={[0.51, 0.011, 0.035]} />
+                    <meshStandardMaterial color="#1e293b" roughness={0.6} />
+                </mesh>
+                {/* RGB Per-Key Underglow Mesh */}
+                <mesh position={[0, 0.013, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <planeGeometry args={[0.52, 0.17]} />
                     <meshBasicMaterial color="#00f5d4" toneMapped={false} />
                 </mesh>
             </group>
 
-            {/* Cyber Gaming Mouse & Charging Dock */}
-            <group position={[0.46, 0.76, 0.15]}>
-                <mesh position={[0, 0.002, 0]}>
-                    <boxGeometry args={[0.18, 0.004, 0.26]} />
+            {/* ERGONOMIC GAMING MOUSE & WIRELESS CHARGING DOCK */}
+            <group position={[0.48, 0.76, 0.16]}>
+                {/* Contoured Mouse Chassis (Logitech G Pro Shape) */}
+                <mesh castShadow position={[0, 0.02, 0]} rotation={[0, -0.06, 0]}>
+                    <boxGeometry args={[0.075, 0.035, 0.135]} />
+                    <meshStandardMaterial color="#0b101d" metalness={0.8} roughness={0.25} />
+                </mesh>
+                {/* Left/Right Click Separation Seam */}
+                <mesh position={[0, 0.038, -0.025]}>
+                    <boxGeometry args={[0.002, 0.005, 0.06]} />
                     <meshStandardMaterial color="#020408" roughness={0.9} />
                 </mesh>
-                <mesh castShadow position={[0, 0.02, 0]}>
-                    <boxGeometry args={[0.08, 0.035, 0.14]} />
-                    <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
-                </mesh>
-                <mesh position={[0, 0.038, 0]}>
-                    <boxGeometry args={[0.015, 0.004, 0.06]} />
+                {/* Rubberized RGB Scroll Wheel */}
+                <mesh position={[0, 0.037, -0.025]} rotation={[Math.PI / 2, 0, 0]}>
+                    <cylinderGeometry args={[0.009, 0.009, 0.008, 12]} />
                     <meshBasicMaterial color="#f72585" toneMapped={false} />
                 </mesh>
             </group>
@@ -276,36 +300,99 @@ function BattlestationDesk() {
                 />
             </group>
 
-            {/* Ergonomic Swivel Gamer Chair */}
-            <group position={[0, 0, 0.95]} rotation={[0, Math.PI, 0]}>
-                <mesh position={[0, 0.1, 0]}>
-                    <cylinderGeometry args={[0.3, 0.35, 0.05, 5]} />
-                    <meshStandardMaterial color="#0f172a" metalness={0.9} />
+            {/* REALISTIC HERMAN MILLER AERON-STYLE ERGONOMIC CHAIR (Aligned at world z=0.4) */}
+            <group position={[0, 0, 1.1]}>
+                {/* Five-Star Caster Wheel Base */}
+                <group position={[0, 0.05, 0]}>
+                    <mesh castShadow>
+                        <cylinderGeometry args={[0.065, 0.075, 0.05, 16]} />
+                        <meshStandardMaterial color="#090d16" metalness={0.9} roughness={0.2} />
+                    </mesh>
+                    {[0, 1, 2, 3, 4].map((i) => {
+                        const angle = (i * Math.PI * 2) / 5;
+                        const legLength = 0.32;
+                        const lx = Math.sin(angle) * (legLength / 2);
+                        const lz = Math.cos(angle) * (legLength / 2);
+                        const wx = Math.sin(angle) * legLength;
+                        const wz = Math.cos(angle) * legLength;
+                        return (
+                            <group key={i}>
+                                <mesh position={[lx, -0.01, lz]} rotation={[0, angle, 0]} castShadow>
+                                    <boxGeometry args={[0.04, 0.025, legLength]} />
+                                    <meshStandardMaterial color="#0f172a" metalness={0.85} roughness={0.25} />
+                                </mesh>
+                                <mesh position={[wx, -0.025, wz]} castShadow>
+                                    <cylinderGeometry args={[0.024, 0.024, 0.025, 12]} />
+                                    <meshStandardMaterial color="#020408" roughness={0.7} />
+                                </mesh>
+                            </group>
+                        );
+                    })}
+                </group>
+
+                {/* Pneumatic Chrome Lift Column */}
+                <mesh position={[0, 0.22, 0]} castShadow>
+                    <cylinderGeometry args={[0.026, 0.034, 0.3, 16]} />
+                    <meshStandardMaterial color="#e2e8f0" metalness={0.98} roughness={0.1} />
                 </mesh>
-                <mesh position={[0, 0.3, 0]}>
-                    <cylinderGeometry args={[0.04, 0.04, 0.35, 12]} />
-                    <meshStandardMaterial color="#334155" metalness={0.9} />
+
+                {/* Under-Seat Tilt Mechanism */}
+                <mesh position={[0, 0.37, 0]} castShadow>
+                    <boxGeometry args={[0.26, 0.05, 0.24]} />
+                    <meshStandardMaterial color="#090d16" metalness={0.8} roughness={0.3} />
                 </mesh>
-                <mesh castShadow position={[0, 0.5, 0]}>
-                    <boxGeometry args={[0.55, 0.1, 0.52]} />
-                    <meshStandardMaterial color="#080e1a" roughness={0.7} />
-                </mesh>
-                <mesh castShadow position={[0, 0.88, -0.22]} rotation={[0.1, 0, 0]}>
-                    <boxGeometry args={[0.48, 0.72, 0.1]} />
-                    <meshStandardMaterial color="#0b1322" roughness={0.7} />
-                </mesh>
-                <mesh position={[0, 0.88, -0.27]} rotation={[0.1, 0, 0]}>
-                    <planeGeometry args={[0.36, 0.6]} />
-                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                </mesh>
-                <mesh position={[-0.28, 0.65, 0]}>
-                    <boxGeometry args={[0.08, 0.22, 0.32]} />
-                    <meshStandardMaterial color="#1e293b" />
-                </mesh>
-                <mesh position={[0.28, 0.65, 0]}>
-                    <boxGeometry args={[0.08, 0.22, 0.32]} />
-                    <meshStandardMaterial color="#1e293b" />
-                </mesh>
+
+                {/* Waterfall-Edge Contoured Seat Pan */}
+                <group position={[0, 0.42, 0]}>
+                    <mesh castShadow>
+                        <boxGeometry args={[0.5, 0.05, 0.48]} />
+                        <meshStandardMaterial color="#0b0f19" roughness={0.6} />
+                    </mesh>
+                    <mesh position={[0, 0.015, 0]}>
+                        <boxGeometry args={[0.44, 0.04, 0.42]} />
+                        <meshStandardMaterial color="#1e2433" roughness={0.85} />
+                    </mesh>
+                </group>
+
+                {/* Contoured High-Back Spine & Lumbar Support (Facing desk towards -Z) */}
+                <group position={[0, 0.70, 0.22]}>
+                    <mesh castShadow position={[0, 0, 0]} rotation={[-0.1, 0, 0]}>
+                        <cylinderGeometry args={[0.022, 0.03, 0.52, 12]} />
+                        <meshStandardMaterial color="#090d16" metalness={0.85} roughness={0.2} />
+                    </mesh>
+                    {/* Lumbar Pad */}
+                    <mesh position={[0, -0.06, -0.03]}>
+                        <boxGeometry args={[0.32, 0.1, 0.04]} />
+                        <meshStandardMaterial color="#05080f" roughness={0.7} />
+                    </mesh>
+                    {/* Breathable Mesh Back Frame */}
+                    <mesh castShadow position={[0, 0.12, -0.02]} rotation={[0.06, 0, 0]}>
+                        <boxGeometry args={[0.46, 0.46, 0.035]} />
+                        <meshStandardMaterial color="#0e1422" roughness={0.7} />
+                    </mesh>
+                </group>
+
+                {/* 3D Adjustable Armrests */}
+                <group position={[-0.26, 0.54, 0.02]}>
+                    <mesh castShadow position={[0, -0.06, 0]}>
+                        <boxGeometry args={[0.03, 0.18, 0.05]} />
+                        <meshStandardMaterial color="#1e293b" metalness={0.8} />
+                    </mesh>
+                    <mesh castShadow position={[0, 0.04, 0]}>
+                        <boxGeometry args={[0.07, 0.03, 0.22]} />
+                        <meshStandardMaterial color="#090d16" roughness={0.5} />
+                    </mesh>
+                </group>
+                <group position={[0.26, 0.54, 0.02]}>
+                    <mesh castShadow position={[0, -0.06, 0]}>
+                        <boxGeometry args={[0.03, 0.18, 0.05]} />
+                        <meshStandardMaterial color="#1e293b" metalness={0.8} />
+                    </mesh>
+                    <mesh castShadow position={[0, 0.04, 0]}>
+                        <boxGeometry args={[0.07, 0.03, 0.22]} />
+                        <meshStandardMaterial color="#090d16" roughness={0.5} />
+                    </mesh>
+                </group>
             </group>
         </group>
     );
@@ -737,7 +824,7 @@ function CoffeeStation() {
             </group>
 
             <points position={[-0.08, 0.1, 0.1]} geometry={steamGeo}>
-                <pointsMaterial color="#00f5d4" size={0.035} transparent opacity={0.45} toneMapped={false} />
+                <pointsMaterial color="#ffffff" size={0.032} transparent opacity={0.35} toneMapped={false} />
             </points>
             <pointLight color="#ffb703" intensity={1.6} distance={2.2} decay={2} position={[0, 1.4, 0.2]} />
         </group>
