@@ -47,7 +47,7 @@ export default function HolographicPortfolio({ onReturnToRoom }: HolographicPort
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                audio.playWarpOut();
+                audio.playClick();
                 onReturnToRoom();
             }
         };
@@ -178,7 +178,7 @@ export default function HolographicPortfolio({ onReturnToRoom }: HolographicPort
                     {/* Return to Room / Unjack Button */}
                     <button
                         onClick={() => {
-                            audio.playWarpOut();
+                            audio.playClick();
                             onReturnToRoom();
                         }}
                         onMouseEnter={() => audio.playHover()}

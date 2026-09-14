@@ -78,12 +78,12 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
         const ctx = canvas.getContext('2d');
         if (!ctx) return null;
 
-        // Base warm oatmeal / cream linen textile tone
-        ctx.fillStyle = isLight ? '#eae5da' : '#2b2520';
+        // Neutral warm oatmeal linen textile tone
+        ctx.fillStyle = '#e8e2d5';
         ctx.fillRect(0, 0, 512, 512);
 
         // Woven cross-hatch textile pattern
-        ctx.strokeStyle = isLight ? '#d6cebf' : '#3d342c';
+        ctx.strokeStyle = '#d0c6b4';
         ctx.lineWidth = 2;
         for (let i = 0; i < 512; i += 8) {
             ctx.beginPath();
@@ -98,11 +98,11 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
         }
 
         // Aesthetic warm terracotta & sand border trim
-        ctx.strokeStyle = isLight ? '#b45309' : '#d97706';
+        ctx.strokeStyle = '#b45309';
         ctx.lineWidth = 5;
         ctx.strokeRect(16, 16, 480, 480);
 
-        ctx.strokeStyle = isLight ? '#78350f' : '#92400e';
+        ctx.strokeStyle = '#78350f';
         ctx.lineWidth = 2;
         ctx.strokeRect(26, 26, 460, 460);
 
@@ -110,7 +110,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         return texture;
-    }, [isLight]);
+    }, []);
 
     // Dynamic color palettes for walls, ceiling, and lighting
     const plasterWallColor = isLight ? '#f4f0e6' : '#231e1a';
@@ -404,7 +404,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
                         />
                     </group>
 
-                    {/* Spot 2: Coffee Bar */}
+                    {/* Spot 2: Coffee Bar & Counter */}
                     <group position={[1.8, -0.08, 0]}>
                         <mesh castShadow rotation={[0.3, -0.5, 0]}>
                             <cylinderGeometry args={[0.045, 0.055, 0.12, 12]} />
@@ -413,9 +413,9 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
                         <spotLight
                             position={[0, 0, 0]}
                             target-position={[2.4, 0.9, 0.7]}
-                            intensity={1.5}
+                            intensity={3.4}
                             color={warmTrackLight}
-                            angle={0.55}
+                            angle={0.7}
                             penumbra={0.5}
                         />
                     </group>

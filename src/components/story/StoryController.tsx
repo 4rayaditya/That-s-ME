@@ -23,34 +23,29 @@ export default function StoryController() {
     // Master story & camera phases
     const [cameraMode, setCameraMode] = useState<CameraMode>('orbit');
     const [showHologram, setShowHologram] = useState(false);
-    const [screenFlare, setScreenFlare] = useState(false);
 
-    // Live Indian Standard Time (IST = UTC+5:30) & Dynamic Atmosphere Engine
+    // Default to Dark Mode (Cozy Ambient Night)
     const [activePhase, setActivePhase] = useState<EnvironmentPhase>(() => {
         if (typeof window !== 'undefined') {
             try {
                 const saved = localStorage.getItem('portfolio_theme_mode');
-                if (saved === 'dark') return 'night';
                 if (saved === 'light') return 'morning';
+                if (saved === 'dark') return 'night';
             } catch {}
         }
-        return getLiveISTTime().phase;
+        return 'night'; // Default is Dark Mode
     });
 
     const [isLightMode, setIsLightMode] = useState<boolean>(() => {
         if (typeof window !== 'undefined') {
             try {
                 const saved = localStorage.getItem('portfolio_theme_mode');
-                if (saved === 'dark') return false;
                 if (saved === 'light') return true;
+                if (saved === 'dark') return false;
             } catch {}
         }
-        const p = getLiveISTTime().phase;
-        return p === 'morning' || p === 'afternoon';
+        return false; // Default is Dark Mode
     });
-
-    // Tracks whether the user explicitly toggled Dark / Light mode so it NEVER gets overridden by automatic timers!
-    const userOverrodeThemeRef = useRef<boolean>(false);
 
     // Character life simulation status
     const [currentRoutine, setCurrentRoutine] = useState<CharacterRoutine>('coding');
@@ -59,25 +54,22 @@ export default function StoryController() {
     // Sound state
     const [isMuted, setIsMuted] = useState(false);
 
-    // Check localStorage on mount
+    // Check localStorage on mount (defaults to dark mode unless previously toggled to light)
     useEffect(() => {
         try {
             const saved = localStorage.getItem('portfolio_theme_mode');
-            if (saved === 'dark') {
-                userOverrodeThemeRef.current = true;
-                setIsLightMode(false);
-                setActivePhase('night');
-            } else if (saved === 'light') {
-                userOverrodeThemeRef.current = true;
+            if (saved === 'light') {
                 setIsLightMode(true);
                 setActivePhase('morning');
+            } else {
+                setIsLightMode(false);
+                setActivePhase('night');
             }
         } catch {}
     }, []);
 
     const handleToggleTheme = () => {
         audio.playClick();
-        userOverrodeThemeRef.current = true;
         setIsLightMode((prev) => {
             const next = !prev;
             const newPhase: EnvironmentPhase = next ? 'morning' : 'night';
@@ -88,18 +80,6 @@ export default function StoryController() {
             return next;
         });
     };
-
-    // Continuously sync with live Indian Time ONLY IF the user has NOT manually set Dark/Light mode!
-    useEffect(() => {
-        const checkTime = () => {
-            if (userOverrodeThemeRef.current) return;
-            const ist = getLiveISTTime();
-            setActivePhase(ist.phase);
-            setIsLightMode(ist.phase === 'morning' || ist.phase === 'afternoon');
-        };
-        const interval = setInterval(checkTime, 10000);
-        return () => clearInterval(interval);
-    }, []);
 
     // Audio & Global Key Listeners
     useEffect(() => {
@@ -143,33 +123,22 @@ export default function StoryController() {
         };
     }, [cameraMode, showHologram, currentRoutine]);
 
-    // Jack In (Dolly Zoom into central monitor)
+    // Jack In (Subtle, smooth transition into battlestation computer)
     const handleJackIn = () => {
         if (cameraMode !== 'orbit') return;
-        audio.playWarpGlide();
+        audio.playClick();
         setCameraMode('dolly_in');
     };
 
     const handleDollyComplete = () => {
-        setScreenFlare(true);
-        audio.playSuccess();
-        setTimeout(() => {
-            setShowHologram(true);
-            setCameraMode('at_screen');
-        }, 150);
-        setTimeout(() => {
-            setScreenFlare(false);
-        }, 800);
+        setShowHologram(true);
+        setCameraMode('at_screen');
     };
 
     const handleReturnToRoom = () => {
+        audio.playClick();
         setShowHologram(false);
-        setScreenFlare(true);
-        audio.playWarpOut();
         setCameraMode('dolly_out');
-        setTimeout(() => {
-            setScreenFlare(false);
-        }, 700);
     };
 
     const handleReturnComplete = () => {
@@ -256,27 +225,14 @@ export default function StoryController() {
                 </button>
             </header>
 
-            {/* 3. SCREEN FLARE EXPLOSION TRANSITION */}
-            <AnimatePresence>
-                {screenFlare && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1.1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.4 }}
-                        className="pointer-events-none absolute inset-0 z-40 bg-gradient-to-r from-cyan-400 via-white to-cyan-300 mix-blend-screen shadow-[0_0_120px_#00f5d4]"
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* 4. 3D HOLOGRAPHIC PORTFOLIO INTERFACE (ON JACK IN) */}
+            {/* 3. 3D HOLOGRAPHIC PORTFOLIO INTERFACE (ON JACK IN) */}
             <AnimatePresence>
                 {showHologram && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.92, filter: 'blur(8px)' }}
-                        animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, scale: 0.95, filter: 'blur(6px)' }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ duration: 0.35, ease: 'easeOut' }}
                         className="absolute inset-0 z-30"
                     >
                         <HolographicPortfolio onReturnToRoom={handleReturnToRoom} />
