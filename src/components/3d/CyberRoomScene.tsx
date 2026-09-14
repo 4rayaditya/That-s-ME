@@ -8,13 +8,20 @@ import CyberCharacter, { CharacterRoutine } from './CyberCharacter';
 import CyberDog from './CyberDog';
 import CameraController, { CameraMode } from './CameraController';
 import { MonitorTextures } from './MonitorTextures';
+import { EnvironmentPhase, ENVIRONMENT_CONFIGS } from '@/lib/environment';
+import FloatingPoiMarkers from './FloatingPoiMarkers';
+import { audio } from '@/lib/audio';
 
 interface CyberRoomSceneProps {
     cameraMode: CameraMode;
     onDollyComplete: () => void;
     onReturnComplete: () => void;
+    onTourPoiChange?: (poiName: string, index: number, total: number) => void;
+    onTourComplete?: () => void;
     currentRoutine: CharacterRoutine;
     onRoutineChange: (routine: CharacterRoutine, label: string) => void;
+    environmentPhase: EnvironmentPhase;
+    onJackIn: () => void;
 }
 
 // -------------------------------------------------------------
@@ -402,12 +409,14 @@ function ServerRackTower() {
 }
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Rainy Window with Multi-Depth Skyline
+// SUB-COMPONENT: Dynamic Atmosphere Window (Synchronized to Indian Time)
 // -------------------------------------------------------------
-function RainyCyberWindow() {
+function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: EnvironmentPhase }) {
+    const config = ENVIRONMENT_CONFIGS[environmentPhase];
     const rainRef = useRef<THREE.Points>(null);
     const traffic1Ref = useRef<THREE.Mesh>(null);
     const traffic2Ref = useRef<THREE.Mesh>(null);
+    const treeGroupRef = useRef<THREE.Group>(null);
 
     const rainCount = 180;
     const { rainGeo } = useMemo(() => {
@@ -423,18 +432,25 @@ function RainyCyberWindow() {
     }, []);
 
     useFrame((state, delta) => {
-        const pos = rainGeo.attributes.position.array as Float32Array;
-        for (let i = 0; i < rainCount; i++) {
-            pos[i * 3 + 1] -= delta * (1.5 + (i % 5) * 0.4);
-            if (pos[i * 3 + 1] < 1.0) {
-                pos[i * 3 + 1] = 2.8;
-            }
-        }
-        rainGeo.attributes.position.needsUpdate = true;
-
         const time = state.clock.elapsedTime;
+        if (config.showRain && rainRef.current) {
+            const pos = rainGeo.attributes.position.array as Float32Array;
+            for (let i = 0; i < rainCount; i++) {
+                pos[i * 3 + 1] -= delta * (1.5 + (i % 5) * 0.4);
+                if (pos[i * 3 + 1] < 1.0) {
+                    pos[i * 3 + 1] = 2.8;
+                }
+            }
+            rainGeo.attributes.position.needsUpdate = true;
+        }
+
         if (traffic1Ref.current) traffic1Ref.current.position.x = ((time * 2.2) % 12) - 6;
         if (traffic2Ref.current) traffic2Ref.current.position.x = 6 - ((time * 1.6) % 12);
+
+        // Gentle breeze swaying the outdoor trees
+        if (treeGroupRef.current) {
+            treeGroupRef.current.rotation.z = Math.sin(time * 1.4) * 0.025;
+        }
     });
 
     return (
@@ -450,69 +466,205 @@ function RainyCyberWindow() {
                 <meshStandardMaterial color="#080e18" metalness={0.9} roughness={0.2} />
             </mesh>
 
-            {/* Glass Pane with Condensation Tint */}
+            {/* Glass Pane: Crystal clear with soft tint in daytime, moody dark tint at night */}
             <mesh position={[0, 1.9, -3.48]}>
                 <planeGeometry args={[3.6, 1.9]} />
-                <meshStandardMaterial color="#091426" transparent opacity={0.75} roughness={0.1} metalness={0.6} />
+                <meshStandardMaterial
+                    color={
+                        environmentPhase === 'morning'
+                            ? '#99f6e4'
+                            : environmentPhase === 'evening'
+                            ? '#fdba74'
+                            : '#091426'
+                    }
+                    transparent
+                    opacity={environmentPhase === 'night' ? 0.75 : 0.3}
+                    roughness={0.1}
+                    metalness={0.4}
+                />
             </mesh>
 
-            {/* Dripping Rain Particles */}
-            <points ref={rainRef} geometry={rainGeo}>
-                <pointsMaterial color="#00f5d4" size={0.03} transparent opacity={0.65} toneMapped={false} />
-            </points>
+            {/* Dripping Rain Particles (Rendered only at Night) */}
+            {config.showRain && (
+                <points ref={rainRef} geometry={rainGeo}>
+                    <pointsMaterial color="#00f5d4" size={0.03} transparent opacity={0.65} toneMapped={false} />
+                </points>
+            )}
 
-            {/* MULTI-DEPTH CYBER CITY SKYLINE */}
+            {/* OUTSIDE WINDOW COURTYARD, SKY & MULTI-DEPTH ENVIRONMENT */}
             <group position={[0, 1.8, -5.5]}>
+                {/* Sky Backdrop Plane (Color-coded to time of day) */}
                 <mesh position={[0, 0, -1]}>
                     <planeGeometry args={[14, 8]} />
-                    <meshBasicMaterial color="#02040a" />
+                    <meshBasicMaterial color={config.windowSkyTop} />
                 </mesh>
 
-                {/* Layer 1: Distant Megastructure */}
+                {/* MORNING / DAYTIME / EVENING: 3D GREEN CYBER TREES & FOLIAGE */}
+                {config.showTrees && (
+                    <group ref={treeGroupRef} position={[0, -0.6, 1.2]}>
+                        {/* Tree 1: Left Foreground Canopy */}
+                        <group position={[-1.6, 0, 0]}>
+                            <mesh position={[0, 0.5, 0]}>
+                                <cylinderGeometry args={[0.08, 0.14, 1.2, 8]} />
+                                <meshStandardMaterial color="#1e293b" roughness={0.9} />
+                            </mesh>
+                            {/* Layered Green Foliage Spheres */}
+                            <mesh position={[0, 1.2, 0]}>
+                                <sphereGeometry args={[0.55, 12, 12]} />
+                                <meshStandardMaterial
+                                    color={environmentPhase === 'evening' ? '#d97706' : '#10b981'}
+                                    roughness={0.7}
+                                />
+                            </mesh>
+                            <mesh position={[0.2, 1.45, 0.1]}>
+                                <sphereGeometry args={[0.42, 12, 12]} />
+                                <meshStandardMaterial
+                                    color={environmentPhase === 'evening' ? '#f59e0b' : '#34d399'}
+                                    roughness={0.7}
+                                />
+                            </mesh>
+                            <mesh position={[-0.15, 1.55, -0.1]}>
+                                <sphereGeometry args={[0.38, 12, 12]} />
+                                <meshStandardMaterial
+                                    color={environmentPhase === 'evening' ? '#ea580c' : '#4ade80'}
+                                    roughness={0.7}
+                                />
+                            </mesh>
+                        </group>
+
+                        {/* Tree 2: Center-Right Majestic Canopy */}
+                        <group position={[1.4, 0.1, 0.2]}>
+                            <mesh position={[0, 0.6, 0]}>
+                                <cylinderGeometry args={[0.1, 0.16, 1.4, 8]} />
+                                <meshStandardMaterial color="#1e293b" roughness={0.9} />
+                            </mesh>
+                            <mesh position={[0, 1.4, 0]}>
+                                <sphereGeometry args={[0.68, 12, 12]} />
+                                <meshStandardMaterial
+                                    color={environmentPhase === 'evening' ? '#b45309' : '#059669'}
+                                    roughness={0.7}
+                                />
+                            </mesh>
+                            <mesh position={[-0.25, 1.7, 0.1]}>
+                                <sphereGeometry args={[0.5, 12, 12]} />
+                                <meshStandardMaterial
+                                    color={environmentPhase === 'evening' ? '#d97706' : '#10b981'}
+                                    roughness={0.7}
+                                />
+                            </mesh>
+                            <mesh position={[0.2, 1.85, -0.1]}>
+                                <sphereGeometry args={[0.42, 12, 12]} />
+                                <meshStandardMaterial
+                                    color={environmentPhase === 'evening' ? '#f59e0b' : '#34d399'}
+                                    roughness={0.7}
+                                />
+                            </mesh>
+                        </group>
+
+                        {/* Tree 3: Distant Background Greenery */}
+                        <group position={[-0.2, 0.2, -0.6]}>
+                            <mesh position={[0, 1.1, 0]}>
+                                <sphereGeometry args={[0.55, 10, 10]} />
+                                <meshStandardMaterial
+                                    color={environmentPhase === 'evening' ? '#92400e' : '#047857'}
+                                    roughness={0.8}
+                                />
+                            </mesh>
+                            <mesh position={[0.3, 1.35, 0]}>
+                                <sphereGeometry args={[0.4, 10, 10]} />
+                                <meshStandardMaterial
+                                    color={environmentPhase === 'evening' ? '#b45309' : '#10b981'}
+                                    roughness={0.8}
+                                />
+                            </mesh>
+                        </group>
+
+                        {/* Window Box Planter with Trailing Ivy on the sill */}
+                        <group position={[0, 0.68, -0.1]}>
+                            <mesh position={[0, 0, 0]}>
+                                <boxGeometry args={[3.2, 0.12, 0.22]} />
+                                <meshStandardMaterial color="#0f172a" roughness={0.8} />
+                            </mesh>
+                            {[-1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2].map((x, i) => (
+                                <mesh key={i} position={[x, 0.08, 0.08]}>
+                                    <sphereGeometry args={[0.12, 8, 8]} />
+                                    <meshStandardMaterial
+                                        color={i % 2 === 0 ? '#10b981' : '#34d399'}
+                                        roughness={0.6}
+                                    />
+                                </mesh>
+                            ))}
+                        </group>
+                    </group>
+                )}
+
+                {/* DISTANT SKYLINE STRUCTURES */}
                 <mesh position={[0, 0.8, -0.6]}>
                     <boxGeometry args={[2.8, 6.5, 0.5]} />
-                    <meshStandardMaterial color="#040710" roughness={0.9} />
+                    <meshStandardMaterial
+                        color={environmentPhase === 'night' ? '#040710' : '#1e293b'}
+                        roughness={0.9}
+                    />
                 </mesh>
-
-                {/* Layer 2: Skyscrapers */}
                 <mesh position={[-2.8, -0.4, 0]}>
                     <boxGeometry args={[1.2, 4.2, 0.6]} />
-                    <meshStandardMaterial color="#050a14" roughness={0.9} />
+                    <meshStandardMaterial
+                        color={environmentPhase === 'night' ? '#050a14' : '#334155'}
+                        roughness={0.9}
+                    />
                 </mesh>
                 <mesh position={[-0.9, -0.2, 0]}>
                     <boxGeometry args={[1.6, 5.0, 0.8]} />
-                    <meshStandardMaterial color="#080e1c" roughness={0.9} />
+                    <meshStandardMaterial
+                        color={environmentPhase === 'night' ? '#080e1c' : '#1e293b'}
+                        roughness={0.9}
+                    />
                 </mesh>
                 <mesh position={[1.4, -0.6, 0]}>
                     <boxGeometry args={[1.4, 3.8, 0.7]} />
-                    <meshStandardMaterial color="#060c18" roughness={0.9} />
+                    <meshStandardMaterial
+                        color={environmentPhase === 'night' ? '#060c18' : '#334155'}
+                        roughness={0.9}
+                    />
                 </mesh>
                 <mesh position={[3.2, 0, 0]}>
                     <boxGeometry args={[1.5, 5.6, 0.9]} />
-                    <meshStandardMaterial color="#0a1224" roughness={0.9} />
+                    <meshStandardMaterial
+                        color={environmentPhase === 'night' ? '#0a1224' : '#1e293b'}
+                        roughness={0.9}
+                    />
                 </mesh>
 
-                {/* Neon Billboard Signs on Buildings */}
-                <mesh position={[-0.9, 1.2, 0.42]}>
-                    <planeGeometry args={[1.2, 0.6]} />
-                    <meshBasicMaterial color="#f72585" toneMapped={false} />
-                </mesh>
-                <mesh position={[1.4, 0.8, 0.37]}>
-                    <planeGeometry args={[0.9, 0.4]} />
-                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                </mesh>
+                {/* Neon Billboard Signs (Active at Night & Evening) */}
+                {(environmentPhase === 'night' || environmentPhase === 'evening') && (
+                    <>
+                        <mesh position={[-0.9, 1.2, 0.42]}>
+                            <planeGeometry args={[1.2, 0.6]} />
+                            <meshBasicMaterial color="#f72585" toneMapped={false} />
+                        </mesh>
+                        <mesh position={[1.4, 0.8, 0.37]}>
+                            <planeGeometry args={[0.9, 0.4]} />
+                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                        </mesh>
+                        <mesh ref={traffic1Ref} position={[-6, 0.4, 0.8]}>
+                            <boxGeometry args={[0.6, 0.04, 0.04]} />
+                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                        </mesh>
+                        <mesh ref={traffic2Ref} position={[6, -0.2, 0.6]}>
+                            <boxGeometry args={[0.7, 0.04, 0.04]} />
+                            <meshBasicMaterial color="#f72585" toneMapped={false} />
+                        </mesh>
+                    </>
+                )}
 
-                {/* Flying Hover-Car Light Trails (Traffic) */}
-                <mesh ref={traffic1Ref} position={[-6, 0.4, 0.8]}>
-                    <boxGeometry args={[0.6, 0.04, 0.04]} />
-                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                </mesh>
-                <mesh ref={traffic2Ref} position={[6, -0.2, 0.6]}>
-                    <boxGeometry args={[0.7, 0.04, 0.04]} />
-                    <meshBasicMaterial color="#f72585" toneMapped={false} />
-                </mesh>
-
-                <pointLight color="#3a86ff" intensity={1.8} distance={8} decay={2} position={[0, 1.2, -1]} />
+                {/* Window Directional / Ambient Cast Light */}
+                <pointLight
+                    color={config.sunColor}
+                    intensity={config.sunIntensity}
+                    distance={8}
+                    decay={2}
+                    position={[0, 1.2, -1]}
+                />
             </group>
         </group>
     );
@@ -843,7 +995,7 @@ function CyberDustMotes() {
 // -------------------------------------------------------------
 // SUB-COMPONENT: Diorama Architecture (Walls, Reflective Grid)
 // -------------------------------------------------------------
-function DioramaRoomGeometry() {
+function DioramaRoomGeometry({ accentColor = '#00f5d4' }: { accentColor?: string }) {
     return (
         <group>
             {/* Dark Reflective Grid Floor */}
@@ -852,8 +1004,8 @@ function DioramaRoomGeometry() {
                 <meshStandardMaterial color="#040710" roughness={0.25} metalness={0.7} />
             </mesh>
 
-            {/* Glowing Floor Grid Lines */}
-            <gridHelper args={[7.2, 24, '#00f5d4', '#0d1d36']} position={[0, 0.005, 0]} />
+            {/* Glowing Floor Grid Lines (Synchronized to time of day accent) */}
+            <gridHelper args={[7.2, 24, accentColor, '#0d1d36']} position={[0, 0.005, 0]} />
 
             {/* Back Wall */}
             <mesh receiveShadow position={[0, 1.8, -3.5]}>
@@ -876,7 +1028,7 @@ function DioramaRoomGeometry() {
             {/* Baseboard Neon Light Strips */}
             <mesh position={[0, 0.02, -3.48]}>
                 <boxGeometry args={[7.2, 0.03, 0.02]} />
-                <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                <meshBasicMaterial color={accentColor} toneMapped={false} />
             </mesh>
             <mesh position={[-3.48, 0.02, 0]} rotation={[0, Math.PI / 2, 0]}>
                 <boxGeometry args={[7.2, 0.03, 0.02]} />
@@ -893,10 +1045,15 @@ export default function CyberRoomScene({
     cameraMode,
     onDollyComplete,
     onReturnComplete,
+    onTourPoiChange,
+    onTourComplete,
     currentRoutine,
     onRoutineChange,
+    environmentPhase,
+    onJackIn,
 }: CyberRoomSceneProps) {
     const monitorTextures = useMemo(() => new MonitorTextures(), []);
+    const envConfig = ENVIRONMENT_CONFIGS[environmentPhase];
 
     useEffect(() => {
         return () => monitorTextures.destroy();
@@ -918,16 +1075,18 @@ export default function CyberRoomScene({
                     antialias: true,
                     powerPreference: 'high-performance',
                     toneMapping: THREE.ACESFilmicToneMapping,
-                    toneMappingExposure: 1.25,
+                    toneMappingExposure: environmentPhase === 'morning' ? 1.4 : environmentPhase === 'afternoon' ? 1.35 : 1.25,
                 }}
             >
                 <SceneLoop />
 
-                {/* Camera Choreography */}
+                {/* Camera Choreography (Locked manual orbit or guided room tour) */}
                 <CameraController
                     mode={cameraMode}
                     onDollyComplete={onDollyComplete}
                     onReturnComplete={onReturnComplete}
+                    onTourPoiChange={onTourPoiChange}
+                    onTourComplete={onTourComplete}
                 />
 
                 {/* Realistic Contact Shadows for all objects */}
@@ -941,19 +1100,32 @@ export default function CyberRoomScene({
                     color="#000000"
                 />
 
-                {/* Ambient Atmospheric Lighting */}
-                <ambientLight intensity={0.45} color="#0d1b2a" />
+                {/* Dynamic Ambient & Sun Atmospheric Lighting */}
+                <ambientLight intensity={envConfig.ambientIntensity} color={envConfig.ambientColor} />
                 <directionalLight
                     castShadow
-                    position={[5, 8, 4]}
-                    intensity={0.7}
-                    color="#e0fbfc"
+                    position={envConfig.sunPosition}
+                    intensity={envConfig.sunIntensity}
+                    color={envConfig.sunColor}
                     shadow-mapSize={[2048, 2048]}
                     shadow-bias={-0.0001}
                 />
 
+                {/* Morning Sunlight Beam pouring through the window */}
+                {environmentPhase === 'morning' && (
+                    <spotLight
+                        position={[0, 4.0, -3.8]}
+                        target-position={[0, 0.7, 0]}
+                        intensity={2.6}
+                        color="#fef08a"
+                        angle={0.85}
+                        penumbra={0.65}
+                        castShadow
+                    />
+                )}
+
                 {/* Architecture & Detailing */}
-                <DioramaRoomGeometry />
+                <DioramaRoomGeometry accentColor={envConfig.accentColor} />
                 <WallPipelinesAndConduits />
                 <IndustrialCeilingVent />
 
@@ -970,8 +1142,8 @@ export default function CyberRoomScene({
                 {/* Corner Server Rack with Patch Cables & LEDs */}
                 <ServerRackTower />
 
-                {/* Rainy Window & City Skyline */}
-                <RainyCyberWindow />
+                {/* Dynamic Atmosphere Window (Trees in morning, sunset in evening, rain at night) */}
+                <DynamicAtmosphereWindow environmentPhase={environmentPhase} />
 
                 {/* Coffee Station / Espresso Bar */}
                 <CoffeeStation />
@@ -981,6 +1153,17 @@ export default function CyberRoomScene({
 
                 {/* Shelves & Decor */}
                 <CyberRoomDecor />
+
+                {/* 3D Floating Interactive POI Markers over Bed, Coffee Stand, Setup, and Dog */}
+                <FloatingPoiMarkers
+                    visible={cameraMode === 'orbit'}
+                    onSelectSetup={onJackIn}
+                    onSelectCoffee={() => onRoutineChange('walking_to_coffee', 'Heading to Neon Espresso Bar...')}
+                    onSelectBed={() => onRoutineChange('walking_to_bed', 'Heading to Cyber Futon to Sleep...')}
+                    onPetDog={() => {
+                        audio.playDogBark();
+                    }}
+                />
             </Canvas>
         </div>
     );
