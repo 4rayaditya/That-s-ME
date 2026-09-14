@@ -19,11 +19,7 @@ import { audio } from '@/lib/audio';
 
 const CyberRoomScene = dynamic(() => import('@/components/3d/CyberRoomScene'), {
     ssr: false,
-    loading: () => (
-        <div className="w-full h-full bg-[#020408] flex items-center justify-center font-mono text-cyan-400 text-sm">
-            <span className="animate-pulse">INITIALIZING 3D NEURAL ENVIRONMENT...</span>
-        </div>
-    ),
+    loading: () => null,
 });
 
 export default function StoryController() {
@@ -46,6 +42,13 @@ export default function StoryController() {
         audio.startLofi();
         setIsLofiPlaying(true);
 
+        const handleUserGesture = () => {
+            audio.startLofi();
+            setIsLofiPlaying(true);
+        };
+        window.addEventListener('pointerdown', handleUserGesture, { once: true });
+        window.addEventListener('keydown', handleUserGesture, { once: true });
+
         // Keyboard triggers for fast interaction
         const handleKeyDown = (e: KeyboardEvent) => {
             if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
@@ -59,16 +62,19 @@ export default function StoryController() {
                 } else if (e.key === '1') {
                     handleSelectRoutine('coding');
                 } else if (e.key === '2') {
-                    handleSelectRoutine('walking_to_coffee');
+                    handleSelectRoutine('brewing');
                 } else if (e.key === '3') {
-                    handleSelectRoutine('walking_to_bed');
+                    handleSelectRoutine('bed');
                 }
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [cameraMode]);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('pointerdown', handleUserGesture);
+        };
+    }, [cameraMode, currentRoutine]);
 
     // Handle Jack In (Dolly Zoom inward over shoulder to monitor)
     const handleJackIn = () => {
@@ -107,9 +113,21 @@ export default function StoryController() {
     };
 
     // Trigger specific character routine manually
-    const handleSelectRoutine = (routine: CharacterRoutine) => {
+    const handleSelectRoutine = (target: 'coding' | 'brewing' | 'bed') => {
         audio.playClick();
-        setCurrentRoutine(routine);
+        if (target === 'coding') {
+            if (currentRoutine === 'coding') return;
+            setCurrentRoutine('returning_to_desk');
+            setRoutineLabel('Returning to Battlestation...');
+        } else if (target === 'brewing') {
+            if (currentRoutine === 'brewing_coffee') return;
+            setCurrentRoutine('walking_to_coffee');
+            setRoutineLabel('Heading to Neon Espresso Bar...');
+        } else if (target === 'bed') {
+            if (currentRoutine === 'resting_bed') return;
+            setCurrentRoutine('walking_to_bed');
+            setRoutineLabel('Heading to Cyber Futon to Sleep...');
+        }
     };
 
     const handleRoutineChange = (routine: CharacterRoutine, label: string) => {
@@ -190,7 +208,7 @@ export default function StoryController() {
                                     <span>1. Code at Desk</span>
                                 </button>
                                 <button
-                                    onClick={() => handleSelectRoutine('walking_to_coffee')}
+                                    onClick={() => handleSelectRoutine('brewing')}
                                     onMouseEnter={() => audio.playHover()}
                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs transition-all ${
                                         currentRoutine === 'walking_to_coffee' || currentRoutine === 'brewing_coffee'
@@ -202,7 +220,7 @@ export default function StoryController() {
                                     <span>2. Brew Espresso</span>
                                 </button>
                                 <button
-                                    onClick={() => handleSelectRoutine('walking_to_bed')}
+                                    onClick={() => handleSelectRoutine('bed')}
                                     onMouseEnter={() => audio.playHover()}
                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs transition-all ${
                                         currentRoutine === 'walking_to_bed' || currentRoutine === 'resting_bed'
