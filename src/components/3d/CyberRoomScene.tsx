@@ -30,31 +30,75 @@ interface CyberRoomSceneProps {
 const BattlestationMonitors = React.memo(function BattlestationMonitors({ monitorTextures }: { monitorTextures: MonitorTextures }) {
     return (
         <group position={[0, 1.45, -3.20]}>
-            {/* Heavy-Duty Heavy Articulated Hydraulic Mounting Arm */}
-            <mesh position={[0, -0.42, -0.15]}>
-                <cylinderGeometry args={[0.045, 0.055, 0.84, 16]} />
-                <meshStandardMaterial color="#090e18" metalness={0.95} roughness={0.15} />
-            </mesh>
-            <mesh position={[0, -0.78, 0]}>
-                <boxGeometry args={[0.38, 0.04, 0.26]} />
-                <meshStandardMaterial color="#090e18" metalness={0.95} roughness={0.15} />
-            </mesh>
+            {/* ============================================================ */}
+            {/* DEDICATED VISIBLE DESKTOP STANDS FOR BOTH MONITORS           */}
+            {/* ============================================================ */}
 
-            {/* Dual Heavy-Duty Crossbar Mount */}
-            <mesh position={[-0.12, 0, -0.09]}>
-                <boxGeometry args={[1.22, 0.04, 0.04]} />
-                <meshStandardMaterial color="#090e18" metalness={0.95} roughness={0.15} />
-            </mesh>
+            {/* STAND 1: MAIN HORIZONTAL MONITOR STAND (x = 0.22) */}
+            <group position={[0.22, 0, 0]}>
+                {/* Heavy CNC Machined Aluminum Desktop Base (resting flat on oak table at y = -0.69) */}
+                <mesh castShadow receiveShadow position={[0, -0.685, 0.06]}>
+                    <boxGeometry args={[0.32, 0.018, 0.24]} />
+                    <meshStandardMaterial color="#090e18" metalness={0.92} roughness={0.18} />
+                </mesh>
+                {/* Beveled Chamfer Trim on Stand Base */}
+                <mesh position={[0, -0.674, 0.06]}>
+                    <boxGeometry args={[0.30, 0.005, 0.22]} />
+                    <meshStandardMaterial color="#334155" metalness={0.95} roughness={0.15} />
+                </mesh>
+                {/* Solid Vertical Riser Column (from desk to monitor VESA mount) */}
+                <mesh castShadow position={[0, -0.34, -0.04]}>
+                    <boxGeometry args={[0.075, 0.68, 0.055]} />
+                    <meshStandardMaterial color="#0c121e" metalness={0.9} roughness={0.2} />
+                </mesh>
+                {/* Vertical Accent Rib / Cable Routing Channel */}
+                <mesh position={[0, -0.34, -0.012]}>
+                    <boxGeometry args={[0.035, 0.62, 0.006]} />
+                    <meshStandardMaterial color="#1e293b" metalness={0.95} roughness={0.15} />
+                </mesh>
+                {/* Articulated VESA Mount Bracket & Tilt Knuckle */}
+                <mesh position={[0, 0, -0.04]}>
+                    <boxGeometry args={[0.16, 0.16, 0.035]} />
+                    <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
+                </mesh>
+                <mesh position={[0, 0, -0.02]} rotation={[0, 0, Math.PI / 2]}>
+                    <cylinderGeometry args={[0.022, 0.022, 0.08, 16]} />
+                    <meshStandardMaterial color="#475569" metalness={0.95} roughness={0.1} />
+                </mesh>
+            </group>
 
-            {/* Articulated VESA Mount Knuckles */}
-            <mesh position={[0.22, 0, -0.06]}>
-                <boxGeometry args={[0.14, 0.14, 0.04]} />
-                <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
-            </mesh>
-            <mesh position={[-0.46, 0.04, -0.02]} rotation={[0, 0.22, 0]}>
-                <boxGeometry args={[0.12, 0.14, 0.04]} />
-                <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
-            </mesh>
+            {/* STAND 2: SECOND VERTICAL MONITOR STAND (x = -0.46, angled 0.22 rad) */}
+            <group position={[-0.46, 0, 0.04]} rotation={[0, 0.22, 0]}>
+                {/* Heavy Aluminum Desktop Base (resting flat on oak table at y = -0.69) */}
+                <mesh castShadow receiveShadow position={[0, -0.685, 0.06]}>
+                    <boxGeometry args={[0.26, 0.018, 0.22]} />
+                    <meshStandardMaterial color="#090e18" metalness={0.92} roughness={0.18} />
+                </mesh>
+                {/* Beveled Chamfer Trim on Stand Base */}
+                <mesh position={[0, -0.674, 0.06]}>
+                    <boxGeometry args={[0.24, 0.005, 0.20]} />
+                    <meshStandardMaterial color="#334155" metalness={0.95} roughness={0.15} />
+                </mesh>
+                {/* Solid Vertical Riser Column (from desk to vertical monitor VESA mount) */}
+                <mesh castShadow position={[0, -0.32, -0.04]}>
+                    <boxGeometry args={[0.065, 0.72, 0.055]} />
+                    <meshStandardMaterial color="#0c121e" metalness={0.9} roughness={0.2} />
+                </mesh>
+                {/* Vertical Accent Rib */}
+                <mesh position={[0, -0.32, -0.012]}>
+                    <boxGeometry args={[0.028, 0.64, 0.006]} />
+                    <meshStandardMaterial color="#1e293b" metalness={0.95} roughness={0.15} />
+                </mesh>
+                {/* Articulated VESA Mount Bracket & Tilt Knuckle */}
+                <mesh position={[0, 0.04, -0.04]}>
+                    <boxGeometry args={[0.14, 0.14, 0.035]} />
+                    <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
+                </mesh>
+                <mesh position={[0, 0.04, -0.02]} rotation={[0, 0, Math.PI / 2]}>
+                    <cylinderGeometry args={[0.02, 0.02, 0.07, 16]} />
+                    <meshStandardMaterial color="#475569" metalness={0.95} roughness={0.1} />
+                </mesh>
+            </group>
 
             {/* "BEHIND SETUP" RED BIAS LIGHT: contrasting sharply against the black slat wall */}
             <pointLight color="#ff1744" intensity={3.5} distance={2.5} decay={2} position={[0, 0.04, -0.12]} />
