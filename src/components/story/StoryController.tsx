@@ -10,8 +10,6 @@ import {
     Code2,
     Moon,
     ArrowRight,
-    Compass,
-    Radio,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import HolographicPortfolio from '@/components/hologram/HolographicPortfolio';
@@ -44,6 +42,9 @@ export default function StoryController() {
 
     useEffect(() => {
         setIsMuted(audio.getMuted());
+        // Lofi music stays always on
+        audio.startLofi();
+        setIsLofiPlaying(true);
 
         // Keyboard triggers for fast interaction
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -148,58 +149,26 @@ export default function StoryController() {
                         exit={{ opacity: 0, transition: { duration: 0.25 } }}
                         className="absolute inset-0 pointer-events-none flex flex-col justify-between p-4 sm:p-8 md:p-10 z-20"
                     >
-                        {/* TOP BAR: Brand, Room Status & Audio Controls */}
-                        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pointer-events-auto">
-                            {/* Brand Tag */}
-                            <div className="flex items-center gap-3">
-                                <div className="w-3 h-3 rounded-full bg-cyan-400 animate-ping shadow-[0_0_12px_#00f5d4]" />
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <h1 className="font-mono text-sm sm:text-base font-extrabold text-cyan-300 tracking-wider">
-                                            ADITYA RAY // THAT&apos;S ME
-                                        </h1>
-                                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/50 text-cyan-300">
-                                            LIVE 3D SIMULATION
-                                        </span>
-                                    </div>
-                                    <p className="text-[11px] font-mono text-zinc-400">
-                                        Creative Technologist &amp; Full-Stack 3D Engineer
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Sound & Lofi Station */}
-                            <div className="flex items-center gap-2 self-start sm:self-auto">
-                                <button
-                                    onClick={handleToggleLofi}
-                                    onMouseEnter={() => audio.playHover()}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs border transition-all ${
-                                        isLofiPlaying
-                                            ? 'bg-purple-900/60 border-purple-400 text-purple-200 shadow-[0_0_15px_rgba(157,78,221,0.5)]'
-                                            : 'bg-zinc-900/70 border-zinc-700/60 text-zinc-400 hover:text-zinc-200'
-                                    }`}
-                                >
-                                    <Radio className="w-3.5 h-3.5" />
-                                    <span>{isLofiPlaying ? 'LOFI BEATS ON' : 'PLAY LOFI'}</span>
-                                </button>
-
-                                <button
-                                    onClick={handleToggleSound}
-                                    onMouseEnter={() => audio.playHover()}
-                                    className="p-2 rounded-lg bg-zinc-900/70 border border-zinc-700/60 hover:border-cyan-400 text-zinc-300 hover:text-cyan-400 transition-all"
-                                    title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
-                                >
-                                    {isMuted ? (
-                                        <VolumeX className="w-4 h-4 text-rose-400" />
-                                    ) : (
-                                        <Volume2 className="w-4 h-4 text-cyan-400" />
-                                    )}
-                                </button>
-                            </div>
+                        {/* TOP-RIGHT MINIMAL AUDIO CONTROLS */}
+                        <header className="flex items-center justify-end pointer-events-auto">
+                            <button
+                                onClick={handleToggleSound}
+                                onMouseEnter={() => audio.playHover()}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-950/70 border border-zinc-800 hover:border-cyan-400 text-zinc-300 hover:text-cyan-400 font-mono text-xs transition-all shadow-lg backdrop-blur-md group"
+                                title={isMuted ? 'Unmute Lofi Audio' : 'Mute Lofi Audio'}
+                            >
+                                <span className={`w-2 h-2 rounded-full ${isMuted ? 'bg-zinc-600' : 'bg-cyan-400 animate-pulse shadow-[0_0_8px_#00f5d4]'}`} />
+                                <span className="text-[11px] text-zinc-400 group-hover:text-cyan-300">LOFI</span>
+                                {isMuted ? (
+                                    <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+                                ) : (
+                                    <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
+                                )}
+                            </button>
                         </header>
 
                         {/* CENTER / BOTTOM HERO CTA & INTERACTIVE ROOM CONTROLS */}
-                        <div className="flex flex-col items-center justify-center text-center space-y-6 max-w-xl mx-auto pointer-events-auto">
+                        <div className="flex flex-col items-center justify-center text-center space-y-5 max-w-xl mx-auto pointer-events-auto pb-6">
                             {/* Live Character Routine Status Badge */}
                             <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-xs sm:text-sm shadow-[0_0_20px_rgba(0,245,212,0.25)] backdrop-blur-md">
                                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
@@ -264,18 +233,6 @@ export default function StoryController() {
                                 </p>
                             </div>
                         </div>
-
-                        {/* BOTTOM TIP BAR */}
-                        <footer className="flex items-center justify-between text-[10px] sm:text-xs font-mono text-zinc-500 pointer-events-none">
-                            <div className="flex items-center gap-2">
-                                <Compass className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
-                                <span>Cinematic 360° Orbit Active • Drag mouse to rotate room</span>
-                            </div>
-                            <div className="hidden sm:flex items-center gap-3">
-                                <span>Weather: Neo-Tokyo Rain 14°C</span>
-                                <span>FPS: 60 (WebGL Locked)</span>
-                            </div>
-                        </footer>
                     </motion.div>
                 )}
             </AnimatePresence>
