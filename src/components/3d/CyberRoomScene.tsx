@@ -1650,7 +1650,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
 // -------------------------------------------------------------
 interface LoungeAndMediaZoneProps {
     currentRoutine: CharacterRoutine;
-    onRoutineChange: (routine: CharacterRoutine, statusText?: string) => void;
+    onRoutineChange: (routine: CharacterRoutine, statusText: string) => void;
 }
 
 const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
@@ -2205,254 +2205,233 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     document.body.style.cursor = 'auto';
                 }}
             >
-                {/* 1. Recessed Shadow Plinth Base (Dark Smoked Oak with Rounded Chamfer) */}
-                <mesh castShadow receiveShadow position={[0, 0.035, -0.04]}>
-                    <boxGeometry args={[1.32, 0.07, 0.62]} />
-                    <meshStandardMaterial color="#1c140d" roughness={0.7} metalness={0.1} />
+                {/* ── SOFA STRUCTURE: Solid Hardwood Frame & Plinth Base ── */}
+                {/* Low Solid Dark-Oak Plinth Base spanning the full sofa width */}
+                <mesh castShadow receiveShadow position={[0, 0.045, 0]}>
+                    <boxGeometry args={[1.46, 0.09, 0.74]} />
+                    <meshStandardMaterial color="#1c140d" roughness={0.55} metalness={0.05} />
                 </mesh>
-                {/* 4 Low Tapered Walnut Dowel Feet with Brushed Brass Ferrules */}
-                {[
-                    [-0.56, -0.22],
-                    [0.56, -0.22],
-                    [-0.50, 0.18],
-                    [0.50, 0.18],
-                ].map(([fx, fz], idx) => (
-                    <group key={idx} position={[fx, 0.035, fz]}>
+                {/* Walnut veneer top face of plinth */}
+                <mesh position={[0, 0.092, 0]}>
+                    <boxGeometry args={[1.44, 0.008, 0.72]} />
+                    <meshStandardMaterial color="#2e1d0e" roughness={0.65} />
+                </mesh>
+                {/* 4 Tapered Cone Walnut Feet with Polished Brass Ferrule Caps */}
+                {([ [-0.62, -0.28], [0.62, -0.28], [-0.62, 0.28], [0.62, 0.28] ] as [number,number][]).map(([fx, fz], idx) => (
+                    <group key={idx} position={[fx, 0.005, fz]}>
                         <mesh castShadow>
-                            <cylinderGeometry args={[0.024, 0.018, 0.07, 12]} />
-                            <meshStandardMaterial color="#382414" roughness={0.6} />
+                            <cylinderGeometry args={[0.028, 0.020, 0.082, 14]} />
+                            <meshStandardMaterial color="#3d2510" roughness={0.5} />
                         </mesh>
-                        <mesh position={[0, -0.025, 0]}>
-                            <cylinderGeometry args={[0.019, 0.017, 0.02, 12]} />
-                            <meshStandardMaterial color="#b45309" metalness={0.9} roughness={0.2} />
+                        {/* Brass Cap Ferrule */}
+                        <mesh position={[0, -0.036, 0]}>
+                            <cylinderGeometry args={[0.021, 0.019, 0.022, 14]} />
+                            <meshStandardMaterial color="#b45309" metalness={0.92} roughness={0.18} />
                         </mesh>
                     </group>
                 ))}
 
-                {/* 2. PLUSH DOUBLE-CROWN SEAT CUSHIONS WITH REALISTIC PIPED WELT SEAMS */}
-                {/* Center Seat Cushion (Soft Tactile Bouclé) */}
-                <group position={[0, 0.20, -0.02]}>
-                    {/* Main Cushion Block */}
-                    <mesh castShadow receiveShadow>
-                        <boxGeometry args={[0.66, 0.24, 0.64]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
-                    </mesh>
-                    {/* Pillowed Top Crown (Gentle comfort bulge) */}
-                    <mesh position={[0, 0.115, 0]} rotation={[0, 0, Math.PI / 2]}>
-                        <cylinderGeometry args={[0.27, 0.28, 0.66, 20]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
-                    </mesh>
-                    {/* Piped Perimeter Welting Seam (Top Edge) */}
-                    <mesh position={[0, 0.125, 0.315]}>
-                        <boxGeometry args={[0.66, 0.014, 0.014]} />
-                        <meshStandardMaterial color="#ded4c3" roughness={0.95} />
-                    </mesh>
-                    {/* Center Biscuit Tufting Indentation Line (Subtle seam compression) */}
-                    <mesh position={[0, 0.13, 0]}>
-                        <boxGeometry args={[0.008, 0.006, 0.60]} />
-                        <meshStandardMaterial color="#2d2218" roughness={0.9} />
-                    </mesh>
-                </group>
-
-                {/* Left Curved Crescent Wing Cushion (Angled forward 17 degrees) */}
-                <group position={[-0.45, 0.20, 0.03]} rotation={[0, 0.30, 0]}>
-                    <mesh castShadow receiveShadow>
-                        <boxGeometry args={[0.48, 0.24, 0.60]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
-                    </mesh>
-                    <mesh position={[0, 0.115, 0]} rotation={[0, 0, Math.PI / 2]}>
-                        <cylinderGeometry args={[0.25, 0.26, 0.46, 18]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
-                    </mesh>
-                    {/* Perimeter Piped Welting Seam */}
-                    <mesh position={[0, 0.125, 0.295]}>
-                        <boxGeometry args={[0.48, 0.014, 0.014]} />
-                        <meshStandardMaterial color="#ded4c3" roughness={0.95} />
-                    </mesh>
-                </group>
-
-                {/* Right Curved Crescent Wing Cushion (Angled forward 17 degrees) */}
-                <group position={[0.45, 0.20, 0.03]} rotation={[0, -0.30, 0]}>
-                    <mesh castShadow receiveShadow>
-                        <boxGeometry args={[0.48, 0.24, 0.60]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
-                    </mesh>
-                    <mesh position={[0, 0.115, 0]} rotation={[0, 0, Math.PI / 2]}>
-                        <cylinderGeometry args={[0.25, 0.26, 0.46, 18]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
-                    </mesh>
-                    {/* Perimeter Piped Welting Seam */}
-                    <mesh position={[0, 0.125, 0.295]}>
-                        <boxGeometry args={[0.48, 0.014, 0.014]} />
-                        <meshStandardMaterial color="#ded4c3" roughness={0.95} />
-                    </mesh>
-                </group>
-
-                {/* Deep Cushion Crevices / Shadow Gaps between Seat Sections */}
-                <mesh position={[-0.23, 0.25, 0.02]} rotation={[0, 0.15, 0]}>
-                    <boxGeometry args={[0.018, 0.12, 0.58]} />
-                    <meshStandardMaterial color="#2d2218" roughness={0.95} />
-                </mesh>
-                <mesh position={[0.23, 0.25, 0.02]} rotation={[0, -0.15, 0]}>
-                    <boxGeometry args={[0.018, 0.12, 0.58]} />
-                    <meshStandardMaterial color="#2d2218" roughness={0.95} />
+                {/* ── UPHOLSTERED FRAME BODY (the structural shell beneath cushions) ── */}
+                {/* Inner foam seating platform */}
+                <mesh castShadow receiveShadow position={[0, 0.14, 0.02]}>
+                    <boxGeometry args={[1.38, 0.04, 0.66]} />
+                    <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
                 </mesh>
 
-                {/* 3. CONTINUOUS COCOON ENVELOPING CURVED BACKREST WITH SOFT BULLNOSE TOP */}
-                {/* Center Backrest Segment (Gently reclined) */}
-                <group position={[0, 0.45, -0.30]} rotation={[-0.10, 0, 0]}>
+                {/* ── THREE INDIVIDUAL SEAT CUSHIONS ── */}
+                {/* Left Seat Cushion */}
+                <group position={[-0.45, 0.255, 0.02]}>
                     <mesh castShadow receiveShadow>
-                        <boxGeometry args={[0.70, 0.36, 0.17]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
+                        <boxGeometry args={[0.43, 0.22, 0.62]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
-                    {/* Rounded Soft Bullnose Top Crest */}
-                    <mesh position={[0, 0.175, 0]} rotation={[0, 0, Math.PI / 2]}>
-                        <cylinderGeometry args={[0.085, 0.085, 0.70, 20]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
+                    {/* Pillow-top bulge */}
+                    <mesh position={[0, 0.108, 0]} rotation={[0, 0, Math.PI / 2]}>
+                        <cylinderGeometry args={[0.26, 0.26, 0.43, 20]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
-                    {/* Vertical Upholstery Tailoring Seam */}
-                    <mesh position={[0, 0, 0.087]}>
-                        <boxGeometry args={[0.008, 0.34, 0.005]} />
-                        <meshStandardMaterial color="#d4c9b8" roughness={0.9} />
+                    {/* Front welt seam */}
+                    <mesh position={[0, 0.112, 0.315]}>
+                        <boxGeometry args={[0.43, 0.015, 0.013]} />
+                        <meshStandardMaterial color="#ddd4c1" roughness={0.95} />
+                    </mesh>
+                    {/* Side welt seams */}
+                    <mesh position={[-0.218, 0.08, 0]}>
+                        <boxGeometry args={[0.013, 0.20, 0.62]} />
+                        <meshStandardMaterial color="#ddd4c1" roughness={0.95} />
                     </mesh>
                 </group>
-
-                {/* Left Sweeping Cocoon Wing & Low Arm Rest (Wraps seamlessly around) */}
-                <group position={[-0.56, 0.41, -0.12]} rotation={[-0.08, 0.56, -0.04]}>
+                {/* Center Seat Cushion */}
+                <group position={[0, 0.255, 0.02]}>
                     <mesh castShadow receiveShadow>
-                        <boxGeometry args={[0.55, 0.34, 0.16]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
+                        <boxGeometry args={[0.43, 0.22, 0.62]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
-                    <mesh position={[0, 0.165, 0]} rotation={[0, 0, Math.PI / 2]}>
-                        <cylinderGeometry args={[0.08, 0.08, 0.55, 20]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
+                    <mesh position={[0, 0.108, 0]} rotation={[0, 0, Math.PI / 2]}>
+                        <cylinderGeometry args={[0.26, 0.26, 0.43, 20]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
-                    {/* Soft Rounded Arm Cap End */}
-                    <mesh position={[-0.27, 0.06, 0.02]} rotation={[0, Math.PI / 2, 0]}>
-                        <cylinderGeometry args={[0.08, 0.08, 0.04, 16]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
+                    <mesh position={[0, 0.112, 0.315]}>
+                        <boxGeometry args={[0.43, 0.015, 0.013]} />
+                        <meshStandardMaterial color="#ddd4c1" roughness={0.95} />
                     </mesh>
                 </group>
-
-                {/* Right Sweeping Cocoon Wing & Low Arm Rest (Wraps seamlessly around) */}
-                <group position={[0.56, 0.41, -0.12]} rotation={[-0.08, -0.56, 0.04]}>
+                {/* Right Seat Cushion */}
+                <group position={[0.45, 0.255, 0.02]}>
                     <mesh castShadow receiveShadow>
-                        <boxGeometry args={[0.55, 0.34, 0.16]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
+                        <boxGeometry args={[0.43, 0.22, 0.62]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
-                    <mesh position={[0, 0.165, 0]} rotation={[0, 0, Math.PI / 2]}>
-                        <cylinderGeometry args={[0.08, 0.08, 0.55, 20]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
+                    <mesh position={[0, 0.108, 0]} rotation={[0, 0, Math.PI / 2]}>
+                        <cylinderGeometry args={[0.26, 0.26, 0.43, 20]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
-                    {/* Soft Rounded Arm Cap End */}
-                    <mesh position={[0.27, 0.06, 0.02]} rotation={[0, Math.PI / 2, 0]}>
-                        <cylinderGeometry args={[0.08, 0.08, 0.04, 16]} />
-                        <meshStandardMaterial
-                            map={boucleTexture || undefined}
-                            color="#f5f0e7"
-                            roughness={0.92}
-                        />
+                    <mesh position={[0, 0.112, 0.315]}>
+                        <boxGeometry args={[0.43, 0.015, 0.013]} />
+                        <meshStandardMaterial color="#ddd4c1" roughness={0.95} />
+                    </mesh>
+                    {/* Side welt seam right */}
+                    <mesh position={[0.218, 0.08, 0]}>
+                        <boxGeometry args={[0.013, 0.20, 0.62]} />
+                        <meshStandardMaterial color="#ddd4c1" roughness={0.95} />
                     </mesh>
                 </group>
-
-                {/* 4. DESIGNER ACCENTS: TEXTURED SCULPTURAL PILLOWS & DRAPED THROW */}
-                {/* Signature Round Spherical Bouclé Ball Pillow */}
-                <mesh castShadow position={[-0.34, 0.38, -0.06]}>
-                    <sphereGeometry args={[0.11, 24, 24]} />
-                    <meshStandardMaterial
-                        map={boucleTexture || undefined}
-                        color="#eae3d6"
-                        roughness={0.96}
-                    />
+                {/* Shadow gap crevices between cushions */}
+                <mesh position={[-0.225, 0.29, 0.02]}>
+                    <boxGeometry args={[0.02, 0.14, 0.60]} />
+                    <meshStandardMaterial color="#1a1208" roughness={0.98} />
+                </mesh>
+                <mesh position={[0.225, 0.29, 0.02]}>
+                    <boxGeometry args={[0.02, 0.14, 0.60]} />
+                    <meshStandardMaterial color="#1a1208" roughness={0.98} />
                 </mesh>
 
-                {/* Soft Organic Sage Green Linen Accent Cushion (Tilted naturally against backrest) */}
-                <group position={[0.32, 0.39, -0.14]} rotation={[0.14, -0.26, 0.08]}>
+                {/* ── FULL-WIDTH BACKREST WITH BACK CUSHIONS ── */}
+                {/* Structural backrest frame (reclined 12°) */}
+                <group position={[0, 0.44, -0.33]} rotation={[-0.20, 0, 0]}>
+                    {/* Solid frame wall */}
+                    <mesh castShadow receiveShadow>
+                        <boxGeometry args={[1.40, 0.42, 0.14]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#eae5db" roughness={0.88} />
+                    </mesh>
+                    {/* Three back cushions (matching seat positions) */}
+                    {([-0.45, 0, 0.45] as number[]).map((bx, bi) => (
+                        <group key={bi} position={[bx, 0, 0.075]}>
+                            {/* Back cushion body */}
+                            <mesh castShadow>
+                                <boxGeometry args={[0.43, 0.38, 0.10]} />
+                                <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
+                            </mesh>
+                            {/* Front face pillow bulge */}
+                            <mesh position={[0, 0, 0.04]}>
+                                <boxGeometry args={[0.41, 0.36, 0.06]} />
+                                <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
+                            </mesh>
+                            {/* Welt seam around front face */}
+                            <mesh position={[0, 0.193, 0.03]}>
+                                <boxGeometry args={[0.43, 0.012, 0.12]} />
+                                <meshStandardMaterial color="#ddd4c1" roughness={0.95} />
+                            </mesh>
+                            {/* Center button tuft indentation */}
+                            <mesh position={[0, 0, 0.072]}>
+                                <cylinderGeometry args={[0.018, 0.018, 0.005, 12]} />
+                                <meshStandardMaterial color="#ccc4b0" roughness={0.95} />
+                            </mesh>
+                        </group>
+                    ))}
+                    {/* Bullnose top crest rail */}
+                    <mesh position={[0, 0.205, 0]} rotation={[0, 0, Math.PI / 2]}>
+                        <cylinderGeometry args={[0.095, 0.095, 1.40, 22]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
+                    </mesh>
+                    {/* Back cushion shadow dividers */}
+                    <mesh position={[-0.225, 0, 0.075]}>
+                        <boxGeometry args={[0.018, 0.40, 0.12]} />
+                        <meshStandardMaterial color="#1a1208" roughness={0.98} />
+                    </mesh>
+                    <mesh position={[0.225, 0, 0.075]}>
+                        <boxGeometry args={[0.018, 0.40, 0.12]} />
+                        <meshStandardMaterial color="#1a1208" roughness={0.98} />
+                    </mesh>
+                </group>
+
+                {/* ── LEFT ARMREST ── */}
+                <group position={[-0.69, 0.36, -0.04]}>
+                    {/* Armrest vertical side panel */}
+                    <mesh castShadow receiveShadow>
+                        <boxGeometry args={[0.10, 0.44, 0.68]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
+                    </mesh>
+                    {/* Padded arm top flat surface */}
+                    <mesh castShadow position={[0, 0.22, -0.02]}>
+                        <boxGeometry args={[0.14, 0.06, 0.64]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
+                    </mesh>
+                    {/* Rounded front arm end cap */}
+                    <mesh position={[0, 0.12, 0.34]} rotation={[Math.PI/2, 0, 0]}>
+                        <cylinderGeometry args={[0.11, 0.10, 0.14, 18]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
+                    </mesh>
+                    {/* Arm top welt seam */}
+                    <mesh position={[0, 0.252, -0.02]}>
+                        <boxGeometry args={[0.14, 0.012, 0.64]} />
+                        <meshStandardMaterial color="#ddd4c1" roughness={0.95} />
+                    </mesh>
+                </group>
+
+                {/* ── RIGHT ARMREST ── */}
+                <group position={[0.69, 0.36, -0.04]}>
+                    <mesh castShadow receiveShadow>
+                        <boxGeometry args={[0.10, 0.44, 0.68]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
+                    </mesh>
+                    <mesh castShadow position={[0, 0.22, -0.02]}>
+                        <boxGeometry args={[0.14, 0.06, 0.64]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
+                    </mesh>
+                    <mesh position={[0, 0.12, 0.34]} rotation={[Math.PI/2, 0, 0]}>
+                        <cylinderGeometry args={[0.11, 0.10, 0.14, 18]} />
+                        <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
+                    </mesh>
+                    <mesh position={[0, 0.252, -0.02]}>
+                        <boxGeometry args={[0.14, 0.012, 0.64]} />
+                        <meshStandardMaterial color="#ddd4c1" roughness={0.95} />
+                    </mesh>
+                </group>
+
+                {/* ── ACCENT PILLOWS & THROW ── */}
+                {/* Round bouclé ball pillow */}
+                <mesh castShadow position={[-0.34, 0.45, -0.25]}>
+                    <sphereGeometry args={[0.12, 24, 24]} />
+                    <meshStandardMaterial map={boucleTexture || undefined} color="#eae3d6" roughness={0.96} />
+                </mesh>
+                {/* Sage green linen lumbar cushion */}
+                <group position={[0.30, 0.50, -0.30]} rotation={[0.18, -0.24, 0.06]}>
                     <mesh castShadow>
-                        <boxGeometry args={[0.30, 0.24, 0.11]} />
+                        <boxGeometry args={[0.32, 0.26, 0.12]} />
                         <meshStandardMaterial color="#4a5e42" roughness={0.85} />
                     </mesh>
-                    {/* Piped Edge Seam */}
-                    <mesh position={[0, 0, 0.056]}>
-                        <boxGeometry args={[0.30, 0.24, 0.006]} />
+                    <mesh position={[0, 0, 0.062]}>
+                        <boxGeometry args={[0.32, 0.26, 0.005]} />
                         <meshStandardMaterial color="#3a4b34" roughness={0.9} />
                     </mesh>
                 </group>
-
-                {/* Waffle-Weave Cashmere Throw Blanket Softly Draped Across Arm and Seat */}
-                <group position={[0.58, 0.40, 0.04]} rotation={[0, -0.22, 0]}>
-                    <mesh castShadow position={[0, 0.015, 0]}>
-                        <boxGeometry args={[0.20, 0.025, 0.52]} />
+                {/* Waffle-weave cashmere throw over right armrest */}
+                <group position={[0.70, 0.48, 0.10]} rotation={[0, -0.18, 0.08]}>
+                    <mesh castShadow position={[0, 0, 0]}>
+                        <boxGeometry args={[0.18, 0.028, 0.58]} />
                         <meshStandardMaterial color="#dcd3c5" roughness={0.94} />
                     </mesh>
-                    {/* Cascading draped fold hanging over the front edge */}
-                    <mesh castShadow position={[0, -0.06, 0.25]} rotation={[0.4, 0, 0]}>
-                        <boxGeometry args={[0.20, 0.14, 0.02]} />
+                    <mesh castShadow position={[0, -0.08, 0.28]} rotation={[0.45, 0, 0]}>
+                        <boxGeometry args={[0.18, 0.16, 0.022]} />
                         <meshStandardMaterial color="#d2c8b8" roughness={0.94} />
                     </mesh>
                 </group>
             </group>
 
             {/* ============================================================ */}
-            {/* 7. SCANDINAVIAN AREA RUG & COMPACT FLUTED OAK COFFEE TABLE   */}
+            {/* 7. COMPACT FLUTED OAK COFFEE TABLE                           */}
             {/* ============================================================ */}
-            {/* Ribbed Oval Area Rug Centered under Sofa & Coffee Table */}
-            <mesh receiveShadow position={[2.12, 0.005, 1.35]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[1.65, 2.15]} />
-                <meshStandardMaterial color="#ded7cb" roughness={0.96} />
-            </mesh>
 
             {/* Chic Organic Fluted Oak Cylinder Coffee Table */}
             <group position={[2.42, 0, 1.35]}>
