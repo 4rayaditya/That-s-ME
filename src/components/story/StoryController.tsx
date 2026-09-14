@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, Moon } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import HolographicPortfolio from '@/components/hologram/HolographicPortfolio';
 import { CharacterRoutine } from '@/components/3d/CyberCharacter';
@@ -142,13 +142,8 @@ export default function StoryController() {
                 />
             </div>
 
-            {/* 2. HEADER CONTROLS: AUDIO TOGGLE + DARK MODE BADGE */}
+            {/* 2. HEADER CONTROLS: AUDIO TOGGLE */}
             <header className="absolute top-4 right-4 z-20 pointer-events-auto flex items-center gap-2.5">
-                {/* Static dark mode indicator */}
-                <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-zinc-950/70 border border-zinc-700/80 text-zinc-300 backdrop-blur-md">
-                    <Moon className="w-4 h-4 text-amber-300" />
-                    <span className="text-xs font-mono font-medium text-amber-200">Dark Mode</span>
-                </div>
 
                 <button
                     onClick={handleToggleSound}

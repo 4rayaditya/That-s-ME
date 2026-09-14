@@ -29,7 +29,7 @@ export const TOUR_STOPS: TourStop[] = [
         name: '☕ Neon Espresso Bar // Hyper-Caffeine',
         subtitle: 'High-pressure steam espresso machine & continuous brewing station',
         camPos: new THREE.Vector3(1.6, 1.4, 1.3),
-        target: new THREE.Vector3(2.6, 1.1, 0.7),
+        target: new THREE.Vector3(3.24, 1.1, 0.7),
         duration: 4.0,
     },
     {

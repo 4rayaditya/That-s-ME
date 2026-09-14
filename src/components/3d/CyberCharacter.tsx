@@ -37,7 +37,7 @@ export default function CyberCharacter({
 
     // Precise spatial coordinates for locations in the room
     const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, 0.4), []);
-    const COFFEE_POS = useMemo(() => new THREE.Vector3(2.15, 0, 0.7), []); // Directly in front of espresso bar
+    const COFFEE_POS = useMemo(() => new THREE.Vector3(2.79, 0, 0.7), []); // Directly in front of espresso bar (counter now flush against wall)
     const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.85, 0, 0.8), []); // Foot of bed for standing
     const BED_LIE_POS = useMemo(() => new THREE.Vector3(-2.55, 0, 0.8), []); // Flat on futon mattress
 
@@ -235,7 +235,7 @@ export default function CyberCharacter({
         // STATE 3: BREWING ESPRESSO (Stands locked at counter, sips coffee)
         // ============================================================
         } else if (r === 'brewing_coffee') {
-            // Locked firmly in front of the espresso bar at x=2.15, z=0.7 facing +X
+            // Locked firmly in front of the espresso bar at x=2.79, z=0.7 facing +X
             group.position.lerp(COFFEE_POS, damp(8));
 
             let diff = Math.PI / 2 - group.rotation.y;

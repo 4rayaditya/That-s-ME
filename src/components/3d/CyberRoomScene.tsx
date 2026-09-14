@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
@@ -27,7 +27,7 @@ interface CyberRoomSceneProps {
 // -------------------------------------------------------------
 // SUB-COMPONENT: Single Ultrawide Curved OLED Monitor
 // -------------------------------------------------------------
-function BattlestationMonitors({ monitorTextures }: { monitorTextures: MonitorTextures }) {
+const BattlestationMonitors = React.memo(function BattlestationMonitors({ monitorTextures }: { monitorTextures: MonitorTextures }) {
     return (
         <group position={[0, 1.45, -0.9]}>
             {/* Heavy-Duty Heavy Articulated Hydraulic Mounting Arm */}
@@ -84,12 +84,12 @@ function BattlestationMonitors({ monitorTextures }: { monitorTextures: MonitorTe
             </group>
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: Custom High-End Gaming / Workstation PC Cabinet
 // -------------------------------------------------------------
-function CpuCabinet() {
+const CpuCabinet = React.memo(function CpuCabinet() {
     const rgbPulseRef = useRef<THREE.PointLight>(null);
     const lastRgbUpdate = useRef(0);
 
@@ -192,7 +192,7 @@ function CpuCabinet() {
                     <ringGeometry args={[0.024, 0.034, 20]} />
                     <meshBasicMaterial color="#00f5d4" toneMapped={false} side={THREE.DoubleSide} />
                 </mesh>
-                {/* LCD Temp Display Center (38°C) */}
+                {/* LCD Temp Display Center (38Â°C) */}
                 <mesh position={[-0.015, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
                     <circleGeometry args={[0.02, 20]} />
                     <meshBasicMaterial color="#042f2e" toneMapped={false} side={THREE.DoubleSide} />
@@ -315,12 +315,12 @@ function CpuCabinet() {
             <pointLight color="#f59e0b" intensity={0.9} distance={1.2} decay={2} position={[0.02, 0.18, 0.05]} />
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: Battlestation Desk, Mat, Keyboard, Cables, Lamp
 // -------------------------------------------------------------
-function BattlestationDesk() {
+const BattlestationDesk = React.memo(function BattlestationDesk() {
     const lampFlickerRef = useRef<THREE.PointLight>(null);
     const lastLampUpdate = useRef(0);
 
@@ -485,6 +485,10 @@ function BattlestationDesk() {
                     <sphereGeometry args={[0.04, 16, 16]} />
                     <meshBasicMaterial color="#ffb703" toneMapped={false} />
                 </mesh>
+                {/* castShadow removed: a shadow-casting point light renders a 6-face cubemap every
+                    frame (6x the cost of the directional light's single shadow map) for a shadow
+                    that's barely visible on a small desk lamp — the directional light + ContactShadows
+                    already ground every object in the room. */}
                 <pointLight
                     ref={lampFlickerRef}
                     color="#ffb703"
@@ -492,7 +496,6 @@ function BattlestationDesk() {
                     distance={3.5}
                     decay={2}
                     position={[0.22, 0.36, 0.2]}
-                    castShadow
                 />
             </group>
 
@@ -592,12 +595,12 @@ function BattlestationDesk() {
             </group>
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: Corner Server Rack with Patch Cables & LEDs
 // -------------------------------------------------------------
-function ServerRackTower() {
+const ServerRackTower = React.memo(function ServerRackTower() {
     const ledRef = useRef<THREE.InstancedMesh>(null);
     const count = 48;
     // Reuse dummy to avoid GC allocation every frame
@@ -703,87 +706,21 @@ function ServerRackTower() {
             <pointLight color="#00f5d4" intensity={1.6} distance={2.5} decay={2} position={[0, 1.4, 0.5]} />
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Dynamic Atmosphere Window (Lush Botanical Courtyard Vista)
+// SUB-COMPONENT: Night Window (Curtained â€” exterior vista removed)
 // -------------------------------------------------------------
-function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: EnvironmentPhase }) {
-    const config = ENVIRONMENT_CONFIGS[environmentPhase];
-    const rainRef = useRef<THREE.Points>(null);
-
-    const isNight = environmentPhase === 'night';
-    const isEvening = environmentPhase === 'evening';
-
-    // Rain particles for night ambiance
-    const rainCount = 180;
-    const { rainGeo } = useMemo(() => {
-        const geo = new THREE.BufferGeometry();
-        const pos = new Float32Array(rainCount * 3);
-        for (let i = 0; i < rainCount; i++) {
-            pos[i * 3] = (Math.random() - 0.5) * 3.4;
-            pos[i * 3 + 1] = 1.0 + Math.random() * 1.8;
-            pos[i * 3 + 2] = -3.48;
-        }
-        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        return { rainGeo: geo };
-    }, []);
-
-    // Night sky texture only — we only keep dark mode
-    const skyTexture = useMemo(() => {
-        if (typeof document === 'undefined') return null;
-        const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 256;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return null;
-        const grad = ctx.createLinearGradient(0, 0, 0, 256);
-        grad.addColorStop(0, '#030712');
-        grad.addColorStop(0.6, '#0b1329');
-        grad.addColorStop(1, '#111827');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 256, 256);
-        // Stars
-        ctx.fillStyle = '#ffffff';
-        for (let s = 0; s < 70; s++) {
-            const sx = (Math.sin(s * 99) * 0.5 + 0.5) * 256;
-            const sy = (Math.cos(s * 33) * 0.5 + 0.5) * 200;
-            ctx.fillRect(sx, sy, s % 3 === 0 ? 2 : 1, s % 3 === 0 ? 2 : 1);
-        }
-        return new THREE.CanvasTexture(canvas);
-    }, []);
-
-    const lastRainUpdate = useRef(0);
-    useFrame((state, delta) => {
-        if (config.showRain && rainRef.current) {
-            // Throttle rain to 30fps
-            if (state.clock.elapsedTime - lastRainUpdate.current < 0.033) return;
-            lastRainUpdate.current = state.clock.elapsedTime;
-            const pos = rainGeo.attributes.position.array as Float32Array;
-            for (let i = 0; i < rainCount; i++) {
-                pos[i * 3 + 1] -= delta * (1.5 + (i % 5) * 0.4);
-                if (pos[i * 3 + 1] < 1.0) {
-                    pos[i * 3 + 1] = 2.8;
-                }
-            }
-            rainGeo.attributes.position.needsUpdate = true;
-        }
-    });
-
-    const windowGlassColor =
-        environmentPhase === 'morning'
-            ? '#fefce8'
-            : environmentPhase === 'afternoon'
-            ? '#f0f9ff'
-            : environmentPhase === 'evening'
-            ? '#fed7aa'
-            : '#0f172a';
-
+// Dark mode is permanent now, and at night the window is drawn shut with a
+// curtain (see ArchitecturalRoom's closed curtain panels), so the courtyard
+// garden / sky vista / rain that used to be visible through the glass has
+// been removed entirely: it was never seen behind the curtain and was one
+// of the heavier parts of the scene (a generated sky texture, a dozen+
+// garden meshes, and a per-frame rain particle update).
+const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow() {
     return (
         <group position={[0, 0, 0]}>
-            {/* ============================================================ */}
-            {/* 1. ARCHITECTURAL HOLLOW WINDOW CASING & SLIM BRONZE MULLIONS */}
-            {/* ============================================================ */}
+            {/* ARCHITECTURAL HOLLOW WINDOW CASING & SLIM BRONZE MULLIONS */}
             {/* Top Frame Beam */}
             <mesh position={[0, 2.92, -3.46]} castShadow>
                 <boxGeometry args={[3.84, 0.08, 0.12]} />
@@ -815,110 +752,29 @@ function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: Envir
                 <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
 
-            {/* Crystal Clear Glass Pane with Realistic Specular Tint */}
+            {/* Dark Night Glass Pane (curtain hangs in front of this) */}
             <mesh position={[0, 1.9, -3.48]}>
                 <planeGeometry args={[3.68, 1.96]} />
-                <meshStandardMaterial
-                    color={windowGlassColor}
-                    transparent
-                    opacity={isNight ? 0.45 : 0.15}
-                    roughness={0.04}
-                    metalness={0.15}
-                />
+                <meshStandardMaterial color="#0f172a" transparent opacity={0.45} roughness={0.04} metalness={0.15} />
             </mesh>
-
-            {/* Dripping Rain Particles (Rendered only at Night) */}
-            {config.showRain && (
-                <points ref={rainRef} geometry={rainGeo}>
-                    <pointsMaterial color="#38bdf8" size={0.03} transparent opacity={0.6} toneMapped={false} />
-                </points>
-            )}
-
-            {/* ============================================================ */}
-            {/* 2. OUTSIDE COURTYARD GARDEN & HIGH-RESOLUTION SKY VISTA      */}
-            {/* ============================================================ */}
-            <group position={[0, 1.8, -5.2]}>
-                {/* Atmospheric Sky Backdrop with Custom Canvas Gradient */}
-                <mesh position={[0, 0.6, -2.5]}>
-                    <planeGeometry args={[16, 10]} />
-                    <meshBasicMaterial map={skyTexture || undefined} color={config.windowSkyTop} />
-                </mesh>
-
-                {/* Courtyard Terrace Paver Floor */}
-                <mesh position={[0, -1.8, 0.5]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-                    <planeGeometry args={[12, 6]} />
-                    <meshStandardMaterial color={isNight ? '#14181f' : '#b8aea2'} roughness={0.75} />
-                </mesh>
-
-                {/* Garden Boundary Stone Wall with Ivy Foliage */}
-                <group position={[0, -0.7, -1.6]}>
-                    {/* Architectural Cut-Stone Boundary Wall */}
-                    <mesh castShadow receiveShadow position={[0, 0, 0]}>
-                        <boxGeometry args={[14, 2.2, 0.4]} />
-                        <meshStandardMaterial color={isNight ? '#11151d' : '#6b5c4d'} roughness={0.85} />
-                    </mesh>
-                    {/* Wall Coping Cap Stone */}
-                    <mesh position={[0, 1.12, 0]}>
-                        <boxGeometry args={[14.2, 0.08, 0.46]} />
-                        <meshStandardMaterial color={isNight ? '#191f2b' : '#857564'} roughness={0.7} />
-                    </mesh>
-                    {/* Climbing Ivy Foliage Pads along the stone wall */}
-                    {[-4.5, -2.8, -1.2, 0.8, 2.4, 4.2].map((wx, wi) => (
-                        <group key={wi} position={[wx, 0.2 + (wi % 3) * 0.25, 0.22]}>
-                            <mesh>
-                                <dodecahedronGeometry args={[0.32 + (wi % 2) * 0.1, 1]} />
-                                <meshStandardMaterial
-                                    color={isEvening ? '#78350f' : isNight ? '#0a2310' : wi % 2 === 0 ? '#1b431e' : '#275828'}
-                                    roughness={0.7}
-                                />
-                            </mesh>
-                        </group>
-                    ))}
-                </group>
-
-                {/* Lush Lawn / Flower Bed along the courtyard terrace */}
-                <mesh position={[0, -1.78, -0.4]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <planeGeometry args={[12, 2.2]} />
-                    <meshStandardMaterial color={isNight ? '#0b1a0d' : '#1c3d18'} roughness={0.9} />
-                </mesh>
-
-                {/* Distant Layered Rolling Treeline - replaced with simple dark silhouette planes for performance */}
-                <group position={[0, 0.3, -2.1]}>
-                    {[-4.8, -2.4, 0.2, 2.6, 5.0].map((tx, ti) => (
-                        <mesh key={ti} position={[tx, (ti % 2) * 0.35, 0]}>
-                            <dodecahedronGeometry args={[1.1 + (ti % 3) * 0.25, 0]} />
-                            <meshBasicMaterial color="#08170c" />
-                        </mesh>
-                    ))}
-                </group>
-
-                {/* Window Directional / Ambient Cast Light */}
-                <pointLight
-                    color={config.sunColor}
-                    intensity={config.sunIntensity}
-                    distance={8}
-                    decay={2}
-                    position={[0, 1.2, -1]}
-                />
-            </group>
         </group>
     );
-}
+});
 
 
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: High-Tech Coffee Station / Espresso Bar
 // -------------------------------------------------------------
-function CoffeeStation() {
+const CoffeeStation = React.memo(function CoffeeStation() {
     const steamGeo = useMemo(() => {
         const count = 32;
         const geo = new THREE.BufferGeometry();
         const pos = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
-            pos[i * 3] = (Math.random() - 0.5) * 0.08;
-            pos[i * 3 + 1] = 0.95 + Math.random() * 0.35;
-            pos[i * 3 + 2] = (Math.random() - 0.5) * 0.08;
+            pos[i * 3] = (Math.random() - 0.5) * 0.06;
+            pos[i * 3 + 1] = 0.01 + Math.random() * 0.28;
+            pos[i * 3 + 2] = (Math.random() - 0.5) * 0.06;
         }
         geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         return geo;
@@ -926,166 +782,222 @@ function CoffeeStation() {
 
     const lastSteamUpdate = useRef(0);
     useFrame((state) => {
-        // Throttle coffee steam to ~20 FPS - slow rising particles don't need 60fps
         const now = state.clock.elapsedTime;
         const dt = now - lastSteamUpdate.current;
         if (dt < 0.05) return;
         lastSteamUpdate.current = now;
         const pos = steamGeo.attributes.position.array as Float32Array;
         for (let i = 0; i < 32; i++) {
-            pos[i * 3 + 1] += dt * 0.22;
-            pos[i * 3] += (Math.random() - 0.5) * dt * 0.05;
-            if (pos[i * 3 + 1] > 1.35) {
-                pos[i * 3 + 1] = 0.96;
-                pos[i * 3] = (Math.random() - 0.5) * 0.06;
+            pos[i * 3 + 1] += dt * 0.2;
+            pos[i * 3] += (Math.random() - 0.5) * dt * 0.04;
+            if (pos[i * 3 + 1] > 0.32) {
+                pos[i * 3 + 1] = 0.01;
+                pos[i * 3] = (Math.random() - 0.5) * 0.04;
             }
         }
         steamGeo.attributes.position.needsUpdate = true;
     });
 
     return (
-        <group position={[2.8, 0, 0.7]} rotation={[0, -Math.PI / 2, 0]}>
+        <group position={[3.19, 0, 0.55]} rotation={[0, -Math.PI / 2, 0]}>
+
+            {/* COUNTER BASE - 1.0 wide, back face flush against the right wall (wall at world x=3.5) */}
             <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
-                <boxGeometry args={[1.4, 0.9, 0.7]} />
+                <boxGeometry args={[1.0, 0.9, 0.62]} />
                 <meshStandardMaterial color="#0a101b" roughness={0.4} metalness={0.7} />
             </mesh>
-            <mesh position={[0, 0.89, 0.355]}>
-                <boxGeometry args={[1.4, 0.02, 0.01]} />
+            <mesh position={[0, 0.9, 0.31]}>
+                <boxGeometry args={[1.0, 0.018, 0.008]} />
                 <meshBasicMaterial color="#ffb703" toneMapped={false} />
             </mesh>
+            <mesh position={[0, 0.905, 0]} receiveShadow>
+                <boxGeometry args={[1.02, 0.018, 0.64]} />
+                <meshStandardMaterial color="#111827" metalness={0.6} roughness={0.3} />
+            </mesh>
 
-            {/* High-Tech Espresso Machine */}
-            <group position={[0, 0.9, -0.05]}>
-                <mesh castShadow position={[0, 0.25, 0]}>
-                    <boxGeometry args={[0.55, 0.5, 0.45]} />
-                    <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
+            {/* DETAILED ESPRESSO MACHINE */}
+            <group position={[0.08, 0.92, -0.04]}>
+                {/* Stainless body */}
+                <mesh castShadow position={[0, 0.22, 0]}>
+                    <boxGeometry args={[0.42, 0.44, 0.32]} />
+                    <meshStandardMaterial color="#1e293b" metalness={0.92} roughness={0.14} />
                 </mesh>
-                <mesh position={[0.18, 0.28, -0.1]}>
-                    <cylinderGeometry args={[0.06, 0.06, 0.38, 16]} />
+                {/* Front panel */}
+                <mesh position={[0, 0.22, 0.162]}>
+                    <boxGeometry args={[0.38, 0.40, 0.004]} />
+                    <meshStandardMaterial color="#0f172a" metalness={0.85} roughness={0.2} />
+                </mesh>
+                {/* Top lid */}
+                <mesh position={[0, 0.445, 0]}>
+                    <boxGeometry args={[0.42, 0.014, 0.32]} />
+                    <meshStandardMaterial color="#334155" metalness={0.95} roughness={0.08} />
+                </mesh>
+                {/* Boiler dome */}
+                <mesh position={[0.09, 0.465, 0.03]}>
+                    <cylinderGeometry args={[0.058, 0.058, 0.06, 16]} />
+                    <meshStandardMaterial color="#374151" metalness={0.95} roughness={0.1} />
+                </mesh>
+                {/* Pressure gauge */}
+                <mesh position={[0.15, 0.31, 0.165]}>
+                    <circleGeometry args={[0.044, 18]} />
+                    <meshStandardMaterial color="#0f172a" metalness={0.4} roughness={0.3} />
+                </mesh>
+                <mesh position={[0.15, 0.31, 0.166]}>
+                    <ringGeometry args={[0.040, 0.047, 18]} />
+                    <meshBasicMaterial color="#d97706" toneMapped={false} />
+                </mesh>
+                <mesh position={[0.15, 0.322, 0.167]} rotation={[0, 0, -0.55]}>
+                    <boxGeometry args={[0.002, 0.030, 0.001]} />
+                    <meshBasicMaterial color="#ef4444" toneMapped={false} />
+                </mesh>
+                {/* OLED display */}
+                <mesh position={[-0.08, 0.31, 0.164]}>
+                    <boxGeometry args={[0.09, 0.056, 0.003]} />
+                    <meshBasicMaterial color="#042f2e" toneMapped={false} />
+                </mesh>
+                <mesh position={[-0.08, 0.31, 0.165]}>
+                    <boxGeometry args={[0.082, 0.048, 0.001]} />
                     <meshBasicMaterial color="#00f5d4" toneMapped={false} />
                 </mesh>
-                <mesh position={[-0.08, 0.12, 0.15]}>
-                    <cylinderGeometry args={[0.04, 0.04, 0.1, 12]} />
-                    <meshStandardMaterial color="#f8fafc" metalness={0.95} roughness={0.1} />
+                {/* Control knobs */}
+                {([-0.12, 0.12] as number[]).map((kx, ki) => (
+                    <group key={ki} position={[kx, 0.13, 0.165]}>
+                        <mesh>
+                            <cylinderGeometry args={[0.026, 0.026, 0.02, 14]} />
+                            <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
+                        </mesh>
+                        <mesh position={[0, 0.011, 0.016]} rotation={[Math.PI / 2, 0, 0]}>
+                            <boxGeometry args={[0.003, 0.009, 0.001]} />
+                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                        </mesh>
+                    </group>
+                ))}
+                {/* Group-head */}
+                <mesh position={[0, 0.065, 0.165]} rotation={[Math.PI / 2, 0, 0]}>
+                    <cylinderGeometry args={[0.058, 0.058, 0.020, 18]} />
+                    <meshStandardMaterial color="#e2e8f0" metalness={0.98} roughness={0.04} />
                 </mesh>
-                <mesh position={[-0.08, 0.06, 0.15]} castShadow>
-                    <cylinderGeometry args={[0.045, 0.04, 0.09, 16]} />
-                    <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.5} />
+                {/* Portafilter collar */}
+                <mesh position={[0, 0.022, 0.165]} rotation={[Math.PI / 2, 0, 0]}>
+                    <cylinderGeometry args={[0.048, 0.048, 0.022, 16]} />
+                    <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.08} />
                 </mesh>
-                <mesh position={[-0.08, 0.095, 0.15]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <circleGeometry args={[0.04, 16]} />
-                    <meshBasicMaterial color="#3d1e08" />
+                {/* Portafilter handle */}
+                <mesh position={[0, -0.072, 0.180]} rotation={[0.45, 0, 0]}>
+                    <cylinderGeometry args={[0.016, 0.012, 0.16, 10]} />
+                    <meshStandardMaterial color="#1e293b" roughness={0.5} />
                 </mesh>
+                {/* Dual spouts */}
+                {([-0.020, 0.020] as number[]).map((sx, si) => (
+                    <mesh key={si} position={[sx, -0.056, 0.178]} rotation={[0.75, 0, 0]}>
+                        <cylinderGeometry args={[0.005, 0.005, 0.048, 8]} />
+                        <meshStandardMaterial color="#94a3b8" metalness={0.9} roughness={0.1} />
+                    </mesh>
+                ))}
+                {/* Drip tray */}
+                <mesh position={[0, -0.012, 0.055]}>
+                    <boxGeometry args={[0.26, 0.016, 0.20]} />
+                    <meshStandardMaterial color="#0f172a" metalness={0.7} roughness={0.3} />
+                </mesh>
+                <mesh position={[0, -0.002, 0.055]}>
+                    <boxGeometry args={[0.25, 0.007, 0.19]} />
+                    <meshStandardMaterial color="#1e293b" metalness={0.85} roughness={0.2} />
+                </mesh>
+                {/* Espresso cup */}
+                <group position={[0, 0.008, 0.065]}>
+                    <mesh>
+                        <cylinderGeometry args={[0.026, 0.020, 0.038, 12]} />
+                        <meshStandardMaterial color="#f8fafc" roughness={0.25} />
+                    </mesh>
+                    <mesh position={[0, 0.019, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                        <circleGeometry args={[0.024, 12]} />
+                        <meshBasicMaterial color="#3d1505" />
+                    </mesh>
+                </group>
+                {/* Steam wand */}
+                <group position={[-0.228, 0.26, 0.04]}>
+                    <mesh rotation={[0, 0, 0.42]}>
+                        <cylinderGeometry args={[0.008, 0.008, 0.20, 10]} />
+                        <meshStandardMaterial color="#94a3b8" metalness={0.95} roughness={0.1} />
+                    </mesh>
+                    <mesh position={[-0.044, -0.084, 0]}>
+                        <cylinderGeometry args={[0.011, 0.007, 0.028, 10]} />
+                        <meshStandardMaterial color="#64748b" metalness={0.9} roughness={0.15} />
+                    </mesh>
+                    <points position={[-0.048, -0.06, 0]} geometry={steamGeo}>
+                        <pointsMaterial color="#ffffff" size={0.025} transparent opacity={0.28} toneMapped={false} />
+                    </points>
+                </group>
+                <pointLight color="#fef3c7" intensity={3.5} distance={2.6} decay={2} position={[0, 0.28, 0.4]} />
             </group>
 
-            <points position={[-0.08, 0.1, 0.1]} geometry={steamGeo}>
-                <pointsMaterial color="#ffffff" size={0.032} transparent opacity={0.35} toneMapped={false} />
-            </points>
-
-            {/* ============================================================ */}
-            {/* DESIGNER COFFEE TABLE LIGHTING ELEMENTS & FIXTURES            */}
-            {/* ============================================================ */}
-
-            {/* 1. SCANDINAVIAN SPUN BRASS CONE PENDANT LIGHT FIXTURE */}
-            <group position={[0, 0, 0]}>
-                {/* Ceiling Mounting Rosette */}
-                <mesh position={[0, 2.7, 0]}>
-                    <cylinderGeometry args={[0.07, 0.07, 0.02, 16]} />
-                    <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.2} />
-                </mesh>
-                {/* Slender Braided Black Suspension Cord */}
-                <mesh position={[0, 2.32, 0]}>
-                    <cylinderGeometry args={[0.005, 0.005, 0.74, 8]} />
-                    <meshStandardMaterial color="#020617" roughness={0.9} />
-                </mesh>
-                {/* Polished Solid Brass Lamp Socket & Finial */}
-                <mesh position={[0, 1.95, 0]}>
-                    <cylinderGeometry args={[0.032, 0.032, 0.06, 16]} />
-                    <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
-                </mesh>
-                {/* Spun Brushed Brass Conical Lampshade */}
-                <mesh position={[0, 1.88, 0]} castShadow>
-                    <coneGeometry args={[0.22, 0.18, 24, 1, true]} />
-                    <meshStandardMaterial color="#ca8a04" metalness={0.88} roughness={0.22} side={THREE.DoubleSide} />
-                </mesh>
-                {/* Warm Glowing Exposed Filament Globe Bulb */}
-                <mesh position={[0, 1.81, 0]}>
-                    <sphereGeometry args={[0.055, 16, 16]} />
-                    <meshBasicMaterial color="#fffbeb" toneMapped={false} />
-                </mesh>
-                {/* Primary Warm Downward Pool of Light (Casting 2700K onto espresso machine & countertop) */}
-                <pointLight color="#fef3c7" intensity={5.4} distance={4.2} decay={1.8} position={[0, 1.75, 0.05]} />
-            </group>
-
-            {/* 2. FLOATING OAK WALL SHELF WITH COFFEE ACCESSORIES & UNDER-SHELF WARM LED */}
-            <group position={[0, 1.55, -0.22]}>
-                {/* Solid Oak Floating Shelf */}
+            {/* WALL SHELF */}
+            <group position={[0, 1.50, -0.22]}>
                 <mesh castShadow receiveShadow>
-                    <boxGeometry args={[1.3, 0.035, 0.24]} />
+                    <boxGeometry args={[0.90, 0.030, 0.20]} />
                     <meshStandardMaterial color="#6a4c33" roughness={0.5} />
                 </mesh>
-                {/* Under-Shelf Warm Indirect LED Light Strip */}
-                <mesh position={[0, -0.02, 0.08]}>
-                    <boxGeometry args={[1.26, 0.012, 0.02]} />
+                <mesh position={[0, -0.016, 0.07]}>
+                    <boxGeometry args={[0.86, 0.010, 0.016]} />
                     <meshBasicMaterial color="#ffb703" toneMapped={false} />
                 </mesh>
-                <pointLight color="#f59e0b" intensity={2.4} distance={2.4} decay={2} position={[0, -0.06, 0.08]} />
-
-                {/* Ceramic Cappuccino Mugs on Shelf */}
-                {[-0.35, -0.20, 0.25].map((mx, idx) => (
-                    <group key={idx} position={[mx, 0.06, 0]}>
+                <pointLight color="#f59e0b" intensity={1.8} distance={1.8} decay={2} position={[0, -0.05, 0.06]} />
+                {([-0.30, -0.14, 0.16] as number[]).map((mx, idx) => (
+                    <group key={idx} position={[mx, 0.052, 0]}>
                         <mesh castShadow>
-                            <cylinderGeometry args={[0.045, 0.038, 0.07, 12]} />
+                            <cylinderGeometry args={[0.040, 0.034, 0.062, 12]} />
                             <meshStandardMaterial color={idx === 1 ? '#f8fafc' : '#1e293b'} roughness={0.3} />
                         </mesh>
                     </group>
                 ))}
-
-                {/* Glass Coffee Bean Canister */}
-                <group position={[0.42, 0.09, 0]}>
+                <group position={[0.36, 0.080, 0]}>
                     <mesh castShadow>
-                        <cylinderGeometry args={[0.05, 0.05, 0.14, 14]} />
-                        <meshStandardMaterial color="#ffffff" transparent opacity={0.45} roughness={0.1} />
+                        <cylinderGeometry args={[0.043, 0.043, 0.12, 14]} />
+                        <meshStandardMaterial color="#ffffff" transparent opacity={0.4} roughness={0.1} />
                     </mesh>
-                    <mesh position={[0, -0.02, 0]}>
-                        <cylinderGeometry args={[0.046, 0.046, 0.09, 12]} />
+                    <mesh position={[0, -0.018, 0]}>
+                        <cylinderGeometry args={[0.039, 0.039, 0.075, 12]} />
                         <meshStandardMaterial color="#451a03" roughness={0.85} />
                     </mesh>
-                    <mesh position={[0, 0.075, 0]}>
-                        <cylinderGeometry args={[0.052, 0.052, 0.02, 14]} />
+                    <mesh position={[0, 0.065, 0]}>
+                        <cylinderGeometry args={[0.045, 0.045, 0.016, 14]} />
                         <meshStandardMaterial color="#a16207" roughness={0.4} metalness={0.6} />
                     </mesh>
                 </group>
             </group>
 
-            {/* 3. ARTICULATED BRASS COUNTER TASK LAMP ON TABLE CORNER */}
-            <group position={[0.55, 0.90, 0.12]}>
-                {/* Weighted Brass Base */}
-                <mesh castShadow position={[0, 0.01, 0]}>
-                    <cylinderGeometry args={[0.055, 0.06, 0.02, 14]} />
-                    <meshStandardMaterial color="#d4af37" metalness={0.9} roughness={0.2} />
+            {/* PENDANT LIGHT */}
+            <group>
+                <mesh position={[0, 2.65, 0]}>
+                    <cylinderGeometry args={[0.060, 0.060, 0.018, 14]} />
+                    <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.2} />
                 </mesh>
-                {/* Arched Slender Brass Stem */}
-                <mesh position={[-0.04, 0.16, 0]} rotation={[0, 0, 0.35]}>
-                    <cylinderGeometry args={[0.008, 0.008, 0.32, 8]} />
-                    <meshStandardMaterial color="#d4af37" metalness={0.9} roughness={0.2} />
+                <mesh position={[0, 2.27, 0]}>
+                    <cylinderGeometry args={[0.004, 0.004, 0.70, 6]} />
+                    <meshStandardMaterial color="#020617" roughness={0.9} />
                 </mesh>
-                {/* Angled Brass Hood Shade */}
-                <mesh position={[-0.10, 0.28, 0]} rotation={[0, 0, -0.6]} castShadow>
-                    <cylinderGeometry args={[0.035, 0.06, 0.09, 12]} />
-                    <meshStandardMaterial color="#eab308" metalness={0.9} roughness={0.2} />
+                <mesh position={[0, 1.92, 0]}>
+                    <cylinderGeometry args={[0.028, 0.028, 0.052, 14]} />
+                    <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
                 </mesh>
-                {/* Warm Task Light on counter */}
-                <pointLight color="#fed7aa" intensity={2.5} distance={2.2} decay={2} position={[-0.12, 0.26, 0]} />
+                <mesh position={[0, 1.85, 0]} castShadow>
+                    <coneGeometry args={[0.19, 0.15, 20, 1, true]} />
+                    <meshStandardMaterial color="#ca8a04" metalness={0.88} roughness={0.22} side={THREE.DoubleSide} />
+                </mesh>
+                <mesh position={[0, 1.79, 0]}>
+                    <sphereGeometry args={[0.044, 14, 14]} />
+                    <meshBasicMaterial color="#fffbeb" toneMapped={false} />
+                </mesh>
+                <pointLight color="#fef3c7" intensity={4.5} distance={3.6} decay={1.8} position={[0, 1.72, 0.05]} />
             </group>
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: Aesthetic Solid Oak Platform Bed & Nightstand
 // -------------------------------------------------------------
-function CyberBedAndChillZone() {
+const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
     return (
         <group position={[-2.7, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
             {/* Solid Warm Oak Low Platform Bed Frame */}
@@ -1136,12 +1048,12 @@ function CyberBedAndChillZone() {
             <pointLight color="#fed7aa" intensity={1.5} distance={2.8} decay={2} position={[0, 0.8, 0]} />
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: Architectural Ceiling Ventilation & Ambient Beam
 // -------------------------------------------------------------
-function IndustrialCeilingVent() {
+const IndustrialCeilingVent = React.memo(function IndustrialCeilingVent() {
     const fanRef = useRef<THREE.Group>(null);
 
     useFrame((_, delta) => {
@@ -1177,12 +1089,12 @@ function IndustrialCeilingVent() {
             {/* Warm Golden Spotlight removed - expensive shadow pass, fan is too high to notice */}
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: Upper Wall Copper Conduits & Warm Accents
 // -------------------------------------------------------------
-function WallPipelinesAndConduits() {
+const WallPipelinesAndConduits = React.memo(function WallPipelinesAndConduits() {
     return (
         <group>
             {/* Main Brushed Copper Pipe across back wall */}
@@ -1209,12 +1121,12 @@ function WallPipelinesAndConduits() {
             </mesh>
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: Shelves, Collectibles & Neon "THAT'S ME" Sign
 // -------------------------------------------------------------
-function CyberRoomDecor() {
+const CyberRoomDecor = React.memo(function CyberRoomDecor() {
     const signFlickerRef = useRef<THREE.MeshBasicMaterial>(null);
     const lastSignUpdate = useRef(0);
 
@@ -1289,7 +1201,7 @@ function CyberRoomDecor() {
             <CyberDustMotes />
         </group>
     );
-}
+});
 
 // -------------------------------------------------------------
 // SUB-COMPONENT: Floating Cyber Dust Motes
@@ -1444,8 +1356,8 @@ export default function CyberRoomScene({
                 {/* Corner Server Rack with Patch Cables & LEDs */}
                 <ServerRackTower />
 
-                {/* Dynamic Atmosphere Window (Trees in morning, sunset in evening, rain at night) */}
-                <DynamicAtmosphereWindow environmentPhase={environmentPhase} />
+                {/* Night Window (curtained â€” see ArchitecturalRoom for the closed curtain + wall-wash light) */}
+                <DynamicAtmosphereWindow />
 
                 {/* Coffee Station / Espresso Bar */}
                 <CoffeeStation />

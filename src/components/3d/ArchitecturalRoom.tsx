@@ -7,7 +7,7 @@ interface ArchitecturalRoomProps {
     environmentPhase: 'morning' | 'afternoon' | 'evening' | 'night';
 }
 
-export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
+function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
     const isLight = environmentPhase === 'morning' || environmentPhase === 'afternoon';
 
     // -------------------------------------------------------------
@@ -412,7 +412,7 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
                         </mesh>
                         <spotLight
                             position={[0, 0, 0]}
-                            target-position={[2.4, 0.9, 0.7]}
+                            target-position={[3.04, 0.9, 0.7]}
                             intensity={3.4}
                             color={warmTrackLight}
                             angle={0.7}
@@ -454,16 +454,111 @@ export default function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoo
                 {/* Ceramic Succulent Pots on Window Sill */}
                 <AestheticSucculents />
 
-                {/* Natural Oatmeal Draped Linen Curtains */}
-                <mesh position={[-1.9, 1.1, 0.14]} castShadow>
-                    <boxGeometry args={[0.35, 2.2, 0.12]} />
-                    <meshStandardMaterial color={curtainColor} roughness={0.92} />
-                </mesh>
-                <mesh position={[1.9, 1.1, 0.14]} castShadow>
-                    <boxGeometry args={[0.35, 2.2, 0.12]} />
-                    <meshStandardMaterial color={curtainColor} roughness={0.92} />
-                </mesh>
+                {/* Fully Drawn Linen Curtains (closed for the night â€” the outside view is gone,
+                    so the window stays covered instead of showing bare glass) */}
+                <ClosedNightCurtain curtainColor={curtainColor} />
+
+                {/* Curtain Rod & Warm Uplight (washes light onto the acoustic oak slat wall
+                    above the curtain so the wood grain stays visible at night) */}
+                <CurtainRodWallWashLight glowColor={coveLightColor} />
             </group>
+        </group>
+    );
+}
+
+export default React.memo(ArchitecturalRoom);
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Fully Drawn Linen Curtain (closed across the whole window)
+// -------------------------------------------------------------
+function ClosedNightCurtain({ curtainColor }: { curtainColor: string }) {
+    // Procedural vertical pleat texture so the closed curtain reads as folded
+    // fabric instead of a flat slab, without adding any extra geometry.
+    const pleatTexture = useMemo(() => {
+        if (typeof document === 'undefined') return null;
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 128, 128);
+        for (let x = 0; x < 128; x += 16) {
+            const grad = ctx.createLinearGradient(x, 0, x + 16, 0);
+            grad.addColorStop(0, 'rgba(0,0,0,0.32)');
+            grad.addColorStop(0.5, 'rgba(255,255,255,0.22)');
+            grad.addColorStop(1, 'rgba(0,0,0,0.32)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, 0, 16, 128);
+        }
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        texture.repeat.set(6, 1);
+        return texture;
+    }, []);
+
+    return (
+        <group>
+            {/* Left Panel */}
+            <mesh position={[-0.96, 1.1, 0.14]} castShadow>
+                <boxGeometry args={[1.98, 2.2, 0.1]} />
+                <meshStandardMaterial map={pleatTexture || undefined} color={curtainColor} roughness={0.92} />
+            </mesh>
+            {/* Right Panel */}
+            <mesh position={[0.96, 1.1, 0.14]} castShadow>
+                <boxGeometry args={[1.98, 2.2, 0.1]} />
+                <meshStandardMaterial map={pleatTexture || undefined} color={curtainColor} roughness={0.92} />
+            </mesh>
+            {/* Center Seam where the two drawn panels meet */}
+            <mesh position={[0, 1.1, 0.19]}>
+                <boxGeometry args={[0.03, 2.2, 0.02]} />
+                <meshStandardMaterial color="#1a1510" roughness={0.9} />
+            </mesh>
+        </group>
+    );
+}
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Curtain Rod & Warm Wall-Wash Uplight
+// -------------------------------------------------------------
+function CurtainRodWallWashLight({ glowColor }: { glowColor: string }) {
+    return (
+        <group position={[0, 2.28, 0.17]}>
+            {/* Slim Bronze Curtain Rod spanning the window */}
+            <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[0.018, 0.018, 4.0, 10]} />
+                <meshStandardMaterial color="#3d2b1c" metalness={0.6} roughness={0.35} />
+            </mesh>
+            {/* Brass End Finials */}
+            {[-2.0, 2.0].map((fx, i) => (
+                <mesh key={i} position={[fx, 0, 0]}>
+                    <sphereGeometry args={[0.032, 10, 10]} />
+                    <meshStandardMaterial color="#eab308" metalness={0.85} roughness={0.2} />
+                </mesh>
+            ))}
+            {/* Small Uplight Fixture Housings mounted on the rod */}
+            {[-1.5, 1.5].map((fx, i) => (
+                <mesh key={i} position={[fx, 0.03, -0.02]}>
+                    <boxGeometry args={[0.09, 0.035, 0.05]} />
+                    <meshStandardMaterial color="#1c1410" metalness={0.7} roughness={0.3} />
+                </mesh>
+            ))}
+            {/* Warm Glow washing up onto the acoustic oak slat wall above the curtain,
+                keeping the wood grain visible now that the window itself is closed off. */}
+            {[-1.5, 1.5].map((fx, i) => (
+                <spotLight
+                    key={i}
+                    color={glowColor}
+                    position={[fx, 0.05, 0.05]}
+                    target-position={[fx, 0.35, -0.2]}
+                    intensity={2.4}
+                    angle={0.75}
+                    penumbra={0.7}
+                    distance={2.4}
+                    decay={2}
+                />
+            ))}
         </group>
     );
 }
@@ -559,7 +654,7 @@ function AestheticWoodWardrobe({ isLight }: { isLight: boolean }) {
 // -------------------------------------------------------------
 function RealisticZenBonsai() {
     return (
-        <group position={[-1.2, 0.05, 0.12]}>
+        <group position={[-1.2, 0.05, 0.26]}>
             {/* Low Japanese Ceramic Bonsai Tray */}
             <mesh castShadow position={[0, 0.03, 0]}>
                 <boxGeometry args={[0.38, 0.06, 0.24]} />
@@ -663,7 +758,7 @@ function RealisticZenBonsai() {
 // -------------------------------------------------------------
 function AestheticSucculents() {
     return (
-        <group position={[1.2, 0.05, 0.12]}>
+        <group position={[1.2, 0.05, 0.26]}>
             {/* Pot 1: Matte White Ceramic Fluted Planter */}
             <group position={[-0.12, 0, 0]}>
                 <mesh castShadow position={[0, 0.05, 0]}>
