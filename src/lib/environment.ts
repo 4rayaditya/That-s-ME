@@ -80,33 +80,33 @@ export function getLiveISTTime(): ISTTimeData {
 export const ENVIRONMENT_CONFIGS: Record<EnvironmentPhase, EnvironmentConfig> = {
     morning: {
         phase: 'morning',
-        label: 'Cool Morning',
-        description: 'Fresh cool morning sunlight streaming in with lush green trees swaying outside the window',
-        accentColor: '#10b981', // Emerald green
-        ambientColor: '#a7f3d0', // Fresh cool green/mint
-        ambientIntensity: 0.85,
-        sunColor: '#fef08a', // Soft morning sunlight
-        sunIntensity: 1.4,
-        sunPosition: [3, 6, -3], // Low morning sun angle
-        windowSkyTop: '#38bdf8', // Clear sky blue
-        windowSkyBottom: '#bbf7d0', // Pale morning mist / tree canopy
+        label: 'Aesthetic Light Mode',
+        description: 'Sun-drenched Scandinavian loft with warm morning sunlight pouring through the window and swaying green trees',
+        accentColor: '#10b981', // Botanical emerald
+        ambientColor: '#fffbeb', // Warm sunlight ambient
+        ambientIntensity: 1.15,
+        sunColor: '#fef3c7', // Soft warm golden sun
+        sunIntensity: 2.2,
+        sunPosition: [3.5, 7.5, -3.2],
+        windowSkyTop: '#60a5fa', // Clear sky blue
+        windowSkyBottom: '#dcfce7', // Morning garden horizon
         showTrees: true,
         showRain: false,
         showStars: false,
-        defaultCharacterRoutine: 'brewing_coffee',
+        defaultCharacterRoutine: 'coding',
     },
     afternoon: {
         phase: 'afternoon',
-        label: 'Bright Daylight',
-        description: 'High noon bright clarity and active daytime cyber skyline',
-        accentColor: '#00f5d4', // Bright cyan
-        ambientColor: '#cffafe', // Crisp sky daylight
-        ambientIntensity: 0.9,
-        sunColor: '#ffffff',
-        sunIntensity: 1.5,
+        label: 'Bright Sunlit Loft',
+        description: 'Bright natural daylight illuminating the warm wooden desk, acoustic oak slats, and lush plants',
+        accentColor: '#059669',
+        ambientColor: '#fefce8',
+        ambientIntensity: 1.1,
+        sunColor: '#fffbeb',
+        sunIntensity: 2.0,
         sunPosition: [4, 9, -2],
-        windowSkyTop: '#0284c7',
-        windowSkyBottom: '#7dd3fc',
+        windowSkyTop: '#38bdf8',
+        windowSkyBottom: '#bae6fd',
         showTrees: true,
         showRain: false,
         showStars: false,
@@ -114,16 +114,16 @@ export const ENVIRONMENT_CONFIGS: Record<EnvironmentPhase, EnvironmentConfig> = 
     },
     evening: {
         phase: 'evening',
-        label: 'Twilight Study',
-        description: 'Warm golden hour sunset transition, focused studying and coding at the battlestation',
-        accentColor: '#ffb703', // Warm golden amber
-        ambientColor: '#4a154b', // Deep dusk violet
-        ambientIntensity: 0.65,
-        sunColor: '#fb923c', // Sunset orange
-        sunIntensity: 1.2,
-        sunPosition: [-5, 4, -4],
-        windowSkyTop: '#3b0764', // Twilight purple
-        windowSkyBottom: '#f97316', // Sunset horizon
+        label: 'Aesthetic Golden Hour',
+        description: 'Warm golden hour sunset transition with ambient study lamp and rich wooden textures',
+        accentColor: '#f59e0b',
+        ambientColor: '#451a03',
+        ambientIntensity: 0.85,
+        sunColor: '#fbbf24',
+        sunIntensity: 1.5,
+        sunPosition: [-4.5, 4.5, -3.8],
+        windowSkyTop: '#4c1d95',
+        windowSkyBottom: '#f97316',
         showTrees: true,
         showRain: false,
         showStars: false,
@@ -131,18 +131,18 @@ export const ENVIRONMENT_CONFIGS: Record<EnvironmentPhase, EnvironmentConfig> = 
     },
     night: {
         phase: 'night',
-        label: 'Cyberpunk Night',
-        description: 'Moody neon cyberpunk battlestation, rain on the glass, sleeping peacefully on the cyber futon',
-        accentColor: '#f72585', // Neon magenta
-        ambientColor: '#070f20', // Dark midnight navy
-        ambientIntensity: 0.45,
-        sunColor: '#00f5d4', // Cyan neon rim
-        sunIntensity: 0.6,
-        sunPosition: [5, 8, 4],
-        windowSkyTop: '#02040a',
-        windowSkyBottom: '#050a18',
-        showTrees: false,
-        showRain: true,
+        label: 'Cozy Dark Mode',
+        description: 'Intimate night ambiance with warm desk lamp, glowing ember accents, and peaceful night sky',
+        accentColor: '#fbbf24', // Warm golden amber
+        ambientColor: '#1a1410', // Warm deep espresso
+        ambientIntensity: 0.58,
+        sunColor: '#f59e0b', // Warm amber glow
+        sunIntensity: 0.85,
+        sunPosition: [4, 6, 3],
+        windowSkyTop: '#090d16',
+        windowSkyBottom: '#111827',
+        showTrees: true,
+        showRain: false,
         showStars: true,
         defaultCharacterRoutine: 'resting_bed',
     },

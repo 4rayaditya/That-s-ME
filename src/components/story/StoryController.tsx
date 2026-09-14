@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, Sun, Moon } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import HolographicPortfolio from '@/components/hologram/HolographicPortfolio';
 import { CharacterRoutine } from '@/components/3d/CyberCharacter';
@@ -26,40 +26,80 @@ export default function StoryController() {
     const [screenFlare, setScreenFlare] = useState(false);
 
     // Live Indian Standard Time (IST = UTC+5:30) & Dynamic Atmosphere Engine
-    const [activePhase, setActivePhase] = useState<EnvironmentPhase>(getLiveISTTime().phase);
+    const [activePhase, setActivePhase] = useState<EnvironmentPhase>(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const saved = localStorage.getItem('portfolio_theme_mode');
+                if (saved === 'dark') return 'night';
+                if (saved === 'light') return 'morning';
+            } catch {}
+        }
+        return getLiveISTTime().phase;
+    });
+
+    const [isLightMode, setIsLightMode] = useState<boolean>(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const saved = localStorage.getItem('portfolio_theme_mode');
+                if (saved === 'dark') return false;
+                if (saved === 'light') return true;
+            } catch {}
+        }
+        const p = getLiveISTTime().phase;
+        return p === 'morning' || p === 'afternoon';
+    });
+
+    // Tracks whether the user explicitly toggled Dark / Light mode so it NEVER gets overridden by automatic timers!
+    const userOverrodeThemeRef = useRef<boolean>(false);
 
     // Character life simulation status
     const [currentRoutine, setCurrentRoutine] = useState<CharacterRoutine>('coding');
-    const [, setRoutineLabel] = useState('Compiling Neural Shaders & Live Hacking (Desk)');
+    const [, setRoutineLabel] = useState('Studying & Coding at Battlestation (Desk)');
 
     // Sound state
     const [isMuted, setIsMuted] = useState(false);
 
-    // Continuously sync with live Indian Time in the background
+    // Check localStorage on mount
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem('portfolio_theme_mode');
+            if (saved === 'dark') {
+                userOverrodeThemeRef.current = true;
+                setIsLightMode(false);
+                setActivePhase('night');
+            } else if (saved === 'light') {
+                userOverrodeThemeRef.current = true;
+                setIsLightMode(true);
+                setActivePhase('morning');
+            }
+        } catch {}
+    }, []);
+
+    const handleToggleTheme = () => {
+        audio.playClick();
+        userOverrodeThemeRef.current = true;
+        setIsLightMode((prev) => {
+            const next = !prev;
+            const newPhase: EnvironmentPhase = next ? 'morning' : 'night';
+            setActivePhase(newPhase);
+            try {
+                localStorage.setItem('portfolio_theme_mode', next ? 'light' : 'dark');
+            } catch {}
+            return next;
+        });
+    };
+
+    // Continuously sync with live Indian Time ONLY IF the user has NOT manually set Dark/Light mode!
     useEffect(() => {
         const checkTime = () => {
+            if (userOverrodeThemeRef.current) return;
             const ist = getLiveISTTime();
             setActivePhase(ist.phase);
+            setIsLightMode(ist.phase === 'morning' || ist.phase === 'afternoon');
         };
-        checkTime();
         const interval = setInterval(checkTime, 10000);
         return () => clearInterval(interval);
     }, []);
-
-    // Synchronize default character routine with Indian Time of day
-    useEffect(() => {
-        const cfg = ENVIRONMENT_CONFIGS[activePhase];
-        if (cfg.defaultCharacterRoutine === 'resting_bed') {
-            setCurrentRoutine('resting_bed');
-            setRoutineLabel('Sleeping on Cyber Futon & Recharging 🛏️');
-        } else if (cfg.defaultCharacterRoutine === 'brewing_coffee') {
-            setCurrentRoutine('brewing_coffee');
-            setRoutineLabel('Brewing Hyper-Caffeine Espresso & Sipping ☕');
-        } else {
-            setCurrentRoutine('coding');
-            setRoutineLabel('Studying & Coding at Battlestation ⚡');
-        }
-    }, [activePhase]);
 
     // Audio & Global Key Listeners
     useEffect(() => {
@@ -179,19 +219,39 @@ export default function StoryController() {
                 />
             </div>
 
-            {/* 2. MINIMAL ICON-ONLY AUDIO BUTTON (NO TEXT ON SCREEN) */}
-            <header className="absolute top-4 right-4 z-20 pointer-events-auto">
+            {/* 2. HEADER CONTROLS: THEME SWITCH (LIGHT/DARK) & AUDIO TOGGLE */}
+            <header className="absolute top-4 right-4 z-20 pointer-events-auto flex items-center gap-2.5">
+                <button
+                    onClick={handleToggleTheme}
+                    onMouseEnter={() => audio.playHover()}
+                    className="flex items-center gap-2 px-3 py-2 rounded-full bg-zinc-950/70 border border-zinc-700/80 hover:border-amber-400/90 text-zinc-300 hover:text-amber-300 transition-all shadow-md backdrop-blur-md cursor-pointer group"
+                    title={isLightMode ? 'Switch to Cozy Dark Mode' : 'Switch to Sunlit Light Mode'}
+                    aria-label="Toggle Dark / Light Mode"
+                >
+                    {isLightMode ? (
+                        <>
+                            <Sun className="w-4 h-4 text-amber-400 group-hover:rotate-45 transition-transform" />
+                            <span className="text-xs font-mono font-medium text-amber-200">Light Mode</span>
+                        </>
+                    ) : (
+                        <>
+                            <Moon className="w-4 h-4 text-amber-300 group-hover:-rotate-12 transition-transform" />
+                            <span className="text-xs font-mono font-medium text-amber-200">Dark Mode</span>
+                        </>
+                    )}
+                </button>
+
                 <button
                     onClick={handleToggleSound}
                     onMouseEnter={() => audio.playHover()}
-                    className="flex items-center justify-center p-2.5 rounded-full bg-zinc-950/60 border border-zinc-800/80 hover:border-cyan-400/80 text-zinc-400 hover:text-cyan-300 transition-all shadow-md backdrop-blur-md cursor-pointer"
+                    className="flex items-center justify-center p-2.5 rounded-full bg-zinc-950/70 border border-zinc-700/80 hover:border-amber-400/80 text-zinc-400 hover:text-amber-300 transition-all shadow-md backdrop-blur-md cursor-pointer"
                     title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
                     aria-label="Toggle Audio"
                 >
                     {isMuted ? (
                         <VolumeX className="w-4 h-4 text-rose-400" />
                     ) : (
-                        <Volume2 className="w-4 h-4 text-cyan-400" />
+                        <Volume2 className="w-4 h-4 text-amber-300" />
                     )}
                 </button>
             </header>

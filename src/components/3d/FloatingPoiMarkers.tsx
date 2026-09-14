@@ -112,8 +112,8 @@ export default function FloatingPoiMarkers({
                 </Html>
             </group>
 
-            {/* 4. CYBER-DOG (BYTE) MARKER */}
-            <group ref={dogRef} position={[1.1, 0.8, 0.3]}>
+            {/* 4. CYBER-DOG (BYTE) MARKER - OVER DEDICATED DOG BED */}
+            <group ref={dogRef} position={[1.15, 0.88, 0.75]}>
                 <Html center distanceFactor={7} zIndexRange={[100, 0]}>
                     <button
                         onClick={(e) => {

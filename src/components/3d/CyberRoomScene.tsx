@@ -122,138 +122,134 @@ function BattlestationDesk() {
 
     return (
         <group position={[0, 0, -0.7]}>
-            {/* Desktop Surface - Textured Carbon-Fiber Beveled Finish */}
+            {/* Desktop Surface - Aesthetic Solid Warm Oak / Live-Edge Walnut */}
             <mesh receiveShadow castShadow position={[0, 0.72, 0]}>
-                <boxGeometry args={[3.2, 0.06, 1.25]} />
-                <meshStandardMaterial color="#080c16" roughness={0.35} metalness={0.7} />
+                <boxGeometry args={[3.2, 0.065, 1.25]} />
+                <meshStandardMaterial color="#7c5335" roughness={0.45} metalness={0.06} />
             </mesh>
 
-            {/* Desk Edge Neon Cyan Underglow Strip */}
+            {/* Desk Edge Chamfer / Warm Amber Accent */}
             <mesh position={[0, 0.69, 0.627]}>
                 <boxGeometry args={[3.2, 0.015, 0.01]} />
-                <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                <meshBasicMaterial color="#d97706" toneMapped={false} />
             </mesh>
 
-            {/* Desk Heavy Steel Beveled Legs */}
+            {/* Solid Oak & Warm Bronze Trestle Legs */}
             <mesh castShadow position={[-1.48, 0.36, 0]}>
                 <boxGeometry args={[0.08, 0.72, 1.05]} />
-                <meshStandardMaterial color="#04060c" metalness={0.95} roughness={0.15} />
+                <meshStandardMaterial color="#4a3220" roughness={0.5} />
             </mesh>
             <mesh castShadow position={[1.48, 0.36, 0]}>
                 <boxGeometry args={[0.08, 0.72, 1.05]} />
-                <meshStandardMaterial color="#04060c" metalness={0.95} roughness={0.15} />
+                <meshStandardMaterial color="#4a3220" roughness={0.5} />
             </mesh>
 
-            {/* Cable Management Tray Under Desk with Glowing Power Strip */}
+            {/* Cable Management Tray Under Desk with Warm Status Glow */}
             <group position={[0, 0.66, -0.3]}>
                 <mesh>
                     <boxGeometry args={[2.0, 0.05, 0.2]} />
-                    <meshStandardMaterial color="#050812" metalness={0.9} />
+                    <meshStandardMaterial color="#2c1f15" roughness={0.6} />
                 </mesh>
-                {/* Glowing power strip switches */}
                 {[-0.6, -0.2, 0.2, 0.6].map((x, i) => (
                     <mesh key={i} position={[x, -0.03, 0]}>
                         <boxGeometry args={[0.05, 0.01, 0.03]} />
-                        <meshBasicMaterial color="#ffb703" toneMapped={false} />
+                        <meshBasicMaterial color="#f59e0b" toneMapped={false} />
                     </mesh>
                 ))}
             </group>
 
-            {/* EXTENDED CYBER CIRCUIT DESK MAT (Stitched Edge Finish) */}
+            {/* PREMIUM COGNAC LEATHER / SADDLE TAN DESK BLOTTER */}
             <group position={[0, 0.753, 0.12]}>
                 <mesh receiveShadow>
                     <boxGeometry args={[1.9, 0.005, 0.68]} />
-                    <meshStandardMaterial color="#070a14" roughness={0.88} />
+                    <meshStandardMaterial color="#8a532a" roughness={0.8} />
                 </mesh>
-                {/* Glowing turquoise perimeter stitched trim */}
+                {/* Natural beige perimeter stitching */}
                 <mesh position={[0, 0.003, 0]}>
                     <boxGeometry args={[1.92, 0.002, 0.7]} />
-                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                    <meshBasicMaterial color="#e0c9b0" />
                 </mesh>
             </group>
 
-            {/* HIGH-END CNC MECHANICAL KEYBOARD WITH SCULPTED KEYCAP ROWS */}
+            {/* HIGH-END CNC MECHANICAL KEYBOARD WITH WARM RETRO CAPS */}
             <group position={[0, 0.76, 0.15]} rotation={[0.08, 0, 0]}>
-                {/* Anodized Aluminum 65% Beveled Chassis */}
+                {/* Dark Walnut & Aluminum Frame */}
                 <mesh castShadow>
                     <boxGeometry args={[0.56, 0.024, 0.20]} />
-                    <meshStandardMaterial color="#0b101d" roughness={0.3} metalness={0.8} />
+                    <meshStandardMaterial color="#3a271a" roughness={0.4} metalness={0.4} />
                 </mesh>
-                {/* Brass Weight Inset Bar on back */}
+                {/* Polished Brass Weight Inset Bar on back */}
                 <mesh position={[0, 0.013, -0.08]}>
                     <boxGeometry args={[0.48, 0.003, 0.025]} />
-                    <meshStandardMaterial color="#eab308" metalness={0.95} roughness={0.15} />
+                    <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
                 </mesh>
                 {/* Sculpted Keycap Row Tier 1 (Number Row) */}
                 <mesh position={[0, 0.016, -0.055]} castShadow>
                     <boxGeometry args={[0.51, 0.012, 0.03]} />
-                    <meshStandardMaterial color="#1e293b" roughness={0.6} />
+                    <meshStandardMaterial color="#332216" roughness={0.5} />
                 </mesh>
-                {/* Sculpted Keycap Row Tier 2 & 3 (QWERTY & Home Alphas) */}
+                {/* Sculpted Keycap Row Tier 2 & 3 (QWERTY & Home Alphas - Cream) */}
                 <mesh position={[0, 0.017, -0.015]} castShadow>
                     <boxGeometry args={[0.51, 0.013, 0.045]} />
-                    <meshStandardMaterial color="#0f172a" roughness={0.6} />
+                    <meshStandardMaterial color="#f8fafc" roughness={0.4} />
                 </mesh>
                 {/* Spacebar & Modifiers Row */}
                 <mesh position={[0, 0.015, 0.045]} castShadow>
                     <boxGeometry args={[0.51, 0.011, 0.035]} />
-                    <meshStandardMaterial color="#1e293b" roughness={0.6} />
+                    <meshStandardMaterial color="#332216" roughness={0.5} />
                 </mesh>
-                {/* RGB Per-Key Underglow Mesh */}
+                {/* Warm Amber Per-Key Underglow */}
                 <mesh position={[0, 0.013, 0]} rotation={[-Math.PI / 2, 0, 0]}>
                     <planeGeometry args={[0.52, 0.17]} />
-                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                    <meshBasicMaterial color="#f59e0b" toneMapped={false} />
                 </mesh>
             </group>
 
-            {/* ERGONOMIC GAMING MOUSE & WIRELESS CHARGING DOCK */}
+            {/* ERGONOMIC MOUSE ON LEATHER MAT */}
             <group position={[0.48, 0.76, 0.16]}>
-                {/* Contoured Mouse Chassis (Logitech G Pro Shape) */}
                 <mesh castShadow position={[0, 0.02, 0]} rotation={[0, -0.06, 0]}>
                     <boxGeometry args={[0.075, 0.035, 0.135]} />
-                    <meshStandardMaterial color="#0b101d" metalness={0.8} roughness={0.25} />
+                    <meshStandardMaterial color="#2d2218" metalness={0.4} roughness={0.4} />
                 </mesh>
-                {/* Left/Right Click Separation Seam */}
                 <mesh position={[0, 0.038, -0.025]}>
                     <boxGeometry args={[0.002, 0.005, 0.06]} />
-                    <meshStandardMaterial color="#020408" roughness={0.9} />
+                    <meshStandardMaterial color="#1a140f" roughness={0.9} />
                 </mesh>
-                {/* Rubberized RGB Scroll Wheel */}
                 <mesh position={[0, 0.037, -0.025]} rotation={[Math.PI / 2, 0, 0]}>
                     <cylinderGeometry args={[0.009, 0.009, 0.008, 12]} />
-                    <meshBasicMaterial color="#f72585" toneMapped={false} />
+                    <meshBasicMaterial color="#f59e0b" toneMapped={false} />
                 </mesh>
             </group>
 
-            {/* FUTURISTIC ENERGY DRINK CAN ("NEO-ENERGY") */}
-            <group position={[0.78, 0.76, 0.25]}>
-                <mesh castShadow position={[0, 0.08, 0]}>
-                    <cylinderGeometry args={[0.035, 0.035, 0.16, 16]} />
-                    <meshStandardMaterial color="#00f5d4" metalness={0.9} roughness={0.2} />
+            {/* DESKTOP GREENERY: POTTED CERAMIC SUCCULENT PLANTER */}
+            <group position={[1.15, 0.76, 0.15]}>
+                <mesh castShadow position={[0, 0.06, 0]}>
+                    <cylinderGeometry args={[0.07, 0.05, 0.12, 16]} />
+                    <meshStandardMaterial color="#f8fafc" roughness={0.3} />
                 </mesh>
-                {/* Aluminum Pull-Tab Lid */}
-                <mesh position={[0, 0.162, 0]}>
-                    <cylinderGeometry args={[0.034, 0.034, 0.005, 16]} />
-                    <meshStandardMaterial color="#e2e8f0" metalness={0.95} roughness={0.1} />
+                <mesh position={[0, 0.12, 0]}>
+                    <cylinderGeometry args={[0.065, 0.065, 0.02, 16]} />
+                    <meshStandardMaterial color="#271c15" roughness={0.9} />
+                </mesh>
+                <mesh position={[0, 0.16, 0]} castShadow>
+                    <sphereGeometry args={[0.08, 10, 10]} />
+                    <meshStandardMaterial color="#10b981" roughness={0.6} />
+                </mesh>
+                <mesh position={[0.03, 0.21, 0.02]} castShadow>
+                    <sphereGeometry args={[0.055, 8, 8]} />
+                    <meshStandardMaterial color="#34d399" roughness={0.6} />
                 </mesh>
             </group>
 
-            {/* HARDWARE HACK BENCH / SOLDERING TOOLKIT ON RIGHT CORNER */}
-            <group position={[1.2, 0.76, -0.2]}>
-                {/* Tool Base */}
-                <mesh castShadow position={[0, 0.02, 0]}>
-                    <boxGeometry args={[0.28, 0.04, 0.22]} />
-                    <meshStandardMaterial color="#111c2e" metalness={0.8} />
+            {/* AESTHETIC DESK ACCESSORIES (MOLESKINE JOURNAL & WOOD TRAY) */}
+            <group position={[-1.2, 0.76, 0.2]}>
+                <mesh castShadow position={[0, 0.01, 0]} rotation={[0, 0.15, 0]}>
+                    <boxGeometry args={[0.22, 0.02, 0.3]} />
+                    <meshStandardMaterial color="#2d2219" roughness={0.6} />
                 </mesh>
-                {/* Wire Spool */}
-                <mesh position={[-0.07, 0.07, 0]} rotation={[0, 0, Math.PI / 2]}>
-                    <cylinderGeometry args={[0.04, 0.04, 0.06, 12]} />
-                    <meshStandardMaterial color="#ffb703" metalness={0.7} />
-                </mesh>
-                {/* Soldering Iron in Stand */}
-                <mesh position={[0.06, 0.08, 0]} rotation={[0.4, 0, -0.4]}>
-                    <cylinderGeometry args={[0.01, 0.015, 0.18, 8]} />
-                    <meshStandardMaterial color="#334155" metalness={0.9} />
+                <mesh position={[0, 0.022, 0]} rotation={[0, 0.15, 0]}>
+                    <boxGeometry args={[0.21, 0.005, 0.29]} />
+                    <meshStandardMaterial color="#faf6ee" roughness={0.8} />
                 </mesh>
             </group>
 
@@ -497,15 +493,18 @@ function ServerRackTower() {
 }
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Dynamic Atmosphere Window (Synchronized to Indian Time)
+// SUB-COMPONENT: Dynamic Atmosphere Window (Lush Botanical Courtyard Vista)
 // -------------------------------------------------------------
 function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: EnvironmentPhase }) {
     const config = ENVIRONMENT_CONFIGS[environmentPhase];
     const rainRef = useRef<THREE.Points>(null);
-    const traffic1Ref = useRef<THREE.Mesh>(null);
-    const traffic2Ref = useRef<THREE.Mesh>(null);
     const treeGroupRef = useRef<THREE.Group>(null);
+    const foregroundTreeRef = useRef<THREE.Group>(null);
 
+    const isNight = environmentPhase === 'night';
+    const isEvening = environmentPhase === 'evening';
+
+    // Rain particles for night ambiance
     const rainCount = 180;
     const { rainGeo } = useMemo(() => {
         const geo = new THREE.BufferGeometry();
@@ -518,6 +517,71 @@ function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: Envir
         geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         return { rainGeo: geo };
     }, []);
+
+    // High-Resolution Atmospheric Sky Gradient Canvas
+    const skyTexture = useMemo(() => {
+        if (typeof document === 'undefined') return null;
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+
+        const grad = ctx.createLinearGradient(0, 0, 0, 512);
+        if (environmentPhase === 'morning') {
+            grad.addColorStop(0, '#3b82f6'); // Azure blue
+            grad.addColorStop(0.55, '#93c5fd'); // Soft daylight
+            grad.addColorStop(1, '#fef3c7'); // Golden morning horizon
+        } else if (environmentPhase === 'afternoon') {
+            grad.addColorStop(0, '#0284c7'); // Clear sky
+            grad.addColorStop(0.65, '#7dd3fc'); // Crisp horizon
+            grad.addColorStop(1, '#e0f2fe'); // White-tinted horizon
+        } else if (environmentPhase === 'evening') {
+            grad.addColorStop(0, '#311042'); // Twilight purple
+            grad.addColorStop(0.4, '#701a75'); // Rich magenta
+            grad.addColorStop(0.7, '#ea580c'); // Sunset orange
+            grad.addColorStop(1, '#fed7aa'); // Golden peach horizon
+        } else {
+            grad.addColorStop(0, '#030712'); // Deep space
+            grad.addColorStop(0.6, '#0b1329'); // Night indigo
+            grad.addColorStop(1, '#111827'); // Distant horizon
+        }
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Add soft distant sun glow in morning/evening
+        if (environmentPhase === 'morning') {
+            const sunGrad = ctx.createRadialGradient(340, 200, 10, 340, 200, 180);
+            sunGrad.addColorStop(0, 'rgba(255, 255, 230, 0.7)');
+            sunGrad.addColorStop(0.4, 'rgba(254, 240, 138, 0.25)');
+            sunGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(340, 200, 180, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (environmentPhase === 'evening') {
+            const sunGrad = ctx.createRadialGradient(180, 290, 8, 180, 290, 160);
+            sunGrad.addColorStop(0, 'rgba(255, 237, 213, 0.85)');
+            sunGrad.addColorStop(0.4, 'rgba(251, 146, 60, 0.35)');
+            sunGrad.addColorStop(1, 'rgba(234, 88, 12, 0)');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(180, 290, 160, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (environmentPhase === 'night') {
+            // Tiny twinkling night stars
+            ctx.fillStyle = '#ffffff';
+            for (let s = 0; s < 70; s++) {
+                const sx = (Math.sin(s * 99) * 0.5 + 0.5) * 512;
+                const sy = (Math.cos(s * 33) * 0.5 + 0.5) * 320;
+                ctx.fillRect(sx, sy, s % 3 === 0 ? 2 : 1, s % 3 === 0 ? 2 : 1);
+            }
+        }
+
+        const tex = new THREE.CanvasTexture(canvas);
+        return tex;
+    }, [environmentPhase]);
 
     useFrame((state, delta) => {
         const time = state.clock.elapsedTime;
@@ -532,217 +596,180 @@ function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: Envir
             rainGeo.attributes.position.needsUpdate = true;
         }
 
-        if (traffic1Ref.current) traffic1Ref.current.position.x = ((time * 2.2) % 12) - 6;
-        if (traffic2Ref.current) traffic2Ref.current.position.x = 6 - ((time * 1.6) % 12);
-
-        // Gentle breeze swaying the outdoor trees
+        // Natural breeze swaying the garden trees
         if (treeGroupRef.current) {
-            treeGroupRef.current.rotation.z = Math.sin(time * 1.4) * 0.025;
+            treeGroupRef.current.rotation.z = Math.sin(time * 1.2) * 0.018;
+            treeGroupRef.current.rotation.x = Math.cos(time * 0.9) * 0.012;
+        }
+        if (foregroundTreeRef.current) {
+            foregroundTreeRef.current.rotation.z = Math.sin(time * 1.6 + 0.5) * 0.024;
+            foregroundTreeRef.current.rotation.y = Math.cos(time * 1.1) * 0.016;
         }
     });
 
+    const windowGlassColor =
+        environmentPhase === 'morning'
+            ? '#fefce8'
+            : environmentPhase === 'afternoon'
+            ? '#f0f9ff'
+            : environmentPhase === 'evening'
+            ? '#fed7aa'
+            : '#0f172a';
+
     return (
         <group position={[0, 0, 0]}>
-            {/* Window Outer Steel Frame with Mullions */}
-            <mesh position={[0, 1.9, -3.46]}>
-                <boxGeometry args={[3.8, 2.1, 0.08]} />
-                <meshStandardMaterial color="#080e18" metalness={0.9} roughness={0.2} />
+            {/* ============================================================ */}
+            {/* 1. ARCHITECTURAL HOLLOW WINDOW CASING & SLIM BRONZE MULLIONS */}
+            {/* ============================================================ */}
+            {/* Top Frame Beam */}
+            <mesh position={[0, 2.92, -3.46]} castShadow>
+                <boxGeometry args={[3.84, 0.08, 0.12]} />
+                <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
-            {/* Center Vertical Mullion */}
-            <mesh position={[0, 1.9, -3.45]}>
-                <boxGeometry args={[0.06, 2.05, 0.09]} />
-                <meshStandardMaterial color="#080e18" metalness={0.9} roughness={0.2} />
+            {/* Bottom Frame Beam */}
+            <mesh position={[0, 0.88, -3.46]} receiveShadow>
+                <boxGeometry args={[3.84, 0.08, 0.12]} />
+                <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
+            </mesh>
+            {/* Left Frame Jamb */}
+            <mesh position={[-1.88, 1.9, -3.46]} castShadow>
+                <boxGeometry args={[0.08, 2.08, 0.12]} />
+                <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
+            </mesh>
+            {/* Right Frame Jamb */}
+            <mesh position={[1.88, 1.9, -3.46]} castShadow>
+                <boxGeometry args={[0.08, 2.08, 0.12]} />
+                <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
+            </mesh>
+            {/* Center Slim Vertical Mullion */}
+            <mesh position={[0, 1.9, -3.46]} castShadow>
+                <boxGeometry args={[0.045, 2.0, 0.08]} />
+                <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
+            </mesh>
+            {/* Horizontal Upper Transom Bar */}
+            <mesh position={[0, 2.45, -3.46]}>
+                <boxGeometry args={[3.72, 0.035, 0.07]} />
+                <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
 
-            {/* Glass Pane: Crystal clear with soft tint in daytime, moody dark tint at night */}
+            {/* Crystal Clear Glass Pane with Realistic Specular Tint */}
             <mesh position={[0, 1.9, -3.48]}>
-                <planeGeometry args={[3.6, 1.9]} />
+                <planeGeometry args={[3.68, 1.96]} />
                 <meshStandardMaterial
-                    color={
-                        environmentPhase === 'morning'
-                            ? '#99f6e4'
-                            : environmentPhase === 'evening'
-                            ? '#fdba74'
-                            : '#091426'
-                    }
+                    color={windowGlassColor}
                     transparent
-                    opacity={environmentPhase === 'night' ? 0.75 : 0.3}
-                    roughness={0.1}
-                    metalness={0.4}
+                    opacity={isNight ? 0.45 : 0.15}
+                    roughness={0.04}
+                    metalness={0.15}
                 />
             </mesh>
 
             {/* Dripping Rain Particles (Rendered only at Night) */}
             {config.showRain && (
                 <points ref={rainRef} geometry={rainGeo}>
-                    <pointsMaterial color="#00f5d4" size={0.03} transparent opacity={0.65} toneMapped={false} />
+                    <pointsMaterial color="#38bdf8" size={0.03} transparent opacity={0.6} toneMapped={false} />
                 </points>
             )}
 
-            {/* OUTSIDE WINDOW COURTYARD, SKY & MULTI-DEPTH ENVIRONMENT */}
-            <group position={[0, 1.8, -5.5]}>
-                {/* Sky Backdrop Plane (Color-coded to time of day) */}
-                <mesh position={[0, 0, -1]}>
-                    <planeGeometry args={[14, 8]} />
-                    <meshBasicMaterial color={config.windowSkyTop} />
+            {/* ============================================================ */}
+            {/* 2. OUTSIDE COURTYARD GARDEN & HIGH-RESOLUTION SKY VISTA      */}
+            {/* ============================================================ */}
+            <group position={[0, 1.8, -5.2]}>
+                {/* Atmospheric Sky Backdrop with Custom Canvas Gradient */}
+                <mesh position={[0, 0.6, -2.5]}>
+                    <planeGeometry args={[16, 10]} />
+                    <meshBasicMaterial map={skyTexture || undefined} color={config.windowSkyTop} />
                 </mesh>
 
-                {/* MORNING / DAYTIME / EVENING: 3D GREEN CYBER TREES & FOLIAGE */}
+                {/* Courtyard Terrace Paver Floor */}
+                <mesh position={[0, -1.8, 0.5]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+                    <planeGeometry args={[12, 6]} />
+                    <meshStandardMaterial color={isNight ? '#14181f' : '#b8aea2'} roughness={0.75} />
+                </mesh>
+
+                {/* Garden Boundary Stone Wall with Ivy Foliage */}
+                <group position={[0, -0.7, -1.6]}>
+                    {/* Architectural Cut-Stone Boundary Wall */}
+                    <mesh castShadow receiveShadow position={[0, 0, 0]}>
+                        <boxGeometry args={[14, 2.2, 0.4]} />
+                        <meshStandardMaterial color={isNight ? '#11151d' : '#6b5c4d'} roughness={0.85} />
+                    </mesh>
+                    {/* Wall Coping Cap Stone */}
+                    <mesh position={[0, 1.12, 0]}>
+                        <boxGeometry args={[14.2, 0.08, 0.46]} />
+                        <meshStandardMaterial color={isNight ? '#191f2b' : '#857564'} roughness={0.7} />
+                    </mesh>
+                    {/* Climbing Ivy Foliage Pads along the stone wall */}
+                    {[-4.5, -2.8, -1.2, 0.8, 2.4, 4.2].map((wx, wi) => (
+                        <group key={wi} position={[wx, 0.2 + (wi % 3) * 0.25, 0.22]}>
+                            <mesh>
+                                <dodecahedronGeometry args={[0.32 + (wi % 2) * 0.1, 1]} />
+                                <meshStandardMaterial
+                                    color={isEvening ? '#78350f' : isNight ? '#0a2310' : wi % 2 === 0 ? '#1b431e' : '#275828'}
+                                    roughness={0.7}
+                                />
+                            </mesh>
+                        </group>
+                    ))}
+                </group>
+
+                {/* Lush Lawn / Flower Bed along the courtyard terrace */}
+                <mesh position={[0, -1.78, -0.4]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <planeGeometry args={[12, 2.2]} />
+                    <meshStandardMaterial color={isNight ? '#0b1a0d' : '#1c3d18'} roughness={0.9} />
+                </mesh>
+
+                {/* Distant Layered Rolling Treeline (Atmospheric Garden Depth) */}
+                <group position={[0, 0.3, -2.1]}>
+                    {[-4.8, -2.4, 0.2, 2.6, 5.0].map((tx, ti) => (
+                        <mesh key={ti} position={[tx, (ti % 2) * 0.35, 0]}>
+                            <dodecahedronGeometry args={[1.1 + (ti % 3) * 0.25, 1]} />
+                            <meshStandardMaterial
+                                color={isEvening ? '#9a3412' : isNight ? '#08170c' : '#193f1d'}
+                                roughness={0.85}
+                            />
+                        </mesh>
+                    ))}
+                </group>
+
+                {/* ======================================================== */}
+                {/* 3. REALISTIC ORGANIC BOTANICAL TREES IN COURTYARD        */}
+                {/* ======================================================== */}
                 {config.showTrees && (
-                    <group ref={treeGroupRef} position={[0, -0.6, 1.2]}>
-                        {/* Tree 1: Left Foreground Canopy */}
-                        <group position={[-1.6, 0, 0]}>
-                            <mesh position={[0, 0.5, 0]}>
-                                <cylinderGeometry args={[0.08, 0.14, 1.2, 8]} />
-                                <meshStandardMaterial color="#1e293b" roughness={0.9} />
-                            </mesh>
-                            {/* Layered Green Foliage Spheres */}
-                            <mesh position={[0, 1.2, 0]}>
-                                <sphereGeometry args={[0.55, 12, 12]} />
-                                <meshStandardMaterial
-                                    color={environmentPhase === 'evening' ? '#d97706' : '#10b981'}
-                                    roughness={0.7}
-                                />
-                            </mesh>
-                            <mesh position={[0.2, 1.45, 0.1]}>
-                                <sphereGeometry args={[0.42, 12, 12]} />
-                                <meshStandardMaterial
-                                    color={environmentPhase === 'evening' ? '#f59e0b' : '#34d399'}
-                                    roughness={0.7}
-                                />
-                            </mesh>
-                            <mesh position={[-0.15, 1.55, -0.1]}>
-                                <sphereGeometry args={[0.38, 12, 12]} />
-                                <meshStandardMaterial
-                                    color={environmentPhase === 'evening' ? '#ea580c' : '#4ade80'}
-                                    roughness={0.7}
-                                />
-                            </mesh>
+                    <group ref={treeGroupRef} position={[0, 0, 0]}>
+                        {/* TREE 1: FOREGROUND ARCHING JAPANESE MAPLE / BIRCH (Left) */}
+                        <group ref={foregroundTreeRef} position={[-1.35, -0.7, 1.1]}>
+                            <RealisticBotanicalTree
+                                trunkCurve={[-0.15, 0.25, -0.1]}
+                                isEvening={isEvening}
+                                isNight={isNight}
+                                scale={0.95}
+                                type="foreground_maple"
+                            />
                         </group>
 
-                        {/* Tree 2: Center-Right Majestic Canopy */}
-                        <group position={[1.4, 0.1, 0.2]}>
-                            <mesh position={[0, 0.6, 0]}>
-                                <cylinderGeometry args={[0.1, 0.16, 1.4, 8]} />
-                                <meshStandardMaterial color="#1e293b" roughness={0.9} />
-                            </mesh>
-                            <mesh position={[0, 1.4, 0]}>
-                                <sphereGeometry args={[0.68, 12, 12]} />
-                                <meshStandardMaterial
-                                    color={environmentPhase === 'evening' ? '#b45309' : '#059669'}
-                                    roughness={0.7}
-                                />
-                            </mesh>
-                            <mesh position={[-0.25, 1.7, 0.1]}>
-                                <sphereGeometry args={[0.5, 12, 12]} />
-                                <meshStandardMaterial
-                                    color={environmentPhase === 'evening' ? '#d97706' : '#10b981'}
-                                    roughness={0.7}
-                                />
-                            </mesh>
-                            <mesh position={[0.2, 1.85, -0.1]}>
-                                <sphereGeometry args={[0.42, 12, 12]} />
-                                <meshStandardMaterial
-                                    color={environmentPhase === 'evening' ? '#f59e0b' : '#34d399'}
-                                    roughness={0.7}
-                                />
-                            </mesh>
+                        {/* TREE 2: MAJESTIC MIDGROUND OAK / ELM SHADE TREE (Center-Right) */}
+                        <group position={[1.40, -0.6, 0.3]}>
+                            <RealisticBotanicalTree
+                                trunkCurve={[0.1, -0.15, 0.2]}
+                                isEvening={isEvening}
+                                isNight={isNight}
+                                scale={1.25}
+                                type="shade_oak"
+                            />
                         </group>
 
-                        {/* Tree 3: Distant Background Greenery */}
-                        <group position={[-0.2, 0.2, -0.6]}>
-                            <mesh position={[0, 1.1, 0]}>
-                                <sphereGeometry args={[0.55, 10, 10]} />
-                                <meshStandardMaterial
-                                    color={environmentPhase === 'evening' ? '#92400e' : '#047857'}
-                                    roughness={0.8}
-                                />
-                            </mesh>
-                            <mesh position={[0.3, 1.35, 0]}>
-                                <sphereGeometry args={[0.4, 10, 10]} />
-                                <meshStandardMaterial
-                                    color={environmentPhase === 'evening' ? '#b45309' : '#10b981'}
-                                    roughness={0.8}
-                                />
-                            </mesh>
-                        </group>
-
-                        {/* Window Box Planter with Trailing Ivy on the sill */}
-                        <group position={[0, 0.68, -0.1]}>
-                            <mesh position={[0, 0, 0]}>
-                                <boxGeometry args={[3.2, 0.12, 0.22]} />
-                                <meshStandardMaterial color="#0f172a" roughness={0.8} />
-                            </mesh>
-                            {[-1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2].map((x, i) => (
-                                <mesh key={i} position={[x, 0.08, 0.08]}>
-                                    <sphereGeometry args={[0.12, 8, 8]} />
-                                    <meshStandardMaterial
-                                        color={i % 2 === 0 ? '#10b981' : '#34d399'}
-                                        roughness={0.6}
-                                    />
-                                </mesh>
-                            ))}
+                        {/* TREE 3: GARDEN FLOWERING CORNER TREE (Center-Left Depth) */}
+                        <group position={[-0.35, -0.5, -0.7]}>
+                            <RealisticBotanicalTree
+                                trunkCurve={[0.05, 0.1, -0.05]}
+                                isEvening={isEvening}
+                                isNight={isNight}
+                                scale={0.88}
+                                type="garden_accent"
+                            />
                         </group>
                     </group>
-                )}
-
-                {/* DISTANT SKYLINE STRUCTURES */}
-                <mesh position={[0, 0.8, -0.6]}>
-                    <boxGeometry args={[2.8, 6.5, 0.5]} />
-                    <meshStandardMaterial
-                        color={environmentPhase === 'night' ? '#040710' : '#1e293b'}
-                        roughness={0.9}
-                    />
-                </mesh>
-                <mesh position={[-2.8, -0.4, 0]}>
-                    <boxGeometry args={[1.2, 4.2, 0.6]} />
-                    <meshStandardMaterial
-                        color={environmentPhase === 'night' ? '#050a14' : '#334155'}
-                        roughness={0.9}
-                    />
-                </mesh>
-                <mesh position={[-0.9, -0.2, 0]}>
-                    <boxGeometry args={[1.6, 5.0, 0.8]} />
-                    <meshStandardMaterial
-                        color={environmentPhase === 'night' ? '#080e1c' : '#1e293b'}
-                        roughness={0.9}
-                    />
-                </mesh>
-                <mesh position={[1.4, -0.6, 0]}>
-                    <boxGeometry args={[1.4, 3.8, 0.7]} />
-                    <meshStandardMaterial
-                        color={environmentPhase === 'night' ? '#060c18' : '#334155'}
-                        roughness={0.9}
-                    />
-                </mesh>
-                <mesh position={[3.2, 0, 0]}>
-                    <boxGeometry args={[1.5, 5.6, 0.9]} />
-                    <meshStandardMaterial
-                        color={environmentPhase === 'night' ? '#0a1224' : '#1e293b'}
-                        roughness={0.9}
-                    />
-                </mesh>
-
-                {/* Neon Billboard Signs (Active at Night & Evening) */}
-                {(environmentPhase === 'night' || environmentPhase === 'evening') && (
-                    <>
-                        <mesh position={[-0.9, 1.2, 0.42]}>
-                            <planeGeometry args={[1.2, 0.6]} />
-                            <meshBasicMaterial color="#f72585" toneMapped={false} />
-                        </mesh>
-                        <mesh position={[1.4, 0.8, 0.37]}>
-                            <planeGeometry args={[0.9, 0.4]} />
-                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                        </mesh>
-                        <mesh ref={traffic1Ref} position={[-6, 0.4, 0.8]}>
-                            <boxGeometry args={[0.6, 0.04, 0.04]} />
-                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                        </mesh>
-                        <mesh ref={traffic2Ref} position={[6, -0.2, 0.6]}>
-                            <boxGeometry args={[0.7, 0.04, 0.04]} />
-                            <meshBasicMaterial color="#f72585" toneMapped={false} />
-                        </mesh>
-                    </>
                 )}
 
                 {/* Window Directional / Ambient Cast Light */}
@@ -754,6 +781,135 @@ function DynamicAtmosphereWindow({ environmentPhase }: { environmentPhase: Envir
                     position={[0, 1.2, -1]}
                 />
             </group>
+        </group>
+    );
+}
+
+// -------------------------------------------------------------
+// HELPER COMPONENT: Realistic Sculpted Botanical Tree
+// -------------------------------------------------------------
+interface BotanicalTreeProps {
+    trunkCurve: [number, number, number];
+    isEvening: boolean;
+    isNight: boolean;
+    scale?: number;
+    type: 'foreground_maple' | 'shade_oak' | 'garden_accent';
+}
+
+function RealisticBotanicalTree({ trunkCurve, isEvening, isNight, scale = 1.0, type }: BotanicalTreeProps) {
+    const barkColor = isNight ? '#14110e' : '#3d2b1c';
+
+    // Botanical leaf colors tailored to lighting condition
+    const leafDeep = isEvening ? '#78350f' : isNight ? '#0b2410' : '#193f1d';
+    const leafMid = isEvening ? '#b45309' : isNight ? '#103317' : '#275828';
+    const leafLight = isEvening ? '#d97706' : isNight ? '#15421e' : '#417a33';
+    const leafTip = isEvening ? '#f59e0b' : isNight ? '#1b5226' : '#5e9444';
+
+    return (
+        <group scale={scale}>
+            {/* 1. SCULPTED ORGANIC TRUNK & SPREADING ROOT BASE */}
+            {/* Root Flare */}
+            <mesh castShadow position={[0, 0.15, 0]}>
+                <cylinderGeometry args={[0.08, 0.16, 0.35, 10]} />
+                <meshStandardMaterial color={barkColor} roughness={0.88} />
+            </mesh>
+
+            {/* Main Lower Trunk */}
+            <mesh castShadow position={[trunkCurve[0] * 0.4, 0.65, trunkCurve[2] * 0.4]} rotation={[trunkCurve[0], 0, trunkCurve[2]]}>
+                <cylinderGeometry args={[0.065, 0.085, 0.75, 10]} />
+                <meshStandardMaterial color={barkColor} roughness={0.88} />
+            </mesh>
+
+            {/* Trunk Fork / Upper Trunk splitting into limbs */}
+            <mesh castShadow position={[trunkCurve[0] * 0.9, 1.2, trunkCurve[2] * 0.9]} rotation={[trunkCurve[0] * 1.4, 0, trunkCurve[2] * 1.4]}>
+                <cylinderGeometry args={[0.045, 0.065, 0.65, 8]} />
+                <meshStandardMaterial color={barkColor} roughness={0.88} />
+            </mesh>
+
+            {/* Left Arching Bough */}
+            <mesh castShadow position={[trunkCurve[0] * 0.9 - 0.25, 1.45, trunkCurve[2] * 0.9 + 0.1]} rotation={[0.4, 0.2, -0.65]}>
+                <cylinderGeometry args={[0.025, 0.042, 0.7, 8]} />
+                <meshStandardMaterial color={barkColor} roughness={0.88} />
+            </mesh>
+
+            {/* Right Arching Bough */}
+            <mesh castShadow position={[trunkCurve[0] * 0.9 + 0.28, 1.5, trunkCurve[2] * 0.9 - 0.1]} rotation={[-0.3, -0.2, 0.6]}>
+                <cylinderGeometry args={[0.025, 0.042, 0.75, 8]} />
+                <meshStandardMaterial color={barkColor} roughness={0.88} />
+            </mesh>
+
+            {/* 2. MULTI-TIERED ORGANIC FOLIAGE CLUSTERS (NO SPHERE BALLS!) */}
+            {/* Cluster 1: Core Center Dense Canopy */}
+            <group position={[trunkCurve[0] * 0.9, 1.75, trunkCurve[2] * 0.9]}>
+                <mesh castShadow>
+                    <dodecahedronGeometry args={[0.48, 1]} />
+                    <meshStandardMaterial color={leafDeep} roughness={0.7} />
+                </mesh>
+                <mesh position={[0.05, 0.15, 0.05]} castShadow>
+                    <dodecahedronGeometry args={[0.40, 1]} />
+                    <meshStandardMaterial color={leafMid} roughness={0.68} />
+                </mesh>
+            </group>
+
+            {/* Cluster 2: Left Arching Foliage Cloud */}
+            <group position={[trunkCurve[0] * 0.9 - 0.52, 1.65, trunkCurve[2] * 0.9 + 0.18]}>
+                <mesh castShadow>
+                    <dodecahedronGeometry args={[0.44, 1]} />
+                    <meshStandardMaterial color={leafMid} roughness={0.7} />
+                </mesh>
+                <mesh position={[-0.1, 0.12, 0.08]} castShadow>
+                    <dodecahedronGeometry args={[0.34, 1]} />
+                    <meshStandardMaterial color={leafLight} roughness={0.65} />
+                </mesh>
+                {/* Sunlight-Kissed Leaf Tip Highlights */}
+                <mesh position={[-0.18, 0.22, 0.14]}>
+                    <dodecahedronGeometry args={[0.22, 1]} />
+                    <meshStandardMaterial color={leafTip} roughness={0.6} />
+                </mesh>
+            </group>
+
+            {/* Cluster 3: Right Upper Foliage Cloud */}
+            <group position={[trunkCurve[0] * 0.9 + 0.55, 1.78, trunkCurve[2] * 0.9 - 0.15]}>
+                <mesh castShadow>
+                    <dodecahedronGeometry args={[0.46, 1]} />
+                    <meshStandardMaterial color={leafDeep} roughness={0.7} />
+                </mesh>
+                <mesh position={[0.12, 0.14, -0.06]} castShadow>
+                    <dodecahedronGeometry args={[0.38, 1]} />
+                    <meshStandardMaterial color={leafLight} roughness={0.65} />
+                </mesh>
+                <mesh position={[0.22, 0.24, -0.1]}>
+                    <dodecahedronGeometry args={[0.24, 1]} />
+                    <meshStandardMaterial color={leafTip} roughness={0.6} />
+                </mesh>
+            </group>
+
+            {/* Cluster 4: Crown Canopy Top */}
+            <group position={[trunkCurve[0] * 0.9 + 0.08, 2.15, trunkCurve[2] * 0.9]}>
+                <mesh castShadow>
+                    <dodecahedronGeometry args={[0.38, 1]} />
+                    <meshStandardMaterial color={leafLight} roughness={0.65} />
+                </mesh>
+                <mesh position={[0, 0.12, 0.04]}>
+                    <dodecahedronGeometry args={[0.26, 1]} />
+                    <meshStandardMaterial color={leafTip} roughness={0.6} />
+                </mesh>
+            </group>
+
+            {/* Distinct Features for Maple vs Oak */}
+            {type === 'foreground_maple' && (
+                <group position={[0.2, 1.3, 0.3]}>
+                    {/* Graceful weeping bough dipping near the window */}
+                    <mesh castShadow rotation={[0.6, 0.4, 0.2]}>
+                        <cylinderGeometry args={[0.015, 0.025, 0.5, 6]} />
+                        <meshStandardMaterial color={barkColor} roughness={0.88} />
+                    </mesh>
+                    <mesh position={[0.12, -0.15, 0.18]}>
+                        <dodecahedronGeometry args={[0.26, 1]} />
+                        <meshStandardMaterial color={leafLight} roughness={0.65} />
+                    </mesh>
+                </group>
+            )}
         </group>
     );
 }
@@ -832,65 +988,63 @@ function CoffeeStation() {
 }
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Cyber Futon Platform Bed & Hologram Clock
+// SUB-COMPONENT: Aesthetic Solid Oak Platform Bed & Nightstand
 // -------------------------------------------------------------
 function CyberBedAndChillZone() {
     return (
         <group position={[-2.7, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
+            {/* Solid Warm Oak Low Platform Bed Frame */}
             <mesh castShadow receiveShadow position={[0, 0.16, 0]}>
                 <boxGeometry args={[1.4, 0.32, 2.3]} />
-                <meshStandardMaterial color="#060910" roughness={0.7} metalness={0.3} />
+                <meshStandardMaterial color="#6a4c33" roughness={0.5} />
             </mesh>
+            {/* Warm Golden Inset Accent Trim */}
             <mesh position={[0, 0.02, 0]}>
                 <boxGeometry args={[1.44, 0.02, 2.34]} />
-                <meshBasicMaterial color="#f72585" toneMapped={false} />
+                <meshBasicMaterial color="#d97706" toneMapped={false} />
             </mesh>
 
+            {/* Crisp Organic Cotton Mattress */}
             <mesh position={[0, 0.35, 0.1]} castShadow>
                 <boxGeometry args={[1.3, 0.18, 2.1]} />
-                <meshStandardMaterial color="#0d1527" roughness={0.8} />
+                <meshStandardMaterial color="#f7f4ed" roughness={0.9} />
             </mesh>
+            {/* Soft Oatmeal / Waffle Linen Duvet */}
             <mesh position={[0, 0.45, 0.3]} castShadow>
                 <boxGeometry args={[1.28, 0.08, 1.4]} />
-                <meshStandardMaterial color="#13203b" roughness={0.7} />
+                <meshStandardMaterial color="#ebe3d5" roughness={0.88} />
             </mesh>
+            {/* Fluffy Cream Linen Bed Pillows */}
             <mesh position={[0.3, 0.48, -0.7]} rotation={[0.2, 0, 0]} castShadow>
                 <boxGeometry args={[0.5, 0.14, 0.35]} />
-                <meshStandardMaterial color="#1e293b" roughness={0.8} />
+                <meshStandardMaterial color="#faf6ee" roughness={0.8} />
             </mesh>
             <mesh position={[-0.3, 0.48, -0.7]} rotation={[0.2, 0, 0]} castShadow>
                 <boxGeometry args={[0.5, 0.14, 0.35]} />
-                <meshStandardMaterial color="#1e293b" roughness={0.8} />
+                <meshStandardMaterial color="#faf6ee" roughness={0.8} />
             </mesh>
 
-            {/* Bedside Nightstand with Cyber Headphones on Stand */}
+            {/* Bedside Solid Walnut Nightstand */}
             <group position={[0.9, 0.25, -0.7]}>
                 <mesh castShadow>
                     <boxGeometry args={[0.4, 0.5, 0.45]} />
-                    <meshStandardMaterial color="#090e18" metalness={0.7} />
+                    <meshStandardMaterial color="#553a24" roughness={0.5} />
                 </mesh>
-                {/* Headphone Stand */}
-                <mesh position={[0, 0.38, 0]}>
-                    <cylinderGeometry args={[0.015, 0.015, 0.22, 8]} />
-                    <meshStandardMaterial color="#00f5d4" metalness={0.9} />
-                </mesh>
-            </group>
-
-            {/* Floating Holographic Cyber Clock */}
-            <group position={[0.9, 0.68, -0.7]}>
-                <mesh>
-                    <boxGeometry args={[0.32, 0.12, 0.02]} />
-                    <meshBasicMaterial color="#00f5d4" transparent opacity={0.8} toneMapped={false} />
+                {/* Ceramic Water Carafe on Nightstand */}
+                <mesh position={[0, 0.35, 0]} castShadow>
+                    <cylinderGeometry args={[0.04, 0.05, 0.16, 16]} />
+                    <meshStandardMaterial color="#f8fafc" roughness={0.2} />
                 </mesh>
             </group>
 
-            <pointLight color="#f72585" intensity={1.4} distance={2.4} decay={2} position={[0, 0.8, 0]} />
+            {/* Warm Ambient Bedside Reading Light */}
+            <pointLight color="#fed7aa" intensity={1.5} distance={2.8} decay={2} position={[0, 0.8, 0]} />
         </group>
     );
 }
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Industrial Ceiling Ventilation Fan & Shadow Cast
+// SUB-COMPONENT: Architectural Ceiling Ventilation & Ambient Beam
 // -------------------------------------------------------------
 function IndustrialCeilingVent() {
     const fanRef = useRef<THREE.Group>(null);
@@ -903,35 +1057,35 @@ function IndustrialCeilingVent() {
 
     return (
         <group position={[0, 3.48, 0]}>
-            {/* Vent Housing */}
+            {/* Vent Housing in Architectural Dark Walnut */}
             <mesh position={[0, 0, 0]}>
                 <boxGeometry args={[1.3, 0.15, 1.3]} />
-                <meshStandardMaterial color="#070b14" metalness={0.9} roughness={0.2} />
+                <meshStandardMaterial color="#382517" roughness={0.5} />
             </mesh>
 
             {/* Circular Vent Opening */}
             <mesh position={[0, -0.08, 0]} rotation={[-Math.PI / 2, 0, 0]}>
                 <ringGeometry args={[0.42, 0.52, 24]} />
-                <meshStandardMaterial color="#1e293b" metalness={0.8} />
+                <meshStandardMaterial color="#2d1c10" roughness={0.6} />
             </mesh>
 
-            {/* 4-Blade Rotating Fan Casting Ambient Shadows */}
+            {/* 4-Blade Rotating Fan */}
             <group ref={fanRef} position={[0, -0.05, 0]}>
                 {Array.from({ length: 4 }).map((_, i) => (
                     <mesh key={i} rotation={[0, 0, (i * Math.PI) / 2]} castShadow>
                         <boxGeometry args={[0.12, 0.44, 0.02]} />
-                        <meshStandardMaterial color="#04060c" metalness={0.95} roughness={0.15} />
+                        <meshStandardMaterial color="#22150c" roughness={0.6} />
                     </mesh>
                 ))}
             </group>
 
-            {/* Cyan Spotlight beaming down through the fan */}
+            {/* Warm Golden Spotlight beaming down through the fan */}
             <spotLight
                 position={[0, 0.2, 0]}
                 angle={0.7}
                 penumbra={0.85}
-                intensity={1.4}
-                color="#00f5d4"
+                intensity={1.2}
+                color="#fef3c7"
                 castShadow
             />
         </group>
@@ -939,32 +1093,32 @@ function IndustrialCeilingVent() {
 }
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Upper Wall Pipelines & Heavy Cable Conduits
+// SUB-COMPONENT: Upper Wall Copper Conduits & Warm Accents
 // -------------------------------------------------------------
 function WallPipelinesAndConduits() {
     return (
         <group>
-            {/* Main Industrial Pipe across back wall */}
+            {/* Main Brushed Copper Pipe across back wall */}
             <mesh position={[0, 3.2, -3.38]} rotation={[0, 0, Math.PI / 2]}>
                 <cylinderGeometry args={[0.075, 0.075, 7.0, 16]} />
-                <meshStandardMaterial color="#0f172a" metalness={0.85} roughness={0.25} />
+                <meshStandardMaterial color="#784c28" metalness={0.7} roughness={0.3} />
             </mesh>
-            {/* Pipe Couplings with Amber Rings */}
+            {/* Pipe Couplings with Brass Rings */}
             {[-2.2, -0.7, 0.8, 2.3].map((x, i) => (
                 <mesh key={i} position={[x, 3.2, -3.38]} rotation={[0, 0, Math.PI / 2]}>
                     <cylinderGeometry args={[0.095, 0.095, 0.08, 16]} />
-                    <meshStandardMaterial color="#ffb703" metalness={0.7} roughness={0.3} />
+                    <meshStandardMaterial color="#eab308" metalness={0.9} roughness={0.2} />
                 </mesh>
             ))}
 
-            {/* Braided Neon Fiber Cables along left wall */}
+            {/* Warm Ambient Conduit Accents along left wall */}
             <mesh position={[-3.38, 3.05, 0]}>
-                <cylinderGeometry args={[0.03, 0.03, 6.8, 12]} />
-                <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                <cylinderGeometry args={[0.025, 0.025, 6.8, 12]} />
+                <meshBasicMaterial color="#f59e0b" toneMapped={false} />
             </mesh>
             <mesh position={[-3.38, 2.96, 0]}>
-                <cylinderGeometry args={[0.025, 0.025, 6.8, 12]} />
-                <meshBasicMaterial color="#f72585" toneMapped={false} />
+                <cylinderGeometry args={[0.02, 0.02, 6.8, 12]} />
+                <meshBasicMaterial color="#10b981" toneMapped={false} />
             </mesh>
         </group>
     );
@@ -1109,10 +1263,10 @@ export default function CyberRoomScene({
     }
 
     return (
-        <div className="w-full h-full relative cursor-grab active:cursor-grabbing">
+        <div className="w-full h-full relative cursor-default">
             <Canvas
                 shadows
-                camera={{ position: [4.92, 4.44, 5.28], fov: 38 }}
+                camera={{ position: [0, 1.75, 4.55], fov: 55 }}
                 gl={{
                     antialias: true,
                     powerPreference: 'high-performance',

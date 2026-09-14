@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 
@@ -83,12 +83,11 @@ export default function CameraController({
 }: CameraControllerProps) {
     const { camera, gl } = useThree();
 
-    // Orbit state variables - LOCKED BY DEFAULT (No auto-rotation!)
-    const isDraggingRef = useRef(false);
-    const previousPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-    const orbitAngleRef = useRef(0.75); // Initial isometric angle (~43 deg, room-centered)
-    const orbitPitchRef = useRef(0.42); // Elevation angle (frames floor and ceiling evenly)
-    const orbitRadiusRef = useRef(7.9); // Slightly zoomed out for optimal room breathing room
+    // Fixed 4th wall middle camera coordinates (slightly zoomed out so entire room is fully visible):
+    // Centered horizontally (x = 0), at eye-level wall height (y = 1.75), on the 4th wall (z = 4.55)
+    // looking straight forward into the room with zero mouse/trackpad rotation.
+    const FIXED_WALL4_POS = useMemo(() => new THREE.Vector3(0, 1.75, 4.55), []);
+    const ROOM_TARGET = useMemo(() => new THREE.Vector3(0, 1.45, -0.60), []);
 
     // Animation progress for dolly-zoom
     const transitionProgressRef = useRef(0);
@@ -99,66 +98,19 @@ export default function CameraController({
     const tourIndexRef = useRef(0);
     const tourTimeInStopRef = useRef(0);
     const tourTransitionRef = useRef(0);
-    const currentTourTargetPosRef = useRef(new THREE.Vector3(0, 1.20, 0));
+    const currentTourTargetPosRef = useRef(new THREE.Vector3(0, 1.45, -0.70));
 
     // Spatial targets
-    const ROOM_CENTER = new THREE.Vector3(0, 1.20, 0);
     const MONITOR_POS = new THREE.Vector3(0, 1.45, -0.85);
     const SHOULDER_POS = new THREE.Vector3(0.28, 1.52, 0.65);
     const SCREEN_LOCK_POS = new THREE.Vector3(0, 1.45, -0.15);
-
-    // Setup mouse drag event handlers for orbit mode
-    useEffect(() => {
-        const dom = gl.domElement;
-
-        const onPointerDown = (e: PointerEvent) => {
-            if (mode !== 'orbit') return;
-            isDraggingRef.current = true;
-            previousPointerRef.current = { x: e.clientX, y: e.clientY };
-        };
-
-        const onPointerMove = (e: PointerEvent) => {
-            if (!isDraggingRef.current || mode !== 'orbit') return;
-            const dx = e.clientX - previousPointerRef.current.x;
-            const dy = e.clientY - previousPointerRef.current.y;
-
-            // Rotate purely on user drag
-            orbitAngleRef.current -= dx * 0.005;
-            orbitPitchRef.current = Math.max(0.18, Math.min(Math.PI / 2.5, orbitPitchRef.current + dy * 0.005));
-
-            previousPointerRef.current = { x: e.clientX, y: e.clientY };
-        };
-
-        const onPointerUp = () => {
-            isDraggingRef.current = false;
-        };
-
-        const onWheel = (e: WheelEvent) => {
-            if (mode !== 'orbit') return;
-            e.preventDefault();
-            // Smooth zoom range around 7.9 so room remains edge-to-edge
-            orbitRadiusRef.current = Math.max(6.0, Math.min(9.2, orbitRadiusRef.current + e.deltaY * 0.004));
-        };
-
-        dom.addEventListener('pointerdown', onPointerDown);
-        window.addEventListener('pointermove', onPointerMove);
-        window.addEventListener('pointerup', onPointerUp);
-        dom.addEventListener('wheel', onWheel, { passive: false });
-
-        return () => {
-            dom.removeEventListener('pointerdown', onPointerDown);
-            window.removeEventListener('pointermove', onPointerMove);
-            window.removeEventListener('pointerup', onPointerUp);
-            dom.removeEventListener('wheel', onWheel);
-        };
-    }, [gl, mode]);
 
     // Track mode changes
     useEffect(() => {
         if (mode === 'dolly_in') {
             transitionProgressRef.current = 0;
             startCamPosRef.current.copy(camera.position);
-            startTargetRef.current.copy(ROOM_CENTER);
+            startTargetRef.current.copy(ROOM_TARGET);
         } else if (mode === 'dolly_out') {
             transitionProgressRef.current = 0;
             startCamPosRef.current.copy(camera.position);
@@ -168,35 +120,25 @@ export default function CameraController({
             tourTimeInStopRef.current = 0;
             tourTransitionRef.current = 0;
             startCamPosRef.current.copy(camera.position);
-            startTargetRef.current.copy(ROOM_CENTER);
+            startTargetRef.current.copy(ROOM_TARGET);
             if (onTourPoiChange) {
                 onTourPoiChange(TOUR_STOPS[0].name, 1, TOUR_STOPS.length);
             }
         }
-    }, [mode, camera, onTourPoiChange]);
+    }, [mode, camera, onTourPoiChange, ROOM_TARGET]);
 
     useFrame((_, delta) => {
         // ============================================================
-        // 1. ORBIT MODE: LOCKED - NO AUTO-ROTATION!
+        // 1. FIXED 4TH WALL MIDDLE VIEW: PERMANENTLY LOCKED
         // ============================================================
         if (mode === 'orbit') {
-            // Notice: Auto-rotation has been completely removed per user request!
-            // Spherical to Cartesian coordinates
-            const phi = Math.PI / 2 - orbitPitchRef.current;
-            const theta = orbitAngleRef.current;
-            const r = orbitRadiusRef.current;
+            // Camera position is permanently locked at the 4th wall middle view
+            camera.position.lerp(FIXED_WALL4_POS, delta * 8);
+            camera.lookAt(ROOM_TARGET);
 
-            const targetX = r * Math.sin(phi) * Math.sin(theta);
-            const targetY = r * Math.cos(phi) + 1.22;
-            const targetZ = r * Math.sin(phi) * Math.cos(theta);
-
-            // Smooth damping into target orbit position
-            camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), delta * 6);
-            camera.lookAt(ROOM_CENTER);
-
-            // Natural perspective FOV (38 degrees for edge-to-edge room framing)
+            // Natural perspective FOV (55 degrees for zoomed out 4th wall framing showing entire room)
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(camera.fov, 38, delta * 4);
+                camera.fov = THREE.MathUtils.lerp(camera.fov, 55, delta * 6);
                 camera.updateProjectionMatrix();
             }
 
@@ -257,7 +199,7 @@ export default function CameraController({
             camera.lookAt(currentLookTarget);
 
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(38, 28, ease);
+                camera.fov = THREE.MathUtils.lerp(55, 28, ease);
                 camera.updateProjectionMatrix();
             }
 
@@ -284,20 +226,11 @@ export default function CameraController({
             const p = transitionProgressRef.current;
             const ease = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
-            const phi = Math.PI / 2 - orbitPitchRef.current;
-            const theta = orbitAngleRef.current;
-            const r = orbitRadiusRef.current;
-            const orbitPos = new THREE.Vector3(
-                r * Math.sin(phi) * Math.sin(theta),
-                r * Math.cos(phi) + 1.22,
-                r * Math.sin(phi) * Math.cos(theta)
-            );
-
-            camera.position.lerpVectors(SCREEN_LOCK_POS, orbitPos, ease);
-            camera.lookAt(ROOM_CENTER);
+            camera.position.lerpVectors(SCREEN_LOCK_POS, FIXED_WALL4_POS, ease);
+            camera.lookAt(ROOM_TARGET);
 
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(28, 38, ease);
+                camera.fov = THREE.MathUtils.lerp(28, 55, ease);
                 camera.updateProjectionMatrix();
             }
 

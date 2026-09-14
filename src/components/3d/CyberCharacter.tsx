@@ -31,6 +31,8 @@ export default function CyberCharacter({
     const rightArmRef = useRef<THREE.Group>(null);
     const leftLegRef = useRef<THREE.Group>(null);
     const rightLegRef = useRef<THREE.Group>(null);
+    const leftKneeRef = useRef<THREE.Group>(null);
+    const rightKneeRef = useRef<THREE.Group>(null);
     const coffeeCupRef = useRef<THREE.Group>(null);
 
     // Precise spatial coordinates for locations in the room
@@ -89,14 +91,26 @@ export default function CyberCharacter({
             bodyRoot.position.y = 0.5;
             bodyRoot.rotation.x = 0.05;
 
-            // Hips & Legs bent at 90 degrees for sitting
+            // Hips & Legs: thigh horizontal (-90 deg), knee bends DOWN 90 deg so feet rest flat on floor
             if (leftLegRef.current) {
-                leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, -Math.PI / 2.1, delta * 8);
-                leftLegRef.current.rotation.z = -0.05;
+                leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, -Math.PI / 2.15, delta * 8);
+                leftLegRef.current.rotation.y = 0;
+                leftLegRef.current.rotation.z = -0.04;
             }
             if (rightLegRef.current) {
-                rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, -Math.PI / 2.1, delta * 8);
-                rightLegRef.current.rotation.z = 0.05;
+                rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, -Math.PI / 2.15, delta * 8);
+                rightLegRef.current.rotation.y = 0;
+                rightLegRef.current.rotation.z = 0.04;
+            }
+            if (leftKneeRef.current) {
+                leftKneeRef.current.rotation.x = THREE.MathUtils.lerp(leftKneeRef.current.rotation.x, Math.PI / 2.1, delta * 8);
+                leftKneeRef.current.rotation.y = 0;
+                leftKneeRef.current.rotation.z = 0;
+            }
+            if (rightKneeRef.current) {
+                rightKneeRef.current.rotation.x = THREE.MathUtils.lerp(rightKneeRef.current.rotation.x, Math.PI / 2.1, delta * 8);
+                rightKneeRef.current.rotation.y = 0;
+                rightKneeRef.current.rotation.z = 0;
             }
 
             // Torso upright with gentle music nodding
@@ -190,15 +204,27 @@ export default function CyberCharacter({
                 }
                 if (headRef.current) headRef.current.rotation.set(0, 0, 0);
 
-                // Natural leg walk swing
-                const legSwing = Math.sin(time * 8) * 0.5;
+                // Natural leg walk swing with realistic knee flexion
+                const legSwing = Math.sin(time * 8) * 0.42;
                 if (leftLegRef.current) {
                     leftLegRef.current.rotation.x = legSwing;
-                    leftLegRef.current.rotation.z = 0;
+                    leftLegRef.current.rotation.y = 0;
+                    leftLegRef.current.rotation.z = -0.02;
                 }
                 if (rightLegRef.current) {
                     rightLegRef.current.rotation.x = -legSwing;
-                    rightLegRef.current.rotation.z = 0;
+                    rightLegRef.current.rotation.y = 0;
+                    rightLegRef.current.rotation.z = 0.02;
+                }
+                if (leftKneeRef.current) {
+                    leftKneeRef.current.rotation.x = Math.max(0, -legSwing) * 0.75;
+                    leftKneeRef.current.rotation.y = 0;
+                    leftKneeRef.current.rotation.z = 0;
+                }
+                if (rightKneeRef.current) {
+                    rightKneeRef.current.rotation.x = Math.max(0, legSwing) * 0.75;
+                    rightKneeRef.current.rotation.y = 0;
+                    rightKneeRef.current.rotation.z = 0;
                 }
 
                 // Opposite arm swing
@@ -237,11 +263,23 @@ export default function CyberCharacter({
             // Standing legs straight and stationary
             if (leftLegRef.current) {
                 leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0, delta * 8);
-                leftLegRef.current.rotation.z = 0;
+                leftLegRef.current.rotation.y = 0;
+                leftLegRef.current.rotation.z = -0.03;
             }
             if (rightLegRef.current) {
                 rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0, delta * 8);
-                rightLegRef.current.rotation.z = 0;
+                rightLegRef.current.rotation.y = 0;
+                rightLegRef.current.rotation.z = 0.03;
+            }
+            if (leftKneeRef.current) {
+                leftKneeRef.current.rotation.x = THREE.MathUtils.lerp(leftKneeRef.current.rotation.x, 0, delta * 8);
+                leftKneeRef.current.rotation.y = 0;
+                leftKneeRef.current.rotation.z = 0;
+            }
+            if (rightKneeRef.current) {
+                rightKneeRef.current.rotation.x = THREE.MathUtils.lerp(rightKneeRef.current.rotation.x, 0, delta * 8);
+                rightKneeRef.current.rotation.y = 0;
+                rightKneeRef.current.rotation.z = 0;
             }
 
             if (torsoRef.current) {
@@ -289,11 +327,23 @@ export default function CyberCharacter({
             // Legs straight and relaxed flat along mattress
             if (leftLegRef.current) {
                 leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0.04, delta * 8);
+                leftLegRef.current.rotation.y = 0;
                 leftLegRef.current.rotation.z = -0.06;
             }
             if (rightLegRef.current) {
                 rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0.04, delta * 8);
+                rightLegRef.current.rotation.y = 0;
                 rightLegRef.current.rotation.z = 0.06;
+            }
+            if (leftKneeRef.current) {
+                leftKneeRef.current.rotation.x = THREE.MathUtils.lerp(leftKneeRef.current.rotation.x, 0, delta * 8);
+                leftKneeRef.current.rotation.y = 0;
+                leftKneeRef.current.rotation.z = 0;
+            }
+            if (rightKneeRef.current) {
+                rightKneeRef.current.rotation.x = THREE.MathUtils.lerp(rightKneeRef.current.rotation.x, 0, delta * 8);
+                rightKneeRef.current.rotation.y = 0;
+                rightKneeRef.current.rotation.z = 0;
             }
 
             // Torso flat with gentle, deep sleep breathing (chest rising & falling along local Z which is world +Y)
@@ -602,86 +652,101 @@ export default function CyberCharacter({
                     </group>
                 </group>
 
-                {/* LOWER BODY: ARTICULATED LEGS & HIGH-TOP CYBER SNEAKERS */}
-                {/* Left Leg */}
+                {/* LOWER BODY: 2-JOINT ARTICULATED LEGS & HIGH-TOP CYBER SNEAKERS */}
+                {/* Left Leg (Thigh rotates around hip joint [0, 0, 0]) */}
                 <group ref={leftLegRef} position={[-0.13, -0.06, 0]}>
                     {/* Upper Thigh in Tapered Dark Cargo Joggers */}
-                    <mesh castShadow position={[0, -0.12, 0]}>
-                        <cylinderGeometry args={[0.075, 0.068, 0.22, 12]} />
+                    <mesh castShadow position={[0, -0.11, 0]}>
+                        <cylinderGeometry args={[0.075, 0.065, 0.22, 12]} />
                         <meshStandardMaterial color="#080c14" roughness={0.85} />
                     </mesh>
                     {/* Cargo Flap Pocket on Outer Thigh */}
-                    <mesh position={[-0.075, -0.12, 0]}>
+                    <mesh position={[-0.075, -0.11, 0]}>
                         <boxGeometry args={[0.02, 0.1, 0.09]} />
                         <meshStandardMaterial color="#05080f" roughness={0.8} />
                     </mesh>
 
-                    {/* Articulated Knee & Shin */}
-                    <mesh castShadow position={[0, -0.28, 0]}>
-                        <cylinderGeometry args={[0.065, 0.052, 0.2, 12]} />
-                        <meshStandardMaterial color="#080c14" roughness={0.85} />
-                    </mesh>
+                    {/* Knee & Lower Shin (Joint at y = -0.22) */}
+                    <group ref={leftKneeRef} position={[0, -0.22, 0]}>
+                        {/* Knee cap */}
+                        <mesh position={[0, 0, 0.03]} castShadow>
+                            <sphereGeometry args={[0.045, 8, 8]} />
+                            <meshStandardMaterial color="#080c14" roughness={0.85} />
+                        </mesh>
+                        {/* Articulated Shin */}
+                        <mesh castShadow position={[0, -0.11, 0]}>
+                            <cylinderGeometry args={[0.062, 0.052, 0.22, 12]} />
+                            <meshStandardMaterial color="#080c14" roughness={0.85} />
+                        </mesh>
 
-                    {/* High-Top Cyber Streetwear Sneaker */}
-                    <group position={[0, -0.42, 0.04]}>
-                        {/* Sneaker Ankle Collar & Tongue */}
-                        <mesh castShadow position={[0, 0.04, -0.02]}>
-                            <boxGeometry args={[0.11, 0.08, 0.12]} />
-                            <meshStandardMaterial color="#18181b" roughness={0.6} />
-                        </mesh>
-                        {/* Sneaker Leather Upper */}
-                        <mesh castShadow position={[0, 0, 0.02]}>
-                            <boxGeometry args={[0.115, 0.07, 0.18]} />
-                            <meshStandardMaterial color="#f8fafc" roughness={0.3} />
-                        </mesh>
-                        {/* Sneaker Contoured Rubber Sole with Tread */}
-                        <mesh position={[0, -0.045, 0.02]} receiveShadow>
-                            <boxGeometry args={[0.125, 0.03, 0.21]} />
-                            <meshStandardMaterial color="#090d16" roughness={0.7} />
-                        </mesh>
-                        {/* Cyan Air-Bubble Heel Piping */}
-                        <mesh position={[0, -0.035, -0.07]}>
-                            <boxGeometry args={[0.11, 0.015, 0.02]} />
-                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
-                        </mesh>
+                        {/* High-Top Cyber Streetwear Sneaker */}
+                        <group position={[0, -0.23, 0.04]}>
+                            {/* Sneaker Ankle Collar & Tongue */}
+                            <mesh castShadow position={[0, 0.04, -0.02]}>
+                                <boxGeometry args={[0.11, 0.08, 0.12]} />
+                                <meshStandardMaterial color="#18181b" roughness={0.6} />
+                            </mesh>
+                            {/* Sneaker Leather Upper */}
+                            <mesh castShadow position={[0, 0, 0.02]}>
+                                <boxGeometry args={[0.115, 0.07, 0.18]} />
+                                <meshStandardMaterial color="#f8fafc" roughness={0.3} />
+                            </mesh>
+                            {/* Sneaker Contoured Rubber Sole with Tread */}
+                            <mesh position={[0, -0.045, 0.02]} receiveShadow>
+                                <boxGeometry args={[0.125, 0.03, 0.21]} />
+                                <meshStandardMaterial color="#090d16" roughness={0.7} />
+                            </mesh>
+                            {/* Cyan Air-Bubble Heel Piping */}
+                            <mesh position={[0, -0.035, -0.07]}>
+                                <boxGeometry args={[0.11, 0.015, 0.02]} />
+                                <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                            </mesh>
+                        </group>
                     </group>
                 </group>
 
-                {/* Right Leg */}
+                {/* Right Leg (Thigh rotates around hip joint [0, 0, 0]) */}
                 <group ref={rightLegRef} position={[0.13, -0.06, 0]}>
-                    <mesh castShadow position={[0, -0.12, 0]}>
-                        <cylinderGeometry args={[0.075, 0.068, 0.22, 12]} />
+                    <mesh castShadow position={[0, -0.11, 0]}>
+                        <cylinderGeometry args={[0.075, 0.065, 0.22, 12]} />
                         <meshStandardMaterial color="#080c14" roughness={0.85} />
                     </mesh>
-                    <mesh position={[0.075, -0.12, 0]}>
+                    <mesh position={[0.075, -0.11, 0]}>
                         <boxGeometry args={[0.02, 0.1, 0.09]} />
                         <meshStandardMaterial color="#05080f" roughness={0.8} />
                     </mesh>
 
-                    <mesh castShadow position={[0, -0.28, 0]}>
-                        <cylinderGeometry args={[0.065, 0.052, 0.2, 12]} />
-                        <meshStandardMaterial color="#080c14" roughness={0.85} />
-                    </mesh>
+                    {/* Knee & Lower Shin (Joint at y = -0.22) */}
+                    <group ref={rightKneeRef} position={[0, -0.22, 0]}>
+                        <mesh position={[0, 0, 0.03]} castShadow>
+                            <sphereGeometry args={[0.045, 8, 8]} />
+                            <meshStandardMaterial color="#080c14" roughness={0.85} />
+                        </mesh>
+                        <mesh castShadow position={[0, -0.11, 0]}>
+                            <cylinderGeometry args={[0.062, 0.052, 0.22, 12]} />
+                            <meshStandardMaterial color="#080c14" roughness={0.85} />
+                        </mesh>
 
-                    {/* High-Top Cyber Streetwear Sneaker */}
-                    <group position={[0, -0.42, 0.04]}>
-                        <mesh castShadow position={[0, 0.04, -0.02]}>
-                            <boxGeometry args={[0.11, 0.08, 0.12]} />
-                            <meshStandardMaterial color="#18181b" roughness={0.6} />
-                        </mesh>
-                        <mesh castShadow position={[0, 0, 0.02]}>
-                            <boxGeometry args={[0.115, 0.07, 0.18]} />
-                            <meshStandardMaterial color="#f8fafc" roughness={0.3} />
-                        </mesh>
-                        <mesh position={[0, -0.45, 0.02]} receiveShadow>
-                            <boxGeometry args={[0.125, 0.03, 0.21]} />
-                            <meshStandardMaterial color="#090d16" roughness={0.7} />
-                        </mesh>
-                        {/* Magenta Air-Bubble Heel Piping */}
-                        <mesh position={[0, -0.035, -0.07]}>
-                            <boxGeometry args={[0.11, 0.015, 0.02]} />
-                            <meshBasicMaterial color="#f72585" toneMapped={false} />
-                        </mesh>
+                        {/* High-Top Cyber Streetwear Sneaker (Sole correctly at -0.045) */}
+                        <group position={[0, -0.23, 0.04]}>
+                            <mesh castShadow position={[0, 0.04, -0.02]}>
+                                <boxGeometry args={[0.11, 0.08, 0.12]} />
+                                <meshStandardMaterial color="#18181b" roughness={0.6} />
+                            </mesh>
+                            <mesh castShadow position={[0, 0, 0.02]}>
+                                <boxGeometry args={[0.115, 0.07, 0.18]} />
+                                <meshStandardMaterial color="#f8fafc" roughness={0.3} />
+                            </mesh>
+                            <mesh position={[0, -0.045, 0.02]} receiveShadow>
+                                <boxGeometry args={[0.125, 0.03, 0.21]} />
+                                <meshStandardMaterial color="#090d16" roughness={0.7} />
+                            </mesh>
+                            {/* Magenta Air-Bubble Heel Piping */}
+                            <mesh position={[0, -0.035, -0.07]}>
+                                <boxGeometry args={[0.11, 0.015, 0.02]} />
+                                <meshBasicMaterial color="#f72585" toneMapped={false} />
+                            </mesh>
+                        </group>
                     </group>
                 </group>
             </group>
