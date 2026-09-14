@@ -75,11 +75,11 @@ export default function CameraController({
 }: CameraControllerProps) {
     const { camera, gl } = useThree();
 
-    // Fixed 4th wall middle camera coordinates (generously zoomed out so entire room diorama is comfortably visible):
-    // Centered horizontally (x = 0), at eye-level wall height (y = 1.82), pulled back on the 4th wall (z = 5.35)
-    // looking straight forward into the room with zero mouse/trackpad rotation.
-    const FIXED_WALL4_POS = useMemo(() => new THREE.Vector3(0, 1.82, 5.35), []);
-    const ROOM_TARGET = useMemo(() => new THREE.Vector3(0, 1.45, -0.60), []);
+    // Fixed 4th wall camera coordinates tilted slightly toward the TV and lounge area:
+    // Positioned slightly left (x = -0.40) and looking toward (x = 0.60) so more of the 65" TV
+    // on the right wall is prominently visible while cutting down the empty foreground beside the bed.
+    const FIXED_WALL4_POS = useMemo(() => new THREE.Vector3(-0.40, 1.82, 5.35), []);
+    const ROOM_TARGET = useMemo(() => new THREE.Vector3(0.60, 1.45, -0.55), []);
 
     const MASTER_FOV = 58;
 

@@ -2299,6 +2299,71 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     </mesh>
                 </group>
             </group>
+
+            {/* ============================================================ */}
+            {/* 7. MINIMALIST STANDING LIGHT NEAR CORNER OF TV               */}
+            {/* Tucked into the front-right corner right beside the 65" TV   */}
+            {/* ============================================================ */}
+            <group position={[3.24, 0, 2.38]}>
+                {/* Weighted Nero Marquina Marble Circular Base */}
+                <mesh castShadow receiveShadow position={[0, 0.022, 0]}>
+                    <cylinderGeometry args={[0.18, 0.20, 0.044, 28]} />
+                    <meshStandardMaterial color="#0f1117" roughness={0.3} metalness={0.15} />
+                </mesh>
+                {/* Brushed Brass Perimeter Trim Ring */}
+                <mesh position={[0, 0.044, 0]}>
+                    <torusGeometry args={[0.185, 0.006, 12, 28]} />
+                    <meshStandardMaterial color="#b45309" metalness={0.92} roughness={0.2} />
+                </mesh>
+                {/* Brass Foot Tap Switch Button */}
+                <mesh position={[0.08, 0.050, 0.06]}>
+                    <cylinderGeometry args={[0.015, 0.015, 0.014, 16]} />
+                    <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.25} />
+                </mesh>
+
+                {/* Single Slender Vertical Architectural Bronze Stem (rising to TV corner level) */}
+                <mesh castShadow position={[0, 0.74, 0]}>
+                    <cylinderGeometry args={[0.011, 0.011, 1.44, 16]} />
+                    <meshStandardMaterial color="#1f1813" metalness={0.85} roughness={0.3} />
+                </mesh>
+
+                {/* Brass Shade Mount Knuckle Collar */}
+                <mesh position={[0, 1.46, 0]}>
+                    <cylinderGeometry args={[0.018, 0.018, 0.032, 16]} />
+                    <meshStandardMaterial color="#b45309" metalness={0.92} roughness={0.2} />
+                </mesh>
+
+                {/* Single Fluted Architectural Lampshade (level with the TV screen corner) */}
+                <group position={[0, 1.52, 0]}>
+                    {/* Conical Lampshade Exterior */}
+                    <mesh castShadow>
+                        <cylinderGeometry args={[0.09, 0.22, 0.20, 24, 1, true]} />
+                        <meshStandardMaterial
+                            color="#faf5ee"
+                            roughness={0.85}
+                            side={THREE.DoubleSide}
+                        />
+                    </mesh>
+                    {/* Brushed Brass Top Finial Ring */}
+                    <mesh position={[0, 0.10, 0]}>
+                        <cylinderGeometry args={[0.022, 0.022, 0.018, 16]} />
+                        <meshStandardMaterial color="#b45309" metalness={0.92} roughness={0.2} />
+                    </mesh>
+                    {/* Warm Frosted Opal Glass Diffuser Bulb */}
+                    <mesh position={[0, -0.04, 0]}>
+                        <sphereGeometry args={[0.050, 18, 18]} />
+                        <meshBasicMaterial color="#fffbeb" toneMapped={false} />
+                    </mesh>
+                    {/* Single Cozy Warm Downward Ambient Light */}
+                    <pointLight
+                        color="#fef3c7"
+                        intensity={2.8}
+                        distance={3.6}
+                        decay={2}
+                        position={[0, -0.06, 0]}
+                    />
+                </group>
+            </group>
         </group>
     );
 });
@@ -3025,7 +3090,7 @@ export default function CyberRoomScene({
         <div className="w-full h-full relative cursor-default">
             <Canvas
                 shadows
-                camera={{ position: [0, 1.75, 4.55], fov: 55 }}
+                camera={{ position: [-0.40, 1.82, 5.35], fov: 58 }}
                 dpr={[1, 1.5]}
                 performance={{ min: 0.5 }}
                 frameloop={cameraMode === 'at_screen' ? 'demand' : 'always'}
