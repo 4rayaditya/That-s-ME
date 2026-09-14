@@ -10,6 +10,10 @@ export type CharacterRoutine =
     | 'brewing_coffee'
     | 'walking_to_bed'
     | 'resting_bed'
+    | 'walking_to_fridge'
+    | 'snacking_at_fridge'
+    | 'walking_to_tv'
+    | 'watching_tv'
     | 'returning_to_desk';
 
 interface CyberCharacterProps {
@@ -34,12 +38,15 @@ export default function CyberCharacter({
     const leftKneeRef = useRef<THREE.Group>(null);
     const rightKneeRef = useRef<THREE.Group>(null);
     const coffeeCupRef = useRef<THREE.Group>(null);
+    const gamepadRef = useRef<THREE.Group>(null);
 
     // Precise spatial coordinates for locations in the room
     const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, -1.85), []);
-    const COFFEE_POS = useMemo(() => new THREE.Vector3(2.75, 0, -0.28), []); // Directly in front of espresso bar (counter flush against wardrobe)
-    const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.85, 0, 0.8), []); // Foot of bed for standing
+    const COFFEE_POS = useMemo(() => new THREE.Vector3(2.75, 0, -0.28), []); // Espresso counter
+    const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.85, 0, 0.8), []); // Stand beside futon
     const BED_LIE_POS = useMemo(() => new THREE.Vector3(-2.55, 0, 0.8), []); // Flat on futon mattress
+    const FRIDGE_STAND_POS = useMemo(() => new THREE.Vector3(-1.95, 0, -2.45), []); // Mini fridge counter
+    const SOFA_POS = useMemo(() => new THREE.Vector3(1.82, 0, 1.35), []); // Center of comfy curved sofa facing TV
 
     // Internal timing for routines
     const stateTimerRef = useRef(0);
@@ -53,6 +60,10 @@ export default function CyberCharacter({
         brewing_coffee: 'Brewing Hyper-Caffeine Espresso & Sipping ☕',
         walking_to_bed: 'Heading to Cyber Futon to Sleep...',
         resting_bed: 'Sleeping on Cyber Futon & Recharging 🛏️',
+        walking_to_fridge: 'Heading to Cyber Mini Fridge & Snack Bar...',
+        snacking_at_fridge: 'Snacking on Cyber Treats & Cold Drinks 🧊',
+        walking_to_tv: 'Heading to Sofa to Chill...',
+        watching_tv: 'Chilling on Sofa & Watching TV 🎮',
         returning_to_desk: 'Returning to Battlestation...',
     };
 
@@ -63,7 +74,7 @@ export default function CyberCharacter({
     useFrame((state, delta) => {
         if (!groupRef.current || !bodyRootRef.current) return;
         const time = state.clock.getElapsedTime();
-        const dt = Math.min(0.05, delta); // Cap delta to prevent overshoot on frame drops
+        const dt = Math.min(0.05, delta);
         stateTimerRef.current += dt;
 
         const damp = (speed: number) => Math.min(1, dt * speed);
@@ -94,12 +105,12 @@ export default function CyberCharacter({
             }
 
             // Natural sitting height and posture on bodyRoot
-            bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.5, damp(8));
-            bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, 0.05, damp(8));
+            bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.48, damp(8));
+            bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, 0.04, damp(8));
             bodyRoot.rotation.y = 0;
             bodyRoot.rotation.z = 0;
 
-            // Hips & Legs: thigh horizontal (-90 deg), knee bends DOWN 90 deg so feet rest flat on floor
+            // Hips & Legs: thighs horizontal, knees bent down 90 deg, feet flat on floor
             if (leftLegRef.current) {
                 leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, -Math.PI / 2.15, damp(8));
                 leftLegRef.current.rotation.y = 0;
@@ -130,7 +141,7 @@ export default function CyberCharacter({
                 headRef.current.rotation.set(0.12 + Math.sin(time * 2.5) * 0.02, Math.sin(time * 1.0) * 0.03, 0);
             }
 
-            // Keystrokes on mechanical keyboard (realistic subtle typing rhythm, not glitchy vibrating)
+            // Keystrokes on mechanical keyboard
             if (leftArmRef.current) {
                 leftArmRef.current.rotation.x = -Math.PI / 3.4 + Math.sin(time * 5.2) * 0.018;
                 leftArmRef.current.rotation.y = 0.22;
@@ -143,25 +154,32 @@ export default function CyberCharacter({
             }
 
             if (coffeeCupRef.current) coffeeCupRef.current.visible = false;
+            if (gamepadRef.current) gamepadRef.current.visible = false;
 
         // ============================================================
-        // STATE 2: WALKING (Desk -> Coffee, Coffee -> Bed, Bed -> Desk)
+        // STATE 2: DIRECT SMOOTH WALKING
         // ============================================================
-        } else if (r === 'walking_to_coffee' || r === 'walking_to_bed' || r === 'returning_to_desk') {
+        } else if (r === 'walking_to_coffee' || r === 'walking_to_bed' || r === 'returning_to_desk' || r === 'walking_to_fridge' || r === 'walking_to_tv') {
             let target = COFFEE_POS;
             let nextState: CharacterRoutine = 'brewing_coffee';
 
             if (r === 'walking_to_bed') {
                 target = BED_STAND_POS;
                 nextState = 'resting_bed';
+            } else if (r === 'walking_to_fridge') {
+                target = FRIDGE_STAND_POS;
+                nextState = 'snacking_at_fridge';
+            } else if (r === 'walking_to_tv') {
+                target = SOFA_POS;
+                nextState = 'watching_tv';
             } else if (r === 'returning_to_desk') {
                 target = DESK_POS;
                 nextState = 'coding';
             }
 
-            // Waypoint: if starting from bed, step out to BED_STAND_POS first
+            // If starting from inside bed, step out to BED_STAND_POS first
             let currentNavTarget = target;
-            if (group.position.x < -1.95 && (r === 'returning_to_desk' || r === 'walking_to_coffee')) {
+            if (group.position.x < -1.95 && (r === 'returning_to_desk' || r === 'walking_to_coffee' || r === 'walking_to_tv' || r === 'walking_to_fridge')) {
                 currentNavTarget = BED_STAND_POS;
             }
 
@@ -169,11 +187,14 @@ export default function CyberCharacter({
             const dz = currentNavTarget.z - group.position.z;
             const dist = Math.sqrt(dx * dx + dz * dz);
 
-            // Recover upright standing posture smoothly
+            // Natural upright standing posture while traversing
             bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.55 + Math.abs(Math.sin(time * 7)) * 0.025, damp(8));
             bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, 0, damp(8));
             bodyRoot.rotation.y = 0;
             bodyRoot.rotation.z = 0;
+
+            if (coffeeCupRef.current) coffeeCupRef.current.visible = false;
+            if (gamepadRef.current) gamepadRef.current.visible = false;
 
             if (dist < 0.08) {
                 if (currentNavTarget === target) {
@@ -181,18 +202,17 @@ export default function CyberCharacter({
                     onRoutineChange(nextState, ROUTINE_LABELS[nextState]);
                     stateTimerRef.current = 0;
                 } else {
-                    // Cleared bed waypoint, continue to main target
                     group.position.copy(currentNavTarget);
                 }
             } else {
-                // Move towards destination smoothly without overshoot
+                // Step towards destination
                 const dirX = dx / dist;
                 const dirZ = dz / dist;
                 const step = Math.min(dist, dt * 1.35);
                 group.position.x += dirX * step;
                 group.position.z += dirZ * step;
 
-                // Shortest-path angle interpolation to prevent 180-degree jitter/flips
+                // Smooth turning along heading
                 const moveAngle = Math.atan2(dirX, dirZ);
                 let diff = moveAngle - group.rotation.y;
                 while (diff < -Math.PI) diff += Math.PI * 2;
@@ -205,37 +225,22 @@ export default function CyberCharacter({
                 }
                 if (headRef.current) headRef.current.rotation.set(0, 0, 0);
 
-                // Natural leg walk swing with realistic knee flexion
+                // Natural walking leg swing
                 const legSwing = Math.sin(time * 7) * 0.40;
-                if (leftLegRef.current) {
-                    leftLegRef.current.rotation.set(legSwing, 0, -0.02);
-                }
-                if (rightLegRef.current) {
-                    rightLegRef.current.rotation.set(-legSwing, 0, 0.02);
-                }
-                if (leftKneeRef.current) {
-                    leftKneeRef.current.rotation.set(Math.max(0, -legSwing) * 0.75, 0, 0);
-                }
-                if (rightKneeRef.current) {
-                    rightKneeRef.current.rotation.set(Math.max(0, legSwing) * 0.75, 0, 0);
-                }
+                if (leftLegRef.current) leftLegRef.current.rotation.set(legSwing, 0, -0.02);
+                if (rightLegRef.current) rightLegRef.current.rotation.set(-legSwing, 0, 0.02);
+                if (leftKneeRef.current) leftKneeRef.current.rotation.set(Math.max(0, -legSwing) * 0.75, 0, 0);
+                if (rightKneeRef.current) rightKneeRef.current.rotation.set(Math.max(0, legSwing) * 0.75, 0, 0);
 
-                // Opposite arm swing
-                if (leftArmRef.current) {
-                    leftArmRef.current.rotation.set(-legSwing * 0.55, 0, -0.1);
-                }
-                if (rightArmRef.current) {
-                    rightArmRef.current.rotation.set(legSwing * 0.55, 0, 0.1);
-                }
-
-                if (coffeeCupRef.current) coffeeCupRef.current.visible = false;
+                // Arm swing
+                if (leftArmRef.current) leftArmRef.current.rotation.set(-legSwing * 0.55, 0, -0.1);
+                if (rightArmRef.current) rightArmRef.current.rotation.set(legSwing * 0.55, 0, 0.1);
             }
 
         // ============================================================
         // STATE 3: BREWING ESPRESSO (Stands locked at counter, sips coffee)
         // ============================================================
         } else if (r === 'brewing_coffee') {
-            // Locked firmly in front of the espresso bar at x=2.79, z=0.7 facing +X
             group.position.lerp(COFFEE_POS, damp(8));
 
             let diff = Math.PI / 2 - group.rotation.y;
@@ -246,29 +251,20 @@ export default function CyberCharacter({
             bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.55, damp(8));
             bodyRoot.rotation.set(0, 0, 0);
 
-            // Standing legs straight and stationary
-            if (leftLegRef.current) {
-                leftLegRef.current.rotation.set(0, 0, -0.03);
-            }
-            if (rightLegRef.current) {
-                rightLegRef.current.rotation.set(0, 0, 0.03);
-            }
-            if (leftKneeRef.current) {
-                leftKneeRef.current.rotation.set(0, 0, 0);
-            }
-            if (rightKneeRef.current) {
-                rightKneeRef.current.rotation.set(0, 0, 0);
-            }
+            if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, -0.03);
+            if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0.03);
+            if (leftKneeRef.current) leftKneeRef.current.rotation.set(0, 0, 0);
+            if (rightKneeRef.current) rightKneeRef.current.rotation.set(0, 0, 0);
 
             if (torsoRef.current) {
                 torsoRef.current.position.set(0, 0.28, 0);
                 torsoRef.current.rotation.set(0, 0, 0);
             }
 
-            // Holding & sipping coffee cup
             if (coffeeCupRef.current) coffeeCupRef.current.visible = true;
+            if (gamepadRef.current) gamepadRef.current.visible = false;
 
-            const sipCycle = (Math.sin(time * 2.0) + 1) / 2; // 0 to 1
+            const sipCycle = (Math.sin(time * 2.0) + 1) / 2;
             if (rightArmRef.current) {
                 rightArmRef.current.rotation.x = THREE.MathUtils.lerp(-0.4, -1.35, sipCycle);
                 rightArmRef.current.rotation.y = THREE.MathUtils.lerp(0.1, -0.4, sipCycle);
@@ -281,8 +277,14 @@ export default function CyberCharacter({
                 headRef.current.rotation.set(THREE.MathUtils.lerp(0.05, 0.28, sipCycle), 0, 0);
             }
 
+            // Return to desk after 5 seconds of brewing & sipping espresso
+            if (stateTimerRef.current > 5.0) {
+                onRoutineChange('returning_to_desk', ROUTINE_LABELS['returning_to_desk']);
+                stateTimerRef.current = 0;
+            }
+
         // ============================================================
-        // STATE 4: SLEEPING ON BED (Lying flat horizontally on mattress without gimbal lock)
+        // STATE 4: REVERTED CLEAN SLEEPING ON BED (Horizontal on mattress)
         // ============================================================
         } else if (r === 'resting_bed') {
             // Positioned horizontally along the mattress surface
@@ -293,18 +295,13 @@ export default function CyberCharacter({
             while (diff > Math.PI) diff -= Math.PI * 2;
             group.rotation.y += diff * damp(5);
 
-            // Reclined flat on back via bodyRoot.rotation.x only (ZERO group gimbal lock!)
-            // Raised from the old 0.48: once the rig is pitched flat, each part's local
-            // depth/radius becomes its VERTICAL thickness, so 0.48 sat the hips low enough
-            // that the leg cylinders' own radius sank below the mattress + duvet surface.
-            // 0.62 clears that while keeping the torso's back resting just on the duvet.
+            // Reclined flat on back via bodyRoot.rotation.x
             bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.62, damp(5));
             bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, -Math.PI / 2, damp(5));
             bodyRoot.rotation.y = 0;
             bodyRoot.rotation.z = 0;
 
-            // Legs straight and relaxed flat along mattress â€” lerped into place (not snapped)
-            // so the walking leg-swing settles smoothly into the resting pose instead of popping.
+            // Legs straight and relaxed flat along mattress
             if (leftLegRef.current) {
                 leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0.02, damp(6));
                 leftLegRef.current.rotation.y = 0;
@@ -354,6 +351,126 @@ export default function CyberCharacter({
             }
 
             if (coffeeCupRef.current) coffeeCupRef.current.visible = false;
+            if (gamepadRef.current) gamepadRef.current.visible = false;
+
+            // Return to desk after 16 seconds
+            if (stateTimerRef.current > 16) {
+                onRoutineChange('returning_to_desk', ROUTINE_LABELS['returning_to_desk']);
+                stateTimerRef.current = 0;
+            }
+
+        // ============================================================
+        // STATE 5: SNACKING AT MINI FRIDGE & SNACK COUNTER
+        // ============================================================
+        } else if (r === 'snacking_at_fridge') {
+            group.position.lerp(FRIDGE_STAND_POS, damp(8));
+
+            const targetAngle = -Math.PI * 0.75;
+            let diff = targetAngle - group.rotation.y;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            group.rotation.y += diff * damp(8);
+
+            bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.55, damp(8));
+            bodyRoot.rotation.set(0, 0, 0);
+
+            if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, -0.03);
+            if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0.03);
+            if (leftKneeRef.current) leftKneeRef.current.rotation.set(0, 0, 0);
+            if (rightKneeRef.current) rightKneeRef.current.rotation.set(0, 0, 0);
+
+            if (torsoRef.current) {
+                torsoRef.current.position.set(0, 0.28, 0);
+                torsoRef.current.rotation.set(0.04, 0, 0);
+            }
+
+            const munchCycle = (Math.sin(time * 2.8) + 1) / 2;
+            if (rightArmRef.current) {
+                rightArmRef.current.rotation.x = THREE.MathUtils.lerp(-0.4, -1.35, munchCycle);
+                rightArmRef.current.rotation.y = THREE.MathUtils.lerp(0.1, -0.35, munchCycle);
+                rightArmRef.current.rotation.z = THREE.MathUtils.lerp(0.2, 0.45, munchCycle);
+            }
+            if (leftArmRef.current) {
+                leftArmRef.current.rotation.set(0.15, 0, -0.12);
+            }
+            if (headRef.current) {
+                headRef.current.rotation.set(THREE.MathUtils.lerp(0.05, 0.22, munchCycle), 0, 0);
+            }
+
+            if (coffeeCupRef.current) coffeeCupRef.current.visible = false;
+            if (gamepadRef.current) gamepadRef.current.visible = false;
+
+            // Return to desk after 3 seconds of snacking
+            if (stateTimerRef.current > 3.0) {
+                onRoutineChange('returning_to_desk', ROUTINE_LABELS['returning_to_desk']);
+                stateTimerRef.current = 0;
+            }
+
+        // ============================================================
+        // STATE 6: REVERTED CLEAN SOFA CHILL & WATCHING TV
+        // ============================================================
+        } else if (r === 'watching_tv') {
+            group.position.lerp(SOFA_POS, damp(8));
+
+            let diff = Math.PI / 2 - group.rotation.y;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            group.rotation.y += diff * damp(8);
+
+            // Natural seated posture in the comfy curved sofa
+            bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.48, damp(8));
+            bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, 0.04, damp(8));
+            bodyRoot.rotation.y = 0;
+            bodyRoot.rotation.z = 0;
+
+            // Hips & Legs: thighs horizontal, knees bent 90 deg down, feet on rug
+            if (leftLegRef.current) {
+                leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, -Math.PI / 2.15, damp(8));
+                leftLegRef.current.rotation.y = 0;
+                leftLegRef.current.rotation.z = -0.06;
+            }
+            if (rightLegRef.current) {
+                rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, -Math.PI / 2.15, damp(8));
+                rightLegRef.current.rotation.y = 0;
+                rightLegRef.current.rotation.z = 0.06;
+            }
+            if (leftKneeRef.current) {
+                leftKneeRef.current.rotation.x = THREE.MathUtils.lerp(leftKneeRef.current.rotation.x, Math.PI / 2.1, damp(8));
+                leftKneeRef.current.rotation.y = 0;
+                leftKneeRef.current.rotation.z = 0;
+            }
+            if (rightKneeRef.current) {
+                rightKneeRef.current.rotation.x = THREE.MathUtils.lerp(rightKneeRef.current.rotation.x, Math.PI / 2.1, damp(8));
+                rightKneeRef.current.rotation.y = 0;
+                rightKneeRef.current.rotation.z = 0;
+            }
+
+            // Torso upright, subtle relaxed breathing
+            if (torsoRef.current) {
+                torsoRef.current.position.set(0, 0.28, 0);
+                torsoRef.current.rotation.set(-0.04 + Math.sin(time * 1.6) * 0.012, 0, 0);
+            }
+            // Head tilted up looking directly at 65" TV
+            if (headRef.current) {
+                headRef.current.rotation.set(-0.04, Math.sin(time * 0.9) * 0.03, 0);
+            }
+
+            // Arms holding wireless game controller in lap
+            if (leftArmRef.current) {
+                leftArmRef.current.rotation.set(-0.68 + Math.sin(time * 5.5) * 0.015, 0.30, -0.16);
+            }
+            if (rightArmRef.current) {
+                rightArmRef.current.rotation.set(-0.68 + Math.cos(time * 6.2) * 0.015, -0.30, 0.16);
+            }
+
+            if (coffeeCupRef.current) coffeeCupRef.current.visible = false;
+            if (gamepadRef.current) gamepadRef.current.visible = true;
+
+            // Return to desk after 16 seconds of watching TV
+            if (stateTimerRef.current > 16) {
+                onRoutineChange('returning_to_desk', ROUTINE_LABELS['returning_to_desk']);
+                stateTimerRef.current = 0;
+            }
         }
     });
 
@@ -631,6 +748,39 @@ export default function CyberCharacter({
                                 <meshStandardMaterial color="#451a03" roughness={0.2} />
                             </mesh>
                         </group>
+                    </group>
+
+                    {/* Mini Wireless Gamepad Controller (Held while chilling on sofa) */}
+                    <group ref={gamepadRef} position={[0, -0.20, 0.28]} rotation={[0.42, 0, 0]} visible={false}>
+                        {/* Controller Body */}
+                        <mesh castShadow>
+                            <boxGeometry args={[0.16, 0.045, 0.10]} />
+                            <meshStandardMaterial color="#090d16" roughness={0.35} metalness={0.6} />
+                        </mesh>
+                        {/* Left Grip */}
+                        <mesh position={[-0.07, -0.02, 0.02]} rotation={[0.3, 0, -0.4]}>
+                            <cylinderGeometry args={[0.022, 0.018, 0.08, 10]} />
+                            <meshStandardMaterial color="#090d16" roughness={0.4} />
+                        </mesh>
+                        {/* Right Grip */}
+                        <mesh position={[0.07, -0.02, 0.02]} rotation={[0.3, 0, 0.4]}>
+                            <cylinderGeometry args={[0.022, 0.018, 0.08, 10]} />
+                            <meshStandardMaterial color="#090d16" roughness={0.4} />
+                        </mesh>
+                        {/* Glowing Cyan LED Lightbar */}
+                        <mesh position={[0, 0.024, -0.04]}>
+                            <boxGeometry args={[0.06, 0.008, 0.005]} />
+                            <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                        </mesh>
+                        {/* Twin Thumbsticks */}
+                        <mesh position={[-0.038, 0.026, 0.015]}>
+                            <cylinderGeometry args={[0.014, 0.014, 0.012, 10]} />
+                            <meshStandardMaterial color="#1e293b" />
+                        </mesh>
+                        <mesh position={[0.038, 0.026, 0.015]}>
+                            <cylinderGeometry args={[0.014, 0.014, 0.012, 10]} />
+                            <meshStandardMaterial color="#1e293b" />
+                        </mesh>
                     </group>
                 </group>
 

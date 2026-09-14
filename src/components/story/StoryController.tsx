@@ -14,18 +14,13 @@ import {
     getLiveISTTime,
 } from '@/lib/environment';
 
-const LoadingSpinner = () => (
-    <div className="w-full h-full flex items-center justify-center bg-[#020408]">
-        <div className="text-center">
-            <div className="text-sm text-zinc-400 mb-3">Initializing 3D Environment...</div>
-            <div className="w-8 h-8 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mx-auto" />
-        </div>
-    </div>
+const LoadingPlaceholder = () => (
+    <div className="w-full h-full bg-[#020408]" />
 );
 
 const CyberRoomScene = dynamic(() => import('@/components/3d/CyberRoomScene'), {
     ssr: false,
-    loading: LoadingSpinner,
+    loading: LoadingPlaceholder,
 });
 
 export default function StoryController() {
@@ -109,7 +104,7 @@ export default function StoryController() {
     };
 
     // Character routine transitions
-    const handleSelectRoutine = (target: 'coding' | 'brewing' | 'bed') => {
+    const handleSelectRoutine = (target: 'coding' | 'brewing' | 'bed' | 'fridge') => {
         audio.playClick();
         if (target === 'coding') {
             if (currentRoutine === 'coding') return;
@@ -123,6 +118,10 @@ export default function StoryController() {
             if (currentRoutine === 'resting_bed') return;
             setCurrentRoutine('walking_to_bed');
             setRoutineLabel('Heading to Cyber Futon to Sleep...');
+        } else if (target === 'fridge') {
+            if (currentRoutine === 'snacking_at_fridge') return;
+            setCurrentRoutine('walking_to_fridge');
+            setRoutineLabel('Heading to Cyber Mini Fridge & Snack Bar...');
         }
     };
 

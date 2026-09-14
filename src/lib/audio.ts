@@ -478,6 +478,72 @@ class AudioManager {
         }
     }
 
+    public playFridgeDoor(open: boolean) {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            // Magnetic seal pop / click
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = open ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(open ? 180 : 320, now);
+            osc.frequency.exponentialRampToValueAtTime(open ? 380 : 110, now + 0.12);
+
+            gain.gain.setValueAtTime(0.04, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.14);
+        } catch {
+            // Graceful fallback
+        }
+    }
+
+    public playSnack() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            // Crunchy munch bite + subtle melodic chime
+            [0, 0.07].forEach((delay, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = idx === 0 ? 'triangle' : 'sine';
+                osc.frequency.setValueAtTime(540 + idx * 260, now + delay);
+                osc.frequency.exponentialRampToValueAtTime(220, now + delay + 0.06);
+
+                gain.gain.setValueAtTime(0.035, now + delay);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.06);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now + delay);
+                osc.stop(now + delay + 0.06);
+            });
+
+            // Satisfied gentle sparkle tone
+            const chime = ctx.createOscillator();
+            const chimeGain = ctx.createGain();
+            chime.type = 'sine';
+            chime.frequency.setValueAtTime(880, now + 0.15);
+            chimeGain.gain.setValueAtTime(0.02, now + 0.15);
+            chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.40);
+            chime.connect(chimeGain);
+            chimeGain.connect(ctx.destination);
+            chime.start(now + 0.15);
+            chime.stop(now + 0.40);
+        } catch {
+            // Graceful fallback
+        }
+    }
+
     public playWarpGlide() {
         if (this.isMuted) return;
         const ctx = this.getContext();

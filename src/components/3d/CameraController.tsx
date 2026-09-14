@@ -81,13 +81,7 @@ export default function CameraController({
     const FIXED_WALL4_POS = useMemo(() => new THREE.Vector3(0, 1.82, 5.35), []);
     const ROOM_TARGET = useMemo(() => new THREE.Vector3(0, 1.45, -0.60), []);
 
-    // Opening cinematic reveal: starts at user's maximum zoom-in (z = 4.55, fov = 55) and smoothly glides out to 4th wall (z = 5.35, fov = 58)
-    const introActiveRef = useRef(true);
-    const introProgressRef = useRef(0);
-    const INTRO_ZOOM_POS = useMemo(() => new THREE.Vector3(0, 1.75, 4.55), []);
-    const INTRO_FOV = 55;
     const MASTER_FOV = 58;
-    const INTRO_DURATION = 2.6; // seconds
 
     // Animation progress for dolly-zoom
     const transitionProgressRef = useRef(0);
@@ -106,11 +100,14 @@ export default function CameraController({
 
     // Track mode changes
     useEffect(() => {
-        if (mode !== 'orbit') {
-            introActiveRef.current = false;
-        }
-
-        if (mode === 'dolly_in') {
+        if (mode === 'orbit') {
+            camera.position.copy(FIXED_WALL4_POS);
+            camera.lookAt(ROOM_TARGET);
+            if (camera instanceof THREE.PerspectiveCamera) {
+                camera.fov = MASTER_FOV;
+                camera.updateProjectionMatrix();
+            }
+        } else if (mode === 'dolly_in') {
             transitionProgressRef.current = 0;
             startCamPosRef.current.copy(camera.position);
             startTargetRef.current.copy(ROOM_TARGET);
@@ -128,42 +125,22 @@ export default function CameraController({
                 onTourPoiChange(TOUR_STOPS[0].name, 1, TOUR_STOPS.length);
             }
         }
-    }, [mode, camera, onTourPoiChange, ROOM_TARGET]);
+    }, [mode, camera, onTourPoiChange, ROOM_TARGET, FIXED_WALL4_POS]);
 
     useFrame((_, delta) => {
         const dt = Math.min(0.05, delta);
 
         // ============================================================
-        // 1. FIXED 4TH WALL MIDDLE VIEW: OPENING REVEAL & FIXED VIEW
+        // 1. FIXED 4TH WALL MIDDLE VIEW: PERMANENTLY LOCKED
         // ============================================================
         if (mode === 'orbit') {
-            if (introActiveRef.current) {
-                introProgressRef.current = Math.min(1, introProgressRef.current + dt / INTRO_DURATION);
-                const p = introProgressRef.current;
-                // Luxurious cubic ease-out: smooth decelerating glide backwards
-                const ease = 1 - Math.pow(1 - p, 3);
+            camera.position.lerp(FIXED_WALL4_POS, Math.min(1, dt * 10));
+            camera.lookAt(ROOM_TARGET);
 
-                camera.position.lerpVectors(INTRO_ZOOM_POS, FIXED_WALL4_POS, ease);
-                camera.lookAt(ROOM_TARGET);
-
-                if (camera instanceof THREE.PerspectiveCamera) {
-                    camera.fov = THREE.MathUtils.lerp(INTRO_FOV, MASTER_FOV, ease);
-                    camera.updateProjectionMatrix();
-                }
-
-                if (p >= 1) {
-                    introActiveRef.current = false;
-                }
-            } else {
-                // Camera position is permanently locked at the 4th wall middle view
-                camera.position.lerp(FIXED_WALL4_POS, Math.min(1, dt * 8));
-                camera.lookAt(ROOM_TARGET);
-
-                // Natural perspective FOV (58 degrees for generously zoomed out 4th wall framing showing entire room)
-                if (camera instanceof THREE.PerspectiveCamera) {
-                    camera.fov = THREE.MathUtils.lerp(camera.fov, MASTER_FOV, Math.min(1, dt * 6));
-                    camera.updateProjectionMatrix();
-                }
+            // Natural perspective FOV (58 degrees for generously zoomed out 4th wall framing showing entire room)
+            if (camera instanceof THREE.PerspectiveCamera) {
+                camera.fov = THREE.MathUtils.lerp(camera.fov, MASTER_FOV, Math.min(1, dt * 8));
+                camera.updateProjectionMatrix();
             }
 
         // ============================================================

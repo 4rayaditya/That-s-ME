@@ -239,61 +239,212 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                     <meshStandardMaterial color={plasterWallColor} roughness={0.88} />
                 </mesh>
 
-                {/* Floating Natural Walnut Display Shelves */}
-                <group position={[-1.2, 0.3, 0.15]}>
-                    <mesh castShadow>
-                        <boxGeometry args={[1.6, 0.04, 0.28]} />
-                        <meshStandardMaterial color="#5a3d28" roughness={0.5} />
+                {/* ============================================================ */}
+                {/* REALISTIC ARCHITECTURAL OVER-BED FLOATING SHELF & ART        */}
+                {/* ============================================================ */}
+                <group position={[0.8, 0.25, 0.15]}>
+                    {/* Solid Live-Edge Smoked Walnut Shelf Plank */}
+                    <mesh castShadow receiveShadow>
+                        <boxGeometry args={[1.9, 0.04, 0.28]} />
+                        <meshStandardMaterial color="#422e1e" roughness={0.4} metalness={0.06} />
                     </mesh>
-                    {/* Books on shelf */}
-                    {[-0.6, -0.45, -0.3, -0.15, 0].map((bx, i) => (
-                        <mesh key={i} position={[bx, 0.14, 0]} castShadow>
-                            <boxGeometry args={[0.08, 0.24, 0.2]} />
-                            <meshStandardMaterial color={['#b45309', '#0284c7', '#059669', '#d97706', '#7c3aed'][i]} />
-                        </mesh>
+
+                    {/* Blackened Steel Structural Brackets with Industrial Hex Bolts */}
+                    {[-0.75, 0.75].map((bx, i) => (
+                        <group key={i} position={[bx, -0.06, -0.04]}>
+                            {/* Wall bracket strip */}
+                            <mesh position={[0, -0.06, -0.09]}>
+                                <boxGeometry args={[0.032, 0.16, 0.008]} />
+                                <meshStandardMaterial color="#18181b" metalness={0.88} roughness={0.2} />
+                            </mesh>
+                            {/* Shelf under-support arm */}
+                            <mesh position={[0, 0.04, 0.02]}>
+                                <boxGeometry args={[0.032, 0.008, 0.22]} />
+                                <meshStandardMaterial color="#18181b" metalness={0.88} roughness={0.2} />
+                            </mesh>
+                        </group>
                     ))}
-                    {/* Potted shelf succulent */}
-                    <group position={[0.45, 0.08, 0]}>
-                        <mesh castShadow>
-                            <cylinderGeometry args={[0.08, 0.06, 0.12, 12]} />
-                            <meshStandardMaterial color="#f8fafc" roughness={0.3} />
+
+                    {/* Ambient Warm Under-Shelf LED Wash */}
+                    <mesh position={[0, -0.022, 0.02]}>
+                        <boxGeometry args={[1.75, 0.006, 0.012]} />
+                        <meshBasicMaterial color="#fef3c7" toneMapped={false} />
+                    </mesh>
+
+                    {/* --- REALISTIC HARDBOUND BOOKS WITH TEXTURED SPINES & INSET PAGES --- */}
+                    <group position={[-0.55, 0.02, 0.02]}>
+                        {/* Book 1: Large Architectural Design Tome (Midnight Charcoal Cloth) */}
+                        <group position={[-0.26, 0.14, 0]}>
+                            <mesh castShadow>
+                                <boxGeometry args={[0.064, 0.28, 0.22]} />
+                                <meshStandardMaterial color="#18181b" roughness={0.7} />
+                            </mesh>
+                            {/* Cream page block inset */}
+                            <mesh position={[0.002, 0, 0.015]}>
+                                <boxGeometry args={[0.056, 0.268, 0.19]} />
+                                <meshStandardMaterial color="#fefce8" roughness={0.9} />
+                            </mesh>
+                            {/* Embossed Gold Foil Spine Band */}
+                            <mesh position={[-0.031, 0.06, 0]}>
+                                <boxGeometry args={[0.002, 0.012, 0.21]} />
+                                <meshStandardMaterial color="#eab308" metalness={0.95} roughness={0.15} />
+                            </mesh>
+                        </group>
+
+                        {/* Book 2: Cyberpunk Art Anthology (Oxford Navy Linen) */}
+                        <group position={[-0.19, 0.125, -0.005]}>
+                            <mesh castShadow>
+                                <boxGeometry args={[0.054, 0.25, 0.21]} />
+                                <meshStandardMaterial color="#1e293b" roughness={0.65} />
+                            </mesh>
+                            <mesh position={[0.002, 0, 0.015]}>
+                                <boxGeometry args={[0.046, 0.238, 0.18]} />
+                                <meshStandardMaterial color="#fefce8" roughness={0.9} />
+                            </mesh>
+                        </group>
+
+                        {/* Book 3: Japanese Architecture Monograph (Forest Green) */}
+                        <group position={[-0.13, 0.115, 0]}>
+                            <mesh castShadow>
+                                <boxGeometry args={[0.048, 0.23, 0.20]} />
+                                <meshStandardMaterial color="#14532d" roughness={0.6} />
+                            </mesh>
+                            <mesh position={[0.002, 0, 0.015]}>
+                                <boxGeometry args={[0.040, 0.218, 0.17]} />
+                                <meshStandardMaterial color="#fefce8" roughness={0.9} />
+                            </mesh>
+                        </group>
+
+                        {/* Book 4: Minimalist Interiors (Oatmeal Textured Paper) */}
+                        <group position={[-0.075, 0.13, 0.005]}>
+                            <mesh castShadow>
+                                <boxGeometry args={[0.052, 0.26, 0.21]} />
+                                <meshStandardMaterial color="#d6d3d1" roughness={0.8} />
+                            </mesh>
+                            <mesh position={[0.002, 0, 0.015]}>
+                                <boxGeometry args={[0.044, 0.248, 0.18]} />
+                                <meshStandardMaterial color="#fefce8" roughness={0.9} />
+                            </mesh>
+                        </group>
+
+                        {/* Book 5: Tilted Leaning Book (Terracotta Leather) */}
+                        <group position={[-0.015, 0.115, 0]} rotation={[0, 0, -0.18]}>
+                            <mesh castShadow>
+                                <boxGeometry args={[0.045, 0.23, 0.20]} />
+                                <meshStandardMaterial color="#9a3412" roughness={0.65} />
+                            </mesh>
+                            <mesh position={[0.002, 0, 0.015]}>
+                                <boxGeometry args={[0.038, 0.218, 0.17]} />
+                                <meshStandardMaterial color="#fefce8" roughness={0.9} />
+                            </mesh>
+                        </group>
+
+                        {/* Heavy Machined Brushed Brass Triangular Bookend */}
+                        <group position={[0.055, 0.07, 0]}>
+                            <mesh castShadow rotation={[0, 0, Math.PI / 4]}>
+                                <boxGeometry args={[0.10, 0.10, 0.16]} />
+                                <meshStandardMaterial color="#eab308" metalness={0.95} roughness={0.15} />
+                            </mesh>
+                        </group>
+                    </group>
+
+                    {/* --- CERAMIC ABSTRACT DONUT VASE WITH DRIED FLORAL STEMS --- */}
+                    <group position={[0.08, 0.09, -0.02]}>
+                        <mesh castShadow rotation={[0, Math.PI / 2, 0]}>
+                            <torusGeometry args={[0.065, 0.024, 16, 24]} />
+                            <meshStandardMaterial color="#f1f5f9" roughness={0.7} />
                         </mesh>
-                        <mesh position={[0, 0.1, 0]}>
-                            <sphereGeometry args={[0.09, 8, 8]} />
-                            <meshStandardMaterial color="#10b981" roughness={0.7} />
+                        {/* Vase weighted pedestal */}
+                        <mesh position={[0, -0.065, 0]}>
+                            <cylinderGeometry args={[0.045, 0.05, 0.02, 16]} />
+                            <meshStandardMaterial color="#f1f5f9" roughness={0.7} />
+                        </mesh>
+                        {/* Delicate dried floral lunaria sprig */}
+                        <mesh position={[0, 0.08, 0]} rotation={[0, 0, 0.12]}>
+                            <cylinderGeometry args={[0.002, 0.003, 0.14, 6]} />
+                            <meshStandardMaterial color="#78716c" roughness={0.9} />
+                        </mesh>
+                    </group>
+
+                    {/* --- REALISTIC TRAILING INDOOR PLANT (Pothos with organic cascading leaves) --- */}
+                    <group position={[0.42, 0.02, 0.04]}>
+                        {/* Warm Sandstone Fluted Ceramic Planter */}
+                        <mesh castShadow position={[0, 0.07, 0]}>
+                            <cylinderGeometry args={[0.08, 0.06, 0.14, 18]} />
+                            <meshStandardMaterial color="#c2b19d" roughness={0.65} />
+                        </mesh>
+                        {/* Rich potting soil */}
+                        <mesh position={[0, 0.138, 0]}>
+                            <cylinderGeometry args={[0.076, 0.076, 0.01, 16]} />
+                            <meshStandardMaterial color="#271c14" roughness={0.9} />
+                        </mesh>
+
+                        {/* Dense Foliage Crown */}
+                        <mesh position={[0, 0.16, 0]}>
+                            <sphereGeometry args={[0.09, 12, 10]} />
+                            <meshStandardMaterial color="#15803d" roughness={0.7} />
+                        </mesh>
+
+                        {/* Natural cascading vine leaves drooping over the front edge of the shelf */}
+                        {[
+                            { x: -0.05, y: 0.10, z: 0.08, rx: 0.8, rz: -0.2, s: 0.045 },
+                            { x: 0.01, y: 0.06, z: 0.09, rx: 1.1, rz: 0.1, s: 0.042 },
+                            { x: 0.06, y: 0.08, z: 0.08, rx: 0.9, rz: 0.3, s: 0.040 },
+                            { x: -0.02, y: -0.01, z: 0.10, rx: 1.4, rz: -0.1, s: 0.038 },
+                            { x: 0.04, y: -0.04, z: 0.10, rx: 1.5, rz: 0.15, s: 0.036 },
+                            { x: 0.02, y: -0.10, z: 0.105, rx: 1.6, rz: 0.05, s: 0.032 },
+                        ].map((leaf, idx) => (
+                            <mesh key={idx} position={[leaf.x, leaf.y, leaf.z]} rotation={[leaf.rx, 0, leaf.rz]} castShadow>
+                                <sphereGeometry args={[leaf.s, 8, 6]} />
+                                <meshStandardMaterial color={idx % 2 === 0 ? '#166534' : '#15803d'} roughness={0.6} />
+                            </mesh>
+                        ))}
+                    </group>
+
+                    {/* Mini Framed Black-and-White Art resting on shelf */}
+                    <group position={[0.70, 0.10, -0.02]} rotation={[0, -0.15, 0.04]}>
+                        <mesh castShadow>
+                            <boxGeometry args={[0.16, 0.20, 0.014]} />
+                            <meshStandardMaterial color="#ca8a04" metalness={0.9} roughness={0.2} />
+                        </mesh>
+                        <mesh position={[0, 0, 0.008]}>
+                            <planeGeometry args={[0.13, 0.17]} />
+                            <meshStandardMaterial color="#09090b" roughness={0.5} />
                         </mesh>
                     </group>
                 </group>
 
-                {/* Framed Minimalist Scandinavian Gallery Canvas Art */}
-                <group position={[1.4, 0.2, 0.04]}>
-                    {/* Solid warm oak frame */}
+                {/* ============================================================ */}
+                {/* LARGE MINIMALIST ARCHITECTURAL GALLERY ART ABOVE BED         */}
+                {/* ============================================================ */}
+                <group position={[0.8, 0.95, 0.04]}>
+                    {/* Slim Dark Oak Gallery Frame */}
                     <mesh castShadow>
-                        <boxGeometry args={[1.4, 1.8, 0.05]} />
-                        <meshStandardMaterial color="#5a3d28" roughness={0.4} />
+                        <boxGeometry args={[1.5, 0.95, 0.04]} />
+                        <meshStandardMaterial color="#2d1c10" roughness={0.4} />
                     </mesh>
-                    {/* Linen matting board */}
-                    <mesh position={[0, 0, 0.024]}>
-                        <planeGeometry args={[1.26, 1.66]} />
-                        <meshStandardMaterial color={isLight ? '#faf7f2' : '#231e1a'} roughness={0.85} />
+                    {/* Deep Warm Linen Matting Board */}
+                    <mesh position={[0, 0, 0.021]}>
+                        <planeGeometry args={[1.40, 0.85]} />
+                        <meshStandardMaterial color={isLight ? '#faf7f2' : '#1f1b18'} roughness={0.88} />
                     </mesh>
-                    {/* Minimalist Bauhaus / Botanical art composition */}
-                    <mesh position={[0, 0.22, 0.026]}>
-                        <circleGeometry args={[0.34, 32]} />
-                        <meshBasicMaterial color="#d97706" toneMapped={false} />
+                    {/* Elegant Japandi / Bauhaus Geometric Art Composition */}
+                    <mesh position={[-0.22, 0.08, 0.023]}>
+                        <circleGeometry args={[0.24, 32]} />
+                        <meshBasicMaterial color="#b45309" toneMapped={false} />
                     </mesh>
-                    <mesh position={[0, -0.18, 0.026]}>
-                        <planeGeometry args={[0.62, 0.44]} />
+                    <mesh position={[0.18, -0.06, 0.023]}>
+                        <planeGeometry args={[0.48, 0.36]} />
                         <meshBasicMaterial color="#166534" toneMapped={false} />
                     </mesh>
-                    <mesh position={[0.15, -0.05, 0.027]} rotation={[0, 0, 0.45]}>
-                        <planeGeometry args={[0.03, 0.7]} />
-                        <meshBasicMaterial color="#1f2937" toneMapped={false} />
+                    <mesh position={[0.04, 0.02, 0.024]} rotation={[0, 0, 0.45]}>
+                        <planeGeometry args={[0.02, 0.55]} />
+                        <meshBasicMaterial color="#262626" toneMapped={false} />
                     </mesh>
-                    {/* Protective gallery anti-reflective glass */}
-                    <mesh position={[0, 0, 0.028]}>
-                        <planeGeometry args={[1.26, 1.66]} />
-                        <meshStandardMaterial color="#ffffff" transparent opacity={0.12} roughness={0.04} />
+                    {/* Protective Museum Non-Glare Glass Reflection */}
+                    <mesh position={[0, 0, 0.025]}>
+                        <planeGeometry args={[1.40, 0.85]} />
+                        <meshStandardMaterial color="#ffffff" transparent opacity={0.08} roughness={0.05} />
                     </mesh>
                 </group>
 
@@ -311,42 +462,12 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                 </group>
             </group>
 
-            {/* --- RIGHT WALL: WARM LIMEWASH PLASTER, ENTRYWAY DOOR & WOODY WARDROBE --- */}
+            {/* --- RIGHT WALL: WARM LIMEWASH PLASTER & WOODY WARDROBE --- */}
             <group position={[3.5, 2.0, 0]} rotation={[0, -Math.PI / 2, 0]}>
                 <mesh receiveShadow position={[0, 0, 0]}>
                     <planeGeometry args={[10.5, 4.2]} />
                     <meshStandardMaterial color={plasterWallColor} roughness={0.88} />
                 </mesh>
-
-                {/* Real Interior Entryway Door (Natural Oak Paneling) */}
-                <group position={[1.4, -0.85, 0.04]}>
-                    {/* Door Outer Steel Frame */}
-                    <mesh position={[0, 0, 0]}>
-                        <boxGeometry args={[1.16, 2.3, 0.08]} />
-                        <meshStandardMaterial color="#3b2b1d" metalness={0.7} roughness={0.3} />
-                    </mesh>
-                    {/* Door Leaf (Warm Oak Paneled Door) */}
-                    <mesh castShadow position={[0, 0, 0.02]}>
-                        <boxGeometry args={[1.04, 2.18, 0.05]} />
-                        <meshStandardMaterial color="#6a4c33" roughness={0.5} />
-                    </mesh>
-                    {/* Door Inset Panels */}
-                    <mesh position={[0, 0.45, 0.048]}>
-                        <boxGeometry args={[0.78, 0.8, 0.01]} />
-                        <meshStandardMaterial color="#553a24" roughness={0.5} />
-                    </mesh>
-                    <mesh position={[0, -0.45, 0.048]}>
-                        <boxGeometry args={[0.78, 0.8, 0.01]} />
-                        <meshStandardMaterial color="#553a24" roughness={0.5} />
-                    </mesh>
-                    {/* Brushed Brass Lever Door Handle */}
-                    <group position={[-0.42, 0, 0.07]}>
-                        <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
-                            <cylinderGeometry args={[0.014, 0.014, 0.15, 12]} />
-                            <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
-                        </mesh>
-                    </group>
-                </group>
             </group>
 
             {/* ============================================================ */}
