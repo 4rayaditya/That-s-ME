@@ -164,14 +164,14 @@ export default function CyberCharacter({
             let nextState: CharacterRoutine = 'brewing_coffee';
 
             // If starting from inside bed, step out to BED_STAND_POS on the floor immediately
-            if (group.position.x < -1.75 && (r === 'returning_to_desk' || r === 'walking_to_coffee' || r === 'walking_to_tv' || r === 'walking_to_fridge')) {
+            if (group.position.distanceTo(BED_LIE_POS) < 0.5 && (r === 'returning_to_desk' || r === 'walking_to_coffee' || r === 'walking_to_tv' || r === 'walking_to_fridge')) {
                 group.position.copy(BED_STAND_POS);
                 bodyRoot.position.y = 0.55;
                 bodyRoot.rotation.set(0, 0, 0);
             }
 
             // If starting from sofa, step out to open aisle immediately
-            if (group.position.x > 1.6 && group.position.z > 0.9 && (r === 'returning_to_desk' || r === 'walking_to_coffee' || r === 'walking_to_bed' || r === 'walking_to_fridge')) {
+            if (group.position.distanceTo(SOFA_POS) < 0.2 && (r === 'returning_to_desk' || r === 'walking_to_coffee' || r === 'walking_to_bed' || r === 'walking_to_fridge')) {
                 group.position.set(1.82, 0, 0.50);
                 bodyRoot.position.y = 0.55;
                 bodyRoot.rotation.set(0, 0, 0);
@@ -184,13 +184,8 @@ export default function CyberCharacter({
                 target = FRIDGE_STAND_POS;
                 nextState = 'snacking_at_fridge';
             } else if (r === 'walking_to_tv') {
+                target = SOFA_POS;
                 nextState = 'watching_tv';
-                // Walk to the open aisle first, then approach sofa seat
-                if (group.position.z < 0.65) {
-                    target = new THREE.Vector3(1.82, 0, 0.50);
-                } else {
-                    target = SOFA_POS;
-                }
             } else if (r === 'returning_to_desk') {
                 target = DESK_POS;
                 nextState = 'coding';
@@ -210,9 +205,9 @@ export default function CyberCharacter({
             if (gamepadRef.current) gamepadRef.current.visible = false;
 
             // When reaching near bed or near sofa, transition IMMEDIATELY
-            const isBedArrival = r === 'walking_to_bed' && group.position.x < -1.0;
-            const isTvArrival = r === 'walking_to_tv' && group.position.z > 1.05;
-            const arrivalThreshold = isBedArrival ? 0.35 : isTvArrival ? 0.30 : 0.08;
+            const isBedArrival = r === 'walking_to_bed' && group.position.distanceTo(BED_STAND_POS) < 0.35;
+            const isTvArrival = r === 'walking_to_tv' && group.position.distanceTo(SOFA_POS) < 0.35;
+            const arrivalThreshold = isBedArrival || isTvArrival ? 0.35 : 0.08;
 
             if (dist < arrivalThreshold) {
                 if (isBedArrival) {
@@ -231,7 +226,7 @@ export default function CyberCharacter({
                     onRoutineChange('resting_bed', ROUTINE_LABELS['resting_bed']);
                     stateTimerRef.current = 0;
                 } else if (isTvArrival) {
-                    // Instantly sit on sofa!
+                    // Instantly sit on sofa facing TV!
                     group.position.copy(SOFA_POS);
                     group.rotation.set(0, Math.PI / 2, 0);
                     bodyRoot.position.y = 0.48;

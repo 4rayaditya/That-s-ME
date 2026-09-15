@@ -12,6 +12,7 @@ import { EnvironmentPhase, ENVIRONMENT_CONFIGS } from '@/lib/environment';
 import FloatingPoiMarkers from './FloatingPoiMarkers';
 import ArchitecturalRoom from './ArchitecturalRoom';
 import { audio } from '@/lib/audio';
+import { useIsMobile } from '@/lib/useIsMobile';
 
 interface CyberRoomSceneProps {
     cameraMode: CameraMode;
@@ -587,11 +588,11 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
                         const wz = Math.cos(angle) * legLength;
                         return (
                             <group key={i}>
-                                <mesh position={[lx, -0.01, lz]} rotation={[0, angle, 0]} castShadow>
+                                <mesh position={[lx, -0.01, lz]} rotation={[0, angle, 0]}>
                                     <boxGeometry args={[0.04, 0.025, legLength]} />
                                     <meshStandardMaterial color="#0f172a" metalness={0.85} roughness={0.25} />
                                 </mesh>
-                                <mesh position={[wx, -0.025, wz]} castShadow>
+                                <mesh position={[wx, -0.025, wz]}>
                                     <cylinderGeometry args={[0.024, 0.024, 0.025, 12]} />
                                     <meshStandardMaterial color="#020408" roughness={0.7} />
                                 </mesh>
@@ -882,22 +883,26 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
     }, [snackMessage]);
 
     // Synchronize fridge & pantry doors with Aditya's routines:
-    // Auto-opens when Aditya is snacking; auto-closes with magnetic acoustic latch when returning to table!
+    // Auto-opens when Aditya is snacking; auto-closes BEFORE he moves away!
     useEffect(() => {
         if (currentRoutine === 'snacking_at_fridge') {
             setIsOpen(true);
             audio.playFridgeDoor(true);
-        } else if (currentRoutine === 'returning_to_desk' || currentRoutine === 'coding') {
+            // Close the fridge door at 1.8s so it is fully shut and latched before he finishes snacking at 3.0s!
+            const closeTimer = setTimeout(() => {
+                setIsOpen(false);
+                setIsCabinetOpen(false);
+                audio.playFridgeDoor(false);
+            }, 1800);
+            return () => clearTimeout(closeTimer);
+        } else {
+            // Ensure door is closed whenever not snacking
             setIsOpen((prev) => {
-                if (prev) {
-                    audio.playFridgeDoor(false);
-                }
+                if (prev) audio.playFridgeDoor(false);
                 return false;
             });
             setIsCabinetOpen((prev) => {
-                if (prev) {
-                    audio.playFridgeDoor(false);
-                }
+                if (prev) audio.playFridgeDoor(false);
                 return false;
             });
         }
@@ -1144,7 +1149,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                                 document.body.style.cursor = 'auto';
                             }}
                         >
-                            <mesh castShadow>
+                            <mesh>
                                 <cylinderGeometry args={[0.032, 0.032, 0.13, 14]} />
                                 <meshStandardMaterial
                                     color={can.color}
@@ -1194,7 +1199,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                                 document.body.style.cursor = 'auto';
                             }}
                         >
-                            <mesh castShadow>
+                            <mesh>
                                 <cylinderGeometry args={[0.028, 0.032, 0.15, 14]} />
                                 <meshPhysicalMaterial
                                     color={bottle.color}
@@ -1274,7 +1279,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
             {/* ============================================================ */}
             <group position={[0.28, 0.44, 0.02]}>
                 {/* Pantry Cavity Interior */}
-                <mesh castShadow>
+                <mesh>
                     <boxGeometry args={[0.50, 0.74, 0.48]} />
                     <meshStandardMaterial color="#050811" roughness={0.7} />
                 </mesh>
@@ -1310,7 +1315,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                         document.body.style.cursor = 'auto';
                     }}
                 >
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.05, 0.04, 0.12, 14]} />
                         <meshStandardMaterial color="#f97316" roughness={0.4} />
                     </mesh>
@@ -1346,7 +1351,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                         document.body.style.cursor = 'auto';
                     }}
                 >
-                    <mesh castShadow>
+                    <mesh>
                         <boxGeometry args={[0.05, 0.12, 0.024]} />
                         <meshStandardMaterial color="#a855f7" metalness={0.7} roughness={0.25} />
                     </mesh>
@@ -1393,7 +1398,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
             <group position={[0, 0.91, 0]}>
                 {/* Acrylic Snack Organizer Tray */}
                 <group position={[-0.22, 0.01, 0.04]}>
-                    <mesh castShadow>
+                    <mesh>
                         <boxGeometry args={[0.38, 0.024, 0.28]} />
                         <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
                     </mesh>
@@ -1424,7 +1429,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                             document.body.style.cursor = 'auto';
                         }}
                     >
-                        <mesh castShadow>
+                        <mesh>
                             <boxGeometry args={[0.07, 0.15, 0.03]} />
                             <meshStandardMaterial
                                 color="#dc2626"
@@ -1461,7 +1466,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                             document.body.style.cursor = 'auto';
                         }}
                     >
-                        <mesh castShadow>
+                        <mesh>
                             <boxGeometry args={[0.07, 0.15, 0.03]} />
                             <meshStandardMaterial
                                 color="#16a34a"
@@ -1498,7 +1503,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                             document.body.style.cursor = 'auto';
                         }}
                     >
-                        <mesh castShadow>
+                        <mesh>
                             <boxGeometry args={[0.10, 0.13, 0.025]} />
                             <meshStandardMaterial
                                 color="#f59e0b"
@@ -1536,7 +1541,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                             document.body.style.cursor = 'auto';
                         }}
                     >
-                        <mesh castShadow>
+                        <mesh>
                             <boxGeometry args={[0.10, 0.11, 0.025]} />
                             <meshStandardMaterial
                                 color="#8b5cf6"
@@ -1574,7 +1579,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                         document.body.style.cursor = 'auto';
                     }}
                 >
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.06, 0.06, 0.14, 18]} />
                         <meshPhysicalMaterial color="#ffffff" transparent opacity={0.35} roughness={0.08} />
                     </mesh>
@@ -1620,7 +1625,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                         document.body.style.cursor = 'auto';
                     }}
                 >
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.052, 0.068, 0.15, 16]} />
                         <meshStandardMaterial color="#090d16" roughness={0.4} metalness={0.6} />
                     </mesh>
@@ -1707,7 +1712,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
         return texture;
     }, []);
 
-    // Procedural 16:9 Lo-fi Anime Cyber City Canvas Texture for the 65" OLED TV
+    // Procedural 16:9 YouTube Player Interface Texture for the 65" OLED TV
     const tvTexture = useMemo(() => {
         if (typeof document === 'undefined') return null;
         const canvas = document.createElement('canvas');
@@ -1716,97 +1721,254 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
         const ctx = canvas.getContext('2d');
         if (!ctx) return null;
 
-        // Twilight Cyberpunk Sky Gradient
-        const skyGrad = ctx.createLinearGradient(0, 0, 0, 220);
-        skyGrad.addColorStop(0, '#0a0518');
-        skyGrad.addColorStop(0.35, '#2e1065');
-        skyGrad.addColorStop(0.7, '#831843');
-        skyGrad.addColorStop(1, '#ea580c');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, 512, 220);
+        // Base YouTube player dark background
+        ctx.fillStyle = '#0f0f0f';
+        ctx.fillRect(0, 0, 512, 288);
 
-        // Giant Glowing Retro Neon Moon
-        const moonGrad = ctx.createRadialGradient(380, 75, 5, 380, 75, 45);
-        moonGrad.addColorStop(0, '#ffffff');
-        moonGrad.addColorStop(0.3, '#fef08a');
-        moonGrad.addColorStop(0.7, '#f43f5e');
-        moonGrad.addColorStop(1, 'rgba(244,63,94,0)');
-        ctx.fillStyle = moonGrad;
-        ctx.beginPath();
-        ctx.arc(380, 75, 45, 0, Math.PI * 2);
-        ctx.fill();
+        // ============================================================
+        // 1. VIDEO VIEWPORT CONTENT (Lo-fi Anime Cyber City Stream)
+        // ============================================================
+        const videoGrad = ctx.createLinearGradient(0, 36, 0, 246);
+        videoGrad.addColorStop(0, '#0c1022');
+        videoGrad.addColorStop(0.5, '#1e1b4b');
+        videoGrad.addColorStop(0.85, '#4c1d95');
+        videoGrad.addColorStop(1, '#831843');
+        ctx.fillStyle = videoGrad;
+        ctx.fillRect(0, 36, 512, 210);
 
-        // Distant Cyber City Skyline Silhouettes
-        ctx.fillStyle = '#0f0920';
-        const buildings = [
-            [20, 70, 35], [50, 110, 45], [90, 85, 30], [115, 130, 50],
-            [160, 60, 40], [195, 95, 35], [225, 140, 55], [275, 80, 40],
-            [310, 120, 45], [350, 65, 35], [380, 105, 50], [425, 75, 40],
-            [460, 115, 45]
+        // Distant city skyline inside the video
+        ctx.fillStyle = '#090814';
+        const skyline = [
+            [15, 65, 35], [45, 95, 40], [80, 75, 30], [105, 120, 48],
+            [150, 55, 36], [180, 85, 32], [210, 130, 50], [255, 70, 38],
+            [290, 110, 42], [330, 60, 35], [360, 95, 45], [400, 70, 38],
+            [435, 105, 42], [475, 80, 36]
         ];
-        buildings.forEach(([x, h, w]) => {
-            ctx.fillRect(x, 220 - h, w, h);
-            // Window dots
+        skyline.forEach(([bx, bh, bw]) => {
+            ctx.fillRect(bx, 246 - bh, bw, bh);
+            // Window lights
             ctx.fillStyle = '#fef08a';
-            for (let wy = 220 - h + 10; wy < 210; wy += 14) {
-                for (let wx = x + 6; wx < x + w - 6; wx += 10) {
-                    if ((wx + wy) % 5 === 0) {
+            for (let wy = 246 - bh + 8; wy < 238; wy += 12) {
+                for (let wx = bx + 5; wx < bx + bw - 5; wx += 9) {
+                    if ((wx * 3 + wy * 7) % 5 === 0) {
                         ctx.fillRect(wx, wy, 3, 4);
                     }
                 }
             }
-            ctx.fillStyle = '#0f0920';
+            ctx.fillStyle = '#090814';
         });
 
-        // 3D Perspective Synthwave Grid Floor
-        const gridGrad = ctx.createLinearGradient(0, 220, 0, 288);
-        gridGrad.addColorStop(0, '#090514');
-        gridGrad.addColorStop(1, '#1e1b4b');
-        ctx.fillStyle = gridGrad;
-        ctx.fillRect(0, 220, 512, 68);
+        // Ambient city magenta/cyan fog in video
+        const fogGrad = ctx.createLinearGradient(0, 210, 0, 246);
+        fogGrad.addColorStop(0, 'rgba(244,63,94,0)');
+        fogGrad.addColorStop(1, 'rgba(244,63,94,0.35)');
+        ctx.fillStyle = fogGrad;
+        ctx.fillRect(0, 210, 512, 36);
 
-        // Glowing Grid Horizon Line
-        ctx.strokeStyle = '#06b6d4';
-        ctx.lineWidth = 2;
+        // Giant glowing moon in video
+        const moonGrad = ctx.createRadialGradient(390, 92, 4, 390, 92, 36);
+        moonGrad.addColorStop(0, '#ffffff');
+        moonGrad.addColorStop(0.3, '#fef08a');
+        moonGrad.addColorStop(0.8, '#f43f5e');
+        moonGrad.addColorStop(1, 'rgba(244,63,94,0)');
+        ctx.fillStyle = moonGrad;
         ctx.beginPath();
-        ctx.moveTo(0, 220);
-        ctx.lineTo(512, 220);
+        ctx.arc(390, 92, 36, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ============================================================
+        // 2. YOUTUBE TOP HEADER BAR (y: 0 to 36)
+        // ============================================================
+        const topScrim = ctx.createLinearGradient(0, 0, 0, 46);
+        topScrim.addColorStop(0, 'rgba(0,0,0,0.85)');
+        topScrim.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = topScrim;
+        ctx.fillRect(0, 0, 512, 46);
+
+        // YouTube Red Pill Logo
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(14, 10, 24, 16, 4);
+        } else {
+            ctx.rect(14, 10, 24, 16);
+        }
+        ctx.fill();
+
+        // White Play Triangle
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(23, 14);
+        ctx.lineTo(23, 22);
+        ctx.lineTo(30, 18);
+        ctx.closePath();
+        ctx.fill();
+
+        // "YouTube" Brand Text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+        ctx.fillText('YouTube', 43, 23);
+
+        // YouTube Search Bar (Center)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(150, 8, 205, 20, 10);
+        } else {
+            ctx.rect(150, 8, 205, 20);
+        }
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+        ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Receding grid perspective lines
-        ctx.strokeStyle = 'rgba(6,182,212,0.45)';
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '10px system-ui, sans-serif';
+        ctx.fillText('🔍  lofi hip hop radio - beats to relax/study to', 160, 22);
+
+        // Top Right: Notification Bell & Profile Avatar
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(460, 18, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cyan User Profile Avatar with 'A'
+        ctx.fillStyle = '#06b6d4';
+        ctx.beginPath();
+        ctx.arc(486, 18, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('A', 483, 21);
+
+        // ============================================================
+        // 3. VIDEO OVERLAY INFO
+        // ============================================================
+        // Red [● LIVE] Badge
+        ctx.fillStyle = '#cc0000';
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(14, 48, 48, 16, 3);
+        } else {
+            ctx.rect(14, 48, 48, 16);
+        }
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('● LIVE', 20, 60);
+
+        // Video Title Overlay
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px system-ui, sans-serif';
+        ctx.fillText('lofi hip hop radio 📚 - beats to relax/study to [24/7 live]', 68, 60);
+
+        // Channel Name & Viewer Count
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px system-ui, sans-serif';
+        ctx.fillText('Lofi Girl ✔  •  42,851 watching', 68, 74);
+
+        // ============================================================
+        // 4. BOTTOM YOUTUBE PLAYER CONTROLS (y: 240 to 288)
+        // ============================================================
+        const botScrim = ctx.createLinearGradient(0, 230, 0, 288);
+        botScrim.addColorStop(0, 'rgba(0,0,0,0)');
+        botScrim.addColorStop(1, 'rgba(0,0,0,0.92)');
+        ctx.fillStyle = botScrim;
+        ctx.fillRect(0, 230, 512, 58);
+
+        // Timeline Progress Bar (Red scrubber line)
+        const scrubY = 254;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.fillRect(12, scrubY, 488, 3);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+        ctx.fillRect(12, scrubY, 395, 3);
+        // YouTube Red Progress Bar
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(12, scrubY, 345, 3);
+        // Scrubber Knob
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.arc(357, scrubY + 1.5, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(357, scrubY + 1.5, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Left Controls: Play/Pause, Next, Volume, Live badge
+        ctx.fillStyle = '#ffffff';
+        // Pause bars ❚❚
+        ctx.fillRect(16, 266, 3, 11);
+        ctx.fillRect(23, 266, 3, 11);
+
+        // Next ⏭
+        ctx.beginPath();
+        ctx.moveTo(34, 266);
+        ctx.lineTo(41, 271.5);
+        ctx.lineTo(34, 277);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillRect(42, 266, 2, 11);
+
+        // Volume Speaker 🔊
+        ctx.beginPath();
+        ctx.moveTo(52, 269);
+        ctx.lineTo(55, 269);
+        ctx.lineTo(59, 266);
+        ctx.lineTo(59, 277);
+        ctx.lineTo(55, 274);
+        ctx.lineTo(52, 274);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.arc(59, 271.5, 4.5, -0.6, 0.6);
+        ctx.stroke();
+
+        // Volume slider bar
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.fillRect(68, 271, 28, 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(68, 271, 20, 2);
+
+        // Red Live Dot + "LIVE"
+        ctx.fillStyle = '#ff0000';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('●', 106, 275);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('LIVE', 115, 275);
+
+        // Right Controls: Autoplay, [CC], Settings, Miniplayer, Fullscreen
+        // Autoplay switch
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
         ctx.lineWidth = 1;
-        for (let gx = -100; gx <= 612; gx += 32) {
-            ctx.beginPath();
-            ctx.moveTo(256, 220);
-            ctx.lineTo(gx, 288);
-            ctx.stroke();
-        }
-        // Horizontal grid bars
-        [226, 234, 245, 260, 278].forEach((gy) => {
-            ctx.beginPath();
-            ctx.moveTo(0, gy);
-            ctx.lineTo(512, gy);
-            ctx.stroke();
-        });
+        ctx.strokeRect(386, 268, 16, 8);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(395, 269, 6, 6);
 
-        // UI HUD Header: "● LIVE // CYBER_LOFI // TOKYO 02:40 AM"
-        ctx.fillStyle = '#00f5d4';
-        ctx.font = 'bold 11px monospace';
-        ctx.fillText('● LIVE  CYBER_LOFI // TOKYO 02:40 AM', 18, 22);
+        // [CC] Badge
+        ctx.strokeRect(412, 267, 16, 10);
+        ctx.font = 'bold 7px sans-serif';
+        ctx.fillText('CC', 416, 275);
 
-        // Audio Equalizer Spectrum Bars (Bottom Right)
-        const eqHeights = [8, 14, 22, 16, 28, 34, 26, 18, 30, 24, 16, 10];
-        eqHeights.forEach((eh, i) => {
-            ctx.fillStyle = i % 2 === 0 ? '#00f5d4' : '#f43f5e';
-            ctx.fillRect(410 + i * 7, 280 - eh, 5, eh);
-        });
+        // Settings Gear ⚙️
+        ctx.font = '10px sans-serif';
+        ctx.fillText('⚙️', 438, 276);
 
-        // Subtle CRT Scanlines
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
-        for (let sy = 0; sy < 288; sy += 3) {
-            ctx.fillRect(0, sy, 512, 1);
-        }
+        // Theater mode rect
+        ctx.strokeRect(460, 268, 12, 8);
+
+        // Fullscreen [ ⛶ ]
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(484, 269); ctx.lineTo(484, 266); ctx.lineTo(487, 266);
+        ctx.moveTo(496, 266); ctx.lineTo(499, 266); ctx.lineTo(499, 269);
+        ctx.moveTo(484, 274); ctx.lineTo(484, 277); ctx.lineTo(487, 277);
+        ctx.moveTo(496, 277); ctx.lineTo(499, 277); ctx.lineTo(499, 274);
+        ctx.stroke();
 
         const texture = new THREE.CanvasTexture(canvas);
         texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -1951,7 +2113,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 
                 {/* Sleek Soundbar on Console Surface */}
                 <group position={[0.02, 0.142, 0]}>
-                    <mesh castShadow>
+                    <mesh>
                         <boxGeometry args={[0.08, 0.042, 0.88]} />
                         <meshStandardMaterial color="#111827" roughness={0.6} metalness={0.3} />
                     </mesh>
@@ -1964,7 +2126,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 
                 {/* Next-Gen Cyber Game Console (Standing Vertical) */}
                 <group position={[0.02, 0.26, -0.68]}>
-                    <mesh castShadow>
+                    <mesh>
                         <boxGeometry args={[0.09, 0.28, 0.055]} />
                         <meshStandardMaterial color="#f8fafc" roughness={0.25} metalness={0.1} />
                     </mesh>
@@ -1983,17 +2145,17 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* Dual Wireless Gamepads on Charging Dock */}
                 <group position={[0.02, 0.145, 0.62]}>
                     {/* Dock Base */}
-                    <mesh castShadow position={[0, 0.012, 0]}>
+                    <mesh position={[0, 0.012, 0]}>
                         <boxGeometry args={[0.07, 0.024, 0.22]} />
                         <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
                     </mesh>
                     {/* Gamepad 1 */}
-                    <mesh castShadow position={[0, 0.04, -0.06]} rotation={[0.3, 0, 0]}>
+                    <mesh position={[0, 0.04, -0.06]} rotation={[0.3, 0, 0]}>
                         <boxGeometry args={[0.055, 0.035, 0.08]} />
                         <meshStandardMaterial color="#090d16" roughness={0.4} />
                     </mesh>
                     {/* Gamepad 2 */}
-                    <mesh castShadow position={[0, 0.04, 0.06]} rotation={[0.3, 0, 0]}>
+                    <mesh position={[0, 0.04, 0.06]} rotation={[0.3, 0, 0]}>
                         <boxGeometry args={[0.055, 0.035, 0.08]} />
                         <meshStandardMaterial color="#090d16" roughness={0.4} />
                     </mesh>
@@ -2001,7 +2163,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 
                 {/* Fluted Ceramic Planter with Trailing Succulent */}
                 <group position={[0.02, 0.155, 0.82]}>
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.04, 0.032, 0.07, 14]} />
                         <meshStandardMaterial color="#c2410c" roughness={0.65} />
                     </mesh>
@@ -2465,20 +2627,20 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 </mesh>
 
                 {/* Top Chamfer Lip Rim */}
-                <mesh castShadow position={[0, 0.242, 0]}>
+                <mesh position={[0, 0.242, 0]}>
                     <cylinderGeometry args={[0.245, 0.235, 0.015, 28]} />
                     <meshStandardMaterial color="#6a492d" roughness={0.4} />
                 </mesh>
 
                 {/* Tokyo Minimalist Architecture Book */}
-                <mesh castShadow position={[0.02, 0.255, -0.06]} rotation={[0, 0.35, 0]}>
+                <mesh position={[0.02, 0.255, -0.06]} rotation={[0, 0.35, 0]}>
                     <boxGeometry args={[0.19, 0.016, 0.14]} />
                     <meshStandardMaterial color="#18181b" roughness={0.5} />
                 </mesh>
 
                 {/* Matte Ceramic Coffee Cup with Hot Coffee */}
                 <group position={[-0.05, 0.28, 0.06]}>
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.034, 0.028, 0.068, 14]} />
                         <meshStandardMaterial color="#27272a" roughness={0.75} />
                     </mesh>
@@ -2511,7 +2673,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 </mesh>
 
                 {/* Single Slender Vertical Architectural Bronze Stem */}
-                <mesh castShadow position={[0, 0.74, 0]}>
+                <mesh position={[0, 0.74, 0]}>
                     <cylinderGeometry args={[0.011, 0.011, 1.44, 16]} />
                     <meshStandardMaterial color="#1f1813" metalness={0.85} roughness={0.3} />
                 </mesh>
@@ -3254,8 +3416,17 @@ export default function CyberRoomScene({
     environmentPhase,
     onJackIn,
 }: CyberRoomSceneProps) {
+    const isMobile = useIsMobile();
     const monitorTextures = useMemo(() => new MonitorTextures(), []);
     const envConfig = ENVIRONMENT_CONFIGS[environmentPhase];
+
+    // Pause 3D frame rendering when browser tab is inactive to drop GPU consumption to 0%
+    const [isTabVisible, setIsTabVisible] = useState(true);
+    useEffect(() => {
+        const handleVisibility = () => setIsTabVisible(document.visibilityState === 'visible');
+        document.addEventListener('visibilitychange', handleVisibility);
+        return () => document.removeEventListener('visibilitychange', handleVisibility);
+    }, []);
 
     useEffect(() => {
         return () => monitorTextures.destroy();
@@ -3280,9 +3451,9 @@ export default function CyberRoomScene({
             <Canvas
                 shadows
                 camera={{ position: [-0.25, 1.68, 3.75], fov: 46 }}
-                dpr={[1, 1.25]}
+                dpr={isMobile ? [1, 1] : [1, 1.25]}
                 performance={{ min: 0.5 }}
-                frameloop={cameraMode === 'at_screen' ? 'demand' : 'always'}
+                frameloop={cameraMode === 'at_screen' || !isTabVisible ? 'demand' : 'always'}
                 gl={{
                     antialias: true,
                     powerPreference: 'high-performance',
@@ -3316,7 +3487,7 @@ export default function CyberRoomScene({
                     color="#000000"
                 />
 
-                {/* Dynamic Ambient & Sun Atmospheric Lighting */}
+                {/* Dynamic Ambient & Sun Atmospheric Lighting with tightly bounded shadow frustum */}
                 <ambientLight intensity={envConfig.ambientIntensity} color={envConfig.ambientColor} />
                 <directionalLight
                     castShadow
@@ -3325,6 +3496,12 @@ export default function CyberRoomScene({
                     color={envConfig.sunColor}
                     shadow-mapSize={[1024, 1024]}
                     shadow-bias={-0.0001}
+                    shadow-camera-near={0.5}
+                    shadow-camera-far={22}
+                    shadow-camera-left={-4.5}
+                    shadow-camera-right={4.5}
+                    shadow-camera-top={4.5}
+                    shadow-camera-bottom={-4.5}
                 />
 
                 {/* The old "morning sunlight beam" spotlight lived here â€” it only ever lit up
