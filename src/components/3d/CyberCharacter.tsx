@@ -43,7 +43,7 @@ export default function CyberCharacter({
     // Precise spatial coordinates for locations in the room
     const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, -1.85), []);
     const COFFEE_POS = useMemo(() => new THREE.Vector3(2.75, 0, -0.28), []); // Espresso counter
-    const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.85, 0, 0.8), []); // Stand beside futon
+    const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.35, 0, 0.70), []); // Stand completely clear of futon on open floor
     const BED_LIE_POS = useMemo(() => new THREE.Vector3(-2.55, 0, 0.8), []); // Flat on futon mattress
     const FRIDGE_STAND_POS = useMemo(() => new THREE.Vector3(-1.95, 0, -2.45), []); // Mini fridge counter
     const SOFA_POS = useMemo(() => new THREE.Vector3(1.82, 0, 1.35), []); // Center of comfy curved sofa facing TV
@@ -163,6 +163,20 @@ export default function CyberCharacter({
             let target = COFFEE_POS;
             let nextState: CharacterRoutine = 'brewing_coffee';
 
+            // If starting from inside bed, step out to BED_STAND_POS on the floor immediately
+            if (group.position.x < -1.75 && (r === 'returning_to_desk' || r === 'walking_to_coffee' || r === 'walking_to_tv' || r === 'walking_to_fridge')) {
+                group.position.copy(BED_STAND_POS);
+                bodyRoot.position.y = 0.55;
+                bodyRoot.rotation.set(0, 0, 0);
+            }
+
+            // If starting from sofa, step out to open aisle immediately
+            if (group.position.x > 1.6 && group.position.z > 0.9 && (r === 'returning_to_desk' || r === 'walking_to_coffee' || r === 'walking_to_bed' || r === 'walking_to_fridge')) {
+                group.position.set(1.82, 0, 0.50);
+                bodyRoot.position.y = 0.55;
+                bodyRoot.rotation.set(0, 0, 0);
+            }
+
             if (r === 'walking_to_bed') {
                 target = BED_STAND_POS;
                 nextState = 'resting_bed';
@@ -170,21 +184,20 @@ export default function CyberCharacter({
                 target = FRIDGE_STAND_POS;
                 nextState = 'snacking_at_fridge';
             } else if (r === 'walking_to_tv') {
-                target = SOFA_POS;
                 nextState = 'watching_tv';
+                // Walk to the open aisle first, then approach sofa seat
+                if (group.position.z < 0.65) {
+                    target = new THREE.Vector3(1.82, 0, 0.50);
+                } else {
+                    target = SOFA_POS;
+                }
             } else if (r === 'returning_to_desk') {
                 target = DESK_POS;
                 nextState = 'coding';
             }
 
-            // If starting from inside bed, step out to BED_STAND_POS first
-            let currentNavTarget = target;
-            if (group.position.x < -1.95 && (r === 'returning_to_desk' || r === 'walking_to_coffee' || r === 'walking_to_tv' || r === 'walking_to_fridge')) {
-                currentNavTarget = BED_STAND_POS;
-            }
-
-            const dx = currentNavTarget.x - group.position.x;
-            const dz = currentNavTarget.z - group.position.z;
+            const dx = target.x - group.position.x;
+            const dz = target.z - group.position.z;
             const dist = Math.sqrt(dx * dx + dz * dz);
 
             // Natural upright standing posture while traversing
@@ -196,13 +209,45 @@ export default function CyberCharacter({
             if (coffeeCupRef.current) coffeeCupRef.current.visible = false;
             if (gamepadRef.current) gamepadRef.current.visible = false;
 
-            if (dist < 0.08) {
-                if (currentNavTarget === target) {
+            // When reaching near bed or near sofa, transition IMMEDIATELY
+            const isBedArrival = r === 'walking_to_bed' && group.position.x < -1.0;
+            const isTvArrival = r === 'walking_to_tv' && group.position.z > 1.05;
+            const arrivalThreshold = isBedArrival ? 0.35 : isTvArrival ? 0.30 : 0.08;
+
+            if (dist < arrivalThreshold) {
+                if (isBedArrival) {
+                    // Instantly lay down in bed!
+                    group.position.copy(BED_LIE_POS);
+                    group.rotation.set(0, Math.PI / 2, 0);
+                    bodyRoot.position.y = 0.62;
+                    bodyRoot.rotation.set(-Math.PI / 2, 0, 0);
+                    if (leftLegRef.current) leftLegRef.current.rotation.set(0.02, 0, -0.05);
+                    if (rightLegRef.current) rightLegRef.current.rotation.set(0.02, 0, 0.05);
+                    if (leftKneeRef.current) leftKneeRef.current.rotation.set(0, 0, 0);
+                    if (rightKneeRef.current) rightKneeRef.current.rotation.set(0, 0, 0);
+                    if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.35, 0.2);
+                    if (rightArmRef.current) rightArmRef.current.rotation.set(-0.35, -0.35, -0.2);
+                    if (headRef.current) headRef.current.rotation.set(0, 0.12, 0.06);
+                    onRoutineChange('resting_bed', ROUTINE_LABELS['resting_bed']);
+                    stateTimerRef.current = 0;
+                } else if (isTvArrival) {
+                    // Instantly sit on sofa!
+                    group.position.copy(SOFA_POS);
+                    group.rotation.set(0, Math.PI / 2, 0);
+                    bodyRoot.position.y = 0.48;
+                    bodyRoot.rotation.set(0.04, 0, 0);
+                    if (leftLegRef.current) leftLegRef.current.rotation.set(-Math.PI / 2.15, 0, -0.06);
+                    if (rightLegRef.current) rightLegRef.current.rotation.set(-Math.PI / 2.15, 0, 0.06);
+                    if (leftKneeRef.current) leftKneeRef.current.rotation.set(Math.PI / 2.1, 0, 0);
+                    if (rightKneeRef.current) rightKneeRef.current.rotation.set(Math.PI / 2.1, 0, 0);
+                    if (leftArmRef.current) leftArmRef.current.rotation.set(-0.68, 0.30, -0.16);
+                    if (rightArmRef.current) rightArmRef.current.rotation.set(-0.68, -0.30, 0.16);
+                    onRoutineChange('watching_tv', ROUTINE_LABELS['watching_tv']);
+                    stateTimerRef.current = 0;
+                } else if (r !== 'walking_to_tv' && r !== 'walking_to_bed') {
                     group.position.copy(target);
                     onRoutineChange(nextState, ROUTINE_LABELS[nextState]);
                     stateTimerRef.current = 0;
-                } else {
-                    group.position.copy(currentNavTarget);
                 }
             } else {
                 // Step towards destination
@@ -287,67 +332,45 @@ export default function CyberCharacter({
         // STATE 4: REVERTED CLEAN SLEEPING ON BED (Horizontal on mattress)
         // ============================================================
         } else if (r === 'resting_bed') {
-            // Positioned horizontally along the mattress surface
-            group.position.lerp(BED_LIE_POS, damp(5));
-
-            let diff = Math.PI / 2 - group.rotation.y;
-            while (diff < -Math.PI) diff += Math.PI * 2;
-            while (diff > Math.PI) diff -= Math.PI * 2;
-            group.rotation.y += diff * damp(5);
+            // Instantly positioned horizontally flat on the futon mattress (no sliding)
+            group.position.copy(BED_LIE_POS);
+            group.rotation.set(0, Math.PI / 2, 0);
 
             // Reclined flat on back via bodyRoot.rotation.x
-            bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.62, damp(5));
-            bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, -Math.PI / 2, damp(5));
-            bodyRoot.rotation.y = 0;
-            bodyRoot.rotation.z = 0;
+            bodyRoot.position.y = 0.62;
+            bodyRoot.rotation.set(-Math.PI / 2, 0, 0);
 
-            // Legs straight and relaxed flat along mattress
+            // Legs straight and relaxed flat along mattress - instant snap
             if (leftLegRef.current) {
-                leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0.02, damp(6));
-                leftLegRef.current.rotation.y = 0;
-                leftLegRef.current.rotation.z = THREE.MathUtils.lerp(leftLegRef.current.rotation.z, -0.05, damp(6));
+                leftLegRef.current.rotation.set(0.02, 0, -0.05);
             }
             if (rightLegRef.current) {
-                rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0.02, damp(6));
-                rightLegRef.current.rotation.y = 0;
-                rightLegRef.current.rotation.z = THREE.MathUtils.lerp(rightLegRef.current.rotation.z, 0.05, damp(6));
+                rightLegRef.current.rotation.set(0.02, 0, 0.05);
             }
             if (leftKneeRef.current) {
-                leftKneeRef.current.rotation.x = THREE.MathUtils.lerp(leftKneeRef.current.rotation.x, 0, damp(6));
-                leftKneeRef.current.rotation.y = 0;
-                leftKneeRef.current.rotation.z = 0;
+                leftKneeRef.current.rotation.set(0, 0, 0);
             }
             if (rightKneeRef.current) {
-                rightKneeRef.current.rotation.x = THREE.MathUtils.lerp(rightKneeRef.current.rotation.x, 0, damp(6));
-                rightKneeRef.current.rotation.y = 0;
-                rightKneeRef.current.rotation.z = 0;
+                rightKneeRef.current.rotation.set(0, 0, 0);
             }
 
             // Torso flat with gentle, deep sleep breathing
             if (torsoRef.current) {
-                torsoRef.current.rotation.x = THREE.MathUtils.lerp(torsoRef.current.rotation.x, 0, damp(6));
-                torsoRef.current.rotation.y = THREE.MathUtils.lerp(torsoRef.current.rotation.y, 0, damp(6));
-                torsoRef.current.rotation.z = 0;
+                torsoRef.current.rotation.set(0, 0, 0);
                 torsoRef.current.position.set(0, 0.28, Math.sin(time * 1.4) * 0.012);
             }
 
             // Head resting comfortably on pillow
             if (headRef.current) {
-                headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, 0, damp(6));
-                headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, 0.12, damp(6));
-                headRef.current.rotation.z = THREE.MathUtils.lerp(headRef.current.rotation.z, 0.06, damp(6));
+                headRef.current.rotation.set(0, 0.12, 0.06);
             }
 
             // Arms resting comfortably on chest / stomach
             if (leftArmRef.current) {
-                leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, -0.35, damp(6));
-                leftArmRef.current.rotation.y = THREE.MathUtils.lerp(leftArmRef.current.rotation.y, 0.35, damp(6));
-                leftArmRef.current.rotation.z = THREE.MathUtils.lerp(leftArmRef.current.rotation.z, 0.2, damp(6));
+                leftArmRef.current.rotation.set(-0.35, 0.35, 0.2);
             }
             if (rightArmRef.current) {
-                rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, -0.35, damp(6));
-                rightArmRef.current.rotation.y = THREE.MathUtils.lerp(rightArmRef.current.rotation.y, -0.35, damp(6));
-                rightArmRef.current.rotation.z = THREE.MathUtils.lerp(rightArmRef.current.rotation.z, -0.2, damp(6));
+                rightArmRef.current.rotation.set(-0.35, -0.35, -0.2);
             }
 
             if (coffeeCupRef.current) coffeeCupRef.current.visible = false;
@@ -410,39 +433,26 @@ export default function CyberCharacter({
         // STATE 6: REVERTED CLEAN SOFA CHILL & WATCHING TV
         // ============================================================
         } else if (r === 'watching_tv') {
-            group.position.lerp(SOFA_POS, damp(8));
-
-            let diff = Math.PI / 2 - group.rotation.y;
-            while (diff < -Math.PI) diff += Math.PI * 2;
-            while (diff > Math.PI) diff -= Math.PI * 2;
-            group.rotation.y += diff * damp(8);
+            // Instantly positioned in sofa facing TV (no sliding or sinking)
+            group.position.copy(SOFA_POS);
+            group.rotation.set(0, Math.PI / 2, 0);
 
             // Natural seated posture in the comfy curved sofa
-            bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.48, damp(8));
-            bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, 0.04, damp(8));
-            bodyRoot.rotation.y = 0;
-            bodyRoot.rotation.z = 0;
+            bodyRoot.position.y = 0.48;
+            bodyRoot.rotation.set(0.04, 0, 0);
 
-            // Hips & Legs: thighs horizontal, knees bent 90 deg down, feet on rug
+            // Hips & Legs: thighs horizontal, knees bent 90 deg down, feet on rug - instant snap
             if (leftLegRef.current) {
-                leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, -Math.PI / 2.15, damp(8));
-                leftLegRef.current.rotation.y = 0;
-                leftLegRef.current.rotation.z = -0.06;
+                leftLegRef.current.rotation.set(-Math.PI / 2.15, 0, -0.06);
             }
             if (rightLegRef.current) {
-                rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, -Math.PI / 2.15, damp(8));
-                rightLegRef.current.rotation.y = 0;
-                rightLegRef.current.rotation.z = 0.06;
+                rightLegRef.current.rotation.set(-Math.PI / 2.15, 0, 0.06);
             }
             if (leftKneeRef.current) {
-                leftKneeRef.current.rotation.x = THREE.MathUtils.lerp(leftKneeRef.current.rotation.x, Math.PI / 2.1, damp(8));
-                leftKneeRef.current.rotation.y = 0;
-                leftKneeRef.current.rotation.z = 0;
+                leftKneeRef.current.rotation.set(Math.PI / 2.1, 0, 0);
             }
             if (rightKneeRef.current) {
-                rightKneeRef.current.rotation.x = THREE.MathUtils.lerp(rightKneeRef.current.rotation.x, Math.PI / 2.1, damp(8));
-                rightKneeRef.current.rotation.y = 0;
-                rightKneeRef.current.rotation.z = 0;
+                rightKneeRef.current.rotation.set(Math.PI / 2.1, 0, 0);
             }
 
             // Torso upright, subtle relaxed breathing

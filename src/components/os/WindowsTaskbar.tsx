@@ -94,14 +94,14 @@ export default function WindowsTaskbar({ isStartMenuOpen, onToggleStartMenu, ope
             <div style={{ width: 1, height: 28, background: 'rgba(140,190,255,0.28)', margin: '0 6px' }} />
 
             {/* Open window buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, overflow: 'hidden', paddingRight: 8 }}>
+            <div className="custom-scrollbar" style={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, overflowX: 'auto', overflowY: 'hidden', paddingRight: 8 }}>
                 {openWindows.map((win) => (
                     <button
                         key={win.id}
                         onClick={() => onTaskbarAppClick(win.id)}
                         title={win.title}
                         style={{
-                            height: 32, maxWidth: 160, padding: '0 10px',
+                            height: 32, maxWidth: 160, flexShrink: 0, padding: '0 10px',
                             borderRadius: 3,
                             background: win.isActive && !win.isMinimized
                                 ? 'linear-gradient(180deg, rgba(180,215,255,0.35) 0%, rgba(100,165,245,0.28) 50%, rgba(50,120,220,0.38) 100%)'
@@ -152,8 +152,8 @@ export default function WindowsTaskbar({ isStartMenuOpen, onToggleStartMenu, ope
                     style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: 2, color: 'rgba(210,230,255,0.85)' }}>
                     {isMuted ? <VolumeX style={{ width: 14, height: 14 }} /> : <Volume2 style={{ width: 14, height: 14 }} />}
                 </button>
-                <Wifi style={{ width: 14, height: 14, color: 'rgba(210,230,255,0.75)' }} />
-                <BatteryCharging style={{ width: 14, height: 14, color: 'rgba(210,230,255,0.75)' }} />
+                <Wifi className="hidden sm:block" style={{ width: 14, height: 14, color: 'rgba(210,230,255,0.75)' }} />
+                <BatteryCharging className="hidden sm:block" style={{ width: 14, height: 14, color: 'rgba(210,230,255,0.75)' }} />
                 {/* Clock */}
                 <div style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -162,7 +162,7 @@ export default function WindowsTaskbar({ isStartMenuOpen, onToggleStartMenu, ope
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(230,242,255,0.96)', lineHeight: 1.2, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                         {currentTime}
                     </span>
-                    <span style={{ fontSize: 10, color: 'rgba(190,215,250,0.80)', lineHeight: 1.1 }}>
+                    <span className="hidden sm:block" style={{ fontSize: 10, color: 'rgba(190,215,250,0.80)', lineHeight: 1.1 }}>
                         {currentDate}
                     </span>
                 </div>

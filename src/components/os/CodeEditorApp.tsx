@@ -96,7 +96,7 @@ ${PERSONAL_INFO.principles
     const lines = content.split('\n');
 
     return (
-        <div className="flex h-[440px] font-mono text-xs overflow-hidden select-text">
+        <div className="flex flex-1 min-h-0 font-mono text-xs overflow-hidden select-text">
             {/* Sidebar File Explorer */}
             <div className="w-48 bg-space-950/60 border-r border-white/5 p-3 shrink-0 select-none flex flex-col justify-between">
                 <div className="space-y-3">

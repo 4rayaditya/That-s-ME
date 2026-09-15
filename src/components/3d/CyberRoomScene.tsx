@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef, useMemo, useState, useEffect } from 'react';
@@ -1813,12 +1814,16 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
         return texture;
     }, []);
 
-    // TV powers on only when character reaches near it and sits down to watch TV
+    // TV turns ON after he sits on sofa and turns OFF when he is not on sofa
     const isTvOn = currentRoutine === 'watching_tv';
 
     const triggerLounge = () => {
         audio.playClick();
-        onRoutineChange('walking_to_tv', 'Heading to Sofa to Chill...');
+        if (currentRoutine !== 'watching_tv') {
+            onRoutineChange('walking_to_tv', 'Heading to Sofa to Chill...');
+        } else {
+            onRoutineChange('returning_to_desk', 'Returning to Battlestation...');
+        }
     };
 
     return (
@@ -1844,52 +1849,70 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     document.body.style.cursor = 'auto';
                 }}
             >
-                {/* Rear Ambient Ambilight Bias Glow against the Wall (Active only when TV is ON) */}
-                {isTvOn && (
-                    <mesh position={[0.02, 0, 0]}>
-                        <boxGeometry args={[0.005, 1.08, 1.82]} />
-                        <meshBasicMaterial
-                            color="#38bdf8"
-                            transparent
-                            opacity={0.20}
-                            depthWrite={false}
-                        />
-                    </mesh>
-                )}
-
                 {/* Wall VESA Steel Mounting Arm Bracket */}
-                <mesh position={[0.02, 0, 0]}>
-                    <boxGeometry args={[0.02, 0.45, 0.55]} />
-                    <meshStandardMaterial color="#0b0f19" metalness={0.9} roughness={0.2} />
+                <mesh position={[0.015, 0, 0]}>
+                    <boxGeometry args={[0.015, 0.35, 0.45]} />
+                    <meshStandardMaterial color="#050505" metalness={0.8} roughness={0.4} />
                 </mesh>
 
-                {/* Ultra-Slim Matte Titanium Screen Bezel Housing */}
-                <mesh castShadow position={[0, 0, 0]}>
-                    <boxGeometry args={[0.022, 0.92, 1.62]} />
+                {/* 1. Main TV Rear Chassis Enclosure (Ultra-slim OLED backing) */}
+                <mesh castShadow position={[0.006, 0, 0]}>
+                    <boxGeometry args={[0.016, 0.846, 1.496]} />
                     <meshStandardMaterial
-                        color="#090d16"
-                        metalness={0.92}
-                        roughness={0.18}
+                        color="#050505"
+                        metalness={0.2}
+                        roughness={0.85}
                     />
                 </mesh>
 
-                {/* 65" OLED Display Screen (Active when watching TV, Off Standby deep obsidian glass otherwise) */}
-                <mesh position={[-0.012, 0, 0]}>
-                    <boxGeometry args={[0.002, 0.88, 1.58]} />
-                    <meshStandardMaterial
-                        map={isTvOn ? (tvTexture || undefined) : undefined}
-                        color={isTvOn ? '#ffffff' : '#05070d'}
-                        roughness={isTvOn ? 0.12 : 0.05}
-                        metalness={isTvOn ? 0.08 : 0.22}
-                        emissive={isTvOn ? '#ffffff' : '#000000'}
-                        emissiveMap={isTvOn ? (tvTexture || undefined) : undefined}
-                        emissiveIntensity={isTvOn ? (isHovered ? 1.05 : 0.82) : 0}
-                    />
+                {/* 2. Sleek Ultra-Thin Matte Black Bezel Frame (Uniform thin black borders) */}
+                {/* Top Border */}
+                <mesh position={[-0.010, 0.42025, 0]}>
+                    <boxGeometry args={[0.014, 0.008, 1.496]} />
+                    <meshStandardMaterial color="#0a0a0a" roughness={0.9} metalness={0.1} />
+                </mesh>
+                {/* Bottom Border */}
+                <mesh position={[-0.010, -0.41625, 0]}>
+                    <boxGeometry args={[0.014, 0.008, 1.496]} />
+                    <meshStandardMaterial color="#0a0a0a" roughness={0.9} metalness={0.1} />
+                </mesh>
+                {/* Left Border */}
+                <mesh position={[-0.010, 0.002, -0.744]}>
+                    <boxGeometry args={[0.014, 0.8325, 0.008]} />
+                    <meshStandardMaterial color="#0a0a0a" roughness={0.9} metalness={0.1} />
+                </mesh>
+                {/* Right Border */}
+                <mesh position={[-0.010, 0.002, 0.744]}>
+                    <boxGeometry args={[0.014, 0.8325, 0.008]} />
+                    <meshStandardMaterial color="#0a0a0a" roughness={0.9} metalness={0.1} />
                 </mesh>
 
-                {/* Micro Power LED Status Indicator (Cyan when ON, subtle red when in Standby OFF) */}
-                <mesh position={[-0.012, -0.45, 0]}>
-                    <sphereGeometry args={[0.004, 8, 8]} />
+                {/* 6. 65" 16:9 OLED Display Screen (Fits squarely and cleanly inside the border) */}
+                <mesh position={[-0.006, 0.002, 0]} rotation={[0, -Math.PI / 2, 0]}>
+                    <planeGeometry args={[1.48, 0.8325]} />
+                    {isTvOn ? (
+                        <meshBasicMaterial
+                            map={tvTexture || undefined}
+                            toneMapped={false}
+                        />
+                    ) : (
+                        <meshStandardMaterial
+                            color="#030508"
+                            roughness={0.06}
+                            metalness={0.88}
+                        />
+                    )}
+                </mesh>
+
+                {/* 7. Subtle Center Branding Mark on Bottom Bezel */}
+                <mesh position={[-0.013, -0.435, 0]}>
+                    <boxGeometry args={[0.001, 0.004, 0.034]} />
+                    <meshStandardMaterial color="#94a3b8" metalness={0.9} roughness={0.2} />
+                </mesh>
+
+                {/* 8. Micro Power LED Status Indicator on Bottom Bezel */}
+                <mesh position={[-0.013, -0.435, 0.65]}>
+                    <sphereGeometry args={[0.004, 10, 10]} />
                     <meshBasicMaterial color={isTvOn ? '#00f5d4' : '#ef4444'} toneMapped={false} />
                 </mesh>
             </group>
@@ -2120,9 +2143,9 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 
             {/* ============================================================ */}
             {/* 5. OPTION 4: MINIMALIST TECHWEAR COAT & HEADPHONE STAND       */}
-            {/* Corner stand at x = 2.85, z = 2.70, y = 0                   */}
+            {/* Corner stand tucked into room corner at x = 3.25, z = 3.15, y = 0 */}
             {/* ============================================================ */}
-            <group position={[2.85, 0, 2.70]}>
+            <group position={[3.25, 0, 3.15]}>
                 {/* Heavy Solid Steel Base Plate */}
                 <mesh castShadow position={[0, 0.015, 0]}>
                     <cylinderGeometry args={[0.16, 0.16, 0.03, 16]} />
@@ -2217,7 +2240,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     <meshStandardMaterial color="#2e1d0e" roughness={0.65} />
                 </mesh>
                 {/* 4 Tapered Cone Walnut Feet with Polished Brass Ferrule Caps */}
-                {([ [-0.62, -0.28], [0.62, -0.28], [-0.62, 0.28], [0.62, 0.28] ] as [number,number][]).map(([fx, fz], idx) => (
+                {([[-0.62, -0.28], [0.62, -0.28], [-0.62, 0.28], [0.62, 0.28]] as [number, number][]).map(([fx, fz], idx) => (
                     <group key={idx} position={[fx, 0.005, fz]}>
                         <mesh castShadow>
                             <cylinderGeometry args={[0.028, 0.020, 0.082, 14]} />
@@ -2368,7 +2391,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                         <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
                     {/* Rounded front arm end cap */}
-                    <mesh position={[0, 0.12, 0.34]} rotation={[Math.PI/2, 0, 0]}>
+                    <mesh position={[0, 0.12, 0.34]} rotation={[Math.PI / 2, 0, 0]}>
                         <cylinderGeometry args={[0.11, 0.10, 0.14, 18]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
                     </mesh>
@@ -2389,7 +2412,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                         <boxGeometry args={[0.14, 0.06, 0.64]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
-                    <mesh position={[0, 0.12, 0.34]} rotation={[Math.PI/2, 0, 0]}>
+                    <mesh position={[0, 0.12, 0.34]} rotation={[Math.PI / 2, 0, 0]}>
                         <cylinderGeometry args={[0.11, 0.10, 0.14, 18]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
                     </mesh>
@@ -2467,10 +2490,10 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
             </group>
 
             {/* ============================================================ */}
-            {/* 7. MINIMALIST STANDING LIGHT NEAR CORNER OF TV               */}
-            {/* Tucked into the front-right corner right beside the 65" TV   */}
+            {/* 7. MINIMALIST STANDING LIGHT IN LOUNGE NOOK                 */}
+            {/* Soft architectural lighting - placed in lounge corner, never blocking TV */}
             {/* ============================================================ */}
-            <group position={[3.24, 0, 2.38]}>
+            <group position={[2.95, 0, 2.75]}>
                 {/* Weighted Nero Marquina Marble Circular Base */}
                 <mesh castShadow receiveShadow position={[0, 0.022, 0]}>
                     <cylinderGeometry args={[0.18, 0.20, 0.044, 28]} />
@@ -2487,7 +2510,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.25} />
                 </mesh>
 
-                {/* Single Slender Vertical Architectural Bronze Stem (rising to TV corner level) */}
+                {/* Single Slender Vertical Architectural Bronze Stem */}
                 <mesh castShadow position={[0, 0.74, 0]}>
                     <cylinderGeometry args={[0.011, 0.011, 1.44, 16]} />
                     <meshStandardMaterial color="#1f1813" metalness={0.85} roughness={0.3} />
@@ -2499,10 +2522,10 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     <meshStandardMaterial color="#b45309" metalness={0.92} roughness={0.2} />
                 </mesh>
 
-                {/* Single Fluted Architectural Lampshade (level with the TV screen corner) */}
+                {/* Single Fluted Architectural Lampshade (No shadow to prevent wall patterns) */}
                 <group position={[0, 1.52, 0]}>
                     {/* Conical Lampshade Exterior */}
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.09, 0.22, 0.20, 24, 1, true]} />
                         <meshStandardMaterial
                             color="#faf5ee"
@@ -2520,13 +2543,13 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                         <sphereGeometry args={[0.050, 18, 18]} />
                         <meshBasicMaterial color="#fffbeb" toneMapped={false} />
                     </mesh>
-                    {/* Single Cozy Warm Downward Ambient Light */}
+                    {/* Soft local warm lamp glow (short distance, completely clear of the TV wall) */}
                     <pointLight
                         color="#fef3c7"
-                        intensity={2.8}
-                        distance={3.6}
+                        intensity={0.45}
+                        distance={0.9}
                         decay={2}
-                        position={[0, -0.06, 0]}
+                        position={[0, -0.15, 0]}
                     />
                 </group>
             </group>
@@ -3257,7 +3280,7 @@ export default function CyberRoomScene({
             <Canvas
                 shadows
                 camera={{ position: [-0.25, 1.68, 3.75], fov: 46 }}
-                dpr={[1, 1.5]}
+                dpr={[1, 1.25]}
                 performance={{ min: 0.5 }}
                 frameloop={cameraMode === 'at_screen' ? 'demand' : 'always'}
                 gl={{

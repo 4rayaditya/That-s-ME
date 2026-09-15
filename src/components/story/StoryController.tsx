@@ -136,7 +136,7 @@ export default function StoryController() {
     };
 
     return (
-        <main className="relative w-full h-screen overflow-hidden bg-[#020408] select-none text-zinc-100">
+        <main className="relative w-full h-dvh overflow-hidden bg-[#020408] select-none text-zinc-100">
             {/* 1. REAL-TIME 3D ISOMETRIC ROOM WITH FLOATING INTERACTIVE BUTTONS ONLY */}
             <div className="absolute inset-0 w-full h-full">
                 <CyberRoomScene

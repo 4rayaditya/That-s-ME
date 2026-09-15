@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { audio } from '@/lib/audio';
+import { useIsMobile } from '@/lib/useIsMobile';
 
 interface WindowsWindowFrameProps {
     id: string;
@@ -22,11 +23,12 @@ interface WindowsWindowFrameProps {
     minHeight?: number;
 }
 
-function Win7Btn({ children, onClick, title, variant }: {
+function Win7Btn({ children, onClick, title, variant, touch }: {
     children: React.ReactNode;
     onClick: (e: React.MouseEvent) => void;
     title: string;
     variant: 'blue' | 'red';
+    touch?: boolean;
 }) {
     const [hover, setHover] = useState(false);
     const bgNormal = variant === 'red'
@@ -40,12 +42,13 @@ function Win7Btn({ children, onClick, title, variant }: {
         <button onClick={onClick} title={title}
             onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
             style={{
-                width: 26, height: 22, borderRadius: 4,
+                width: touch ? 40 : 26, height: touch ? 32 : 22, borderRadius: 4,
                 background: hover ? bgHover : bgNormal,
                 border: `1px solid ${border}`,
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.52)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', transition: 'background 0.1s',
+                touchAction: 'manipulation',
             }}>
             {children}
         </button>
@@ -60,13 +63,20 @@ export default function WindowsWindowFrame({
     minWidth = 480,
     minHeight = 360,
 }: WindowsWindowFrameProps) {
+    const isMobile = useIsMobile();
+    // On phones there's no reliable way to drag a floating window with a
+    // finger, and a desktop-sized window wouldn't fit anyway — every window
+    // simply behaves as maximized so the OS reads as "one full-screen app
+    // at a time", switched via the taskbar, which is the mental model a
+    // phone visitor already has.
+    const effectiveMaximized = isMaximized || isMobile;
     const [position, setPosition] = useState(initialPosition);
     const [size] = useState(initialSize);
     const isDragging = useRef(false);
     const dragStart = useRef({ mouseX: 0, mouseY: 0, winX: 0, winY: 0 });
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        if (isMaximized) return;
+        if (effectiveMaximized) return;
         if ((e.target as HTMLElement).closest('button')) return;
         onFocus();
         isDragging.current = true;
@@ -101,11 +111,11 @@ export default function WindowsWindowFrame({
             className="window-frame absolute flex flex-col select-none"
             onMouseDown={onFocus}
             style={{
-                left: isMaximized ? 0 : `${position.x}px`,
-                top: isMaximized ? 0 : `${position.y}px`,
-                width: isMaximized ? '100vw' : `${Math.min(size.width, typeof window !== 'undefined' ? window.innerWidth - 20 : size.width)}px`,
-                height: isMaximized ? 'calc(100vh - 40px)' : `${Math.min(size.height, typeof window !== 'undefined' ? window.innerHeight - 80 : size.height)}px`,
-                borderRadius: isMaximized ? 0 : 8,
+                left: effectiveMaximized ? 0 : `${position.x}px`,
+                top: effectiveMaximized ? 0 : `${position.y}px`,
+                width: effectiveMaximized ? '100%' : `${Math.min(size.width, typeof window !== 'undefined' ? window.innerWidth - 20 : size.width)}px`,
+                height: effectiveMaximized ? '100%' : `${Math.min(size.height, typeof window !== 'undefined' ? window.innerHeight - 80 : size.height)}px`,
+                borderRadius: effectiveMaximized ? 0 : 8,
                 overflow: 'hidden',
                 background: aeroBase,
                 backdropFilter: 'blur(24px) saturate(1.8)',
@@ -121,7 +131,7 @@ export default function WindowsWindowFrame({
                 onMouseDown={handleMouseDown}
                 onDoubleClick={onMaximizeToggle}
                 style={{
-                    height: 32, display: 'flex', alignItems: 'center',
+                    height: isMobile ? 40 : 32, display: 'flex', alignItems: 'center',
                     justifyContent: 'space-between', padding: '0 8px',
                     cursor: 'default', position: 'relative', flexShrink: 0,
                     background: titleBg,
@@ -148,26 +158,30 @@ export default function WindowsWindowFrame({
                 </div>
                 {/* Control Buttons */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
-                    <Win7Btn variant="blue" title="Minimize"
+                    <Win7Btn variant="blue" title="Minimize" touch={isMobile}
                         onClick={(e) => { e.stopPropagation(); audio.playClick(); onMinimize(); }}>
                         <svg width="10" height="2" viewBox="0 0 10 2">
                             <rect x="0" y="0" width="10" height="2" fill="#1e3a6a" rx="1"/>
                         </svg>
                     </Win7Btn>
-                    <Win7Btn variant="blue" title={isMaximized ? 'Restore' : 'Maximize'}
-                        onClick={(e) => { e.stopPropagation(); audio.playClick(); onMaximizeToggle(); }}>
-                        {isMaximized ? (
-                            <svg width="10" height="10" viewBox="0 0 10 10">
-                                <rect x="2" y="0" width="8" height="8" rx="1" fill="none" stroke="#1e3a6a" strokeWidth="1.5"/>
-                                <rect x="0" y="2" width="8" height="8" rx="1" fill="rgba(180,210,255,0.4)" stroke="#1e3a6a" strokeWidth="1.5"/>
-                            </svg>
-                        ) : (
-                            <svg width="10" height="10" viewBox="0 0 10 10">
-                                <rect x="0.75" y="0.75" width="8.5" height="8.5" rx="1" fill="none" stroke="#1e3a6a" strokeWidth="1.5"/>
-                            </svg>
-                        )}
-                    </Win7Btn>
-                    <Win7Btn variant="red" title="Close"
+                    {/* Maximize/restore only makes sense when the window isn't
+                        already forced full-screen by mobile layout. */}
+                    {!isMobile && (
+                        <Win7Btn variant="blue" title={isMaximized ? 'Restore' : 'Maximize'}
+                            onClick={(e) => { e.stopPropagation(); audio.playClick(); onMaximizeToggle(); }}>
+                            {isMaximized ? (
+                                <svg width="10" height="10" viewBox="0 0 10 10">
+                                    <rect x="2" y="0" width="8" height="8" rx="1" fill="none" stroke="#1e3a6a" strokeWidth="1.5"/>
+                                    <rect x="0" y="2" width="8" height="8" rx="1" fill="rgba(180,210,255,0.4)" stroke="#1e3a6a" strokeWidth="1.5"/>
+                                </svg>
+                            ) : (
+                                <svg width="10" height="10" viewBox="0 0 10 10">
+                                    <rect x="0.75" y="0.75" width="8.5" height="8.5" rx="1" fill="none" stroke="#1e3a6a" strokeWidth="1.5"/>
+                                </svg>
+                            )}
+                        </Win7Btn>
+                    )}
+                    <Win7Btn variant="red" title="Close" touch={isMobile}
                         onClick={(e) => { e.stopPropagation(); audio.playClick(); onClose(); }}>
                         <svg width="9" height="9" viewBox="0 0 9 9">
                             <line x1="1" y1="1" x2="8" y2="8" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>

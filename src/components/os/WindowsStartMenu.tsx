@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { PERSONAL_INFO } from '@/data/portfolioData';
 import { audio } from '@/lib/audio';
+import { useIsMobile } from '@/lib/useIsMobile';
 
 interface WindowsStartMenuProps {
     isOpen: boolean;
@@ -33,6 +34,7 @@ export default function WindowsStartMenu({
     onOpenApp,
     onReturnToRoom,
 }: WindowsStartMenuProps) {
+    const isMobile = useIsMobile();
     const [searchQuery, setSearchQuery] = useState('');
     const [showPowerMenu, setShowPowerMenu] = useState(false);
 
@@ -57,7 +59,7 @@ export default function WindowsStartMenu({
     return (
         <div
             onClick={(e) => e.stopPropagation()}
-            className="absolute bottom-14 left-1/2 -translate-x-1/2 w-[95vw] max-w-[580px] h-[540px] rounded-xl bg-[#1c1f26]/95 backdrop-blur-3xl border border-white/15 shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(0,245,212,0.1)] z-50 flex flex-col overflow-hidden text-zinc-100 font-sans select-none animate-in fade-in slide-in-from-bottom-3 duration-150"
+            className="absolute bottom-14 left-1/2 -translate-x-1/2 w-[95vw] max-w-[580px] h-[540px] max-h-[75vh] rounded-xl bg-[#1c1f26]/95 backdrop-blur-3xl border border-white/15 shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(0,245,212,0.1)] z-50 flex flex-col overflow-hidden text-zinc-100 font-sans select-none animate-in fade-in slide-in-from-bottom-3 duration-150"
         >
             {/* Top Search Input */}
             <div className="p-5 pb-3">
@@ -68,7 +70,7 @@ export default function WindowsStartMenu({
                         placeholder="Type here to search apps, projects, skills..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        autoFocus
+                        autoFocus={!isMobile}
                         className="w-full pl-10 pr-4 py-2.5 bg-white/[0.05] border border-white/10 rounded-full text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-cyan-400/60 focus:bg-white/[0.08]"
                     />
                 </div>

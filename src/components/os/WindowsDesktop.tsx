@@ -5,6 +5,19 @@ import {
     Briefcase, FolderGit2, Cpu, FileText, Terminal,
     Code2, Mail, Award, Music, LogOut, RefreshCw,
 } from 'lucide-react';
+import {
+    Win7ComputerIcon,
+    Win7UserFolderIcon,
+    Win7RecycleBinIcon,
+    Win7NetworkIcon,
+    Win7ControlPanelIcon,
+    Win7InternetExplorerIcon,
+    Win7NotepadIcon,
+    Win7CmdIcon,
+    Win7VSCodeIcon,
+    Win7PdfIcon,
+    Win7MediaPlayerIcon,
+} from './Win7Icons';
 import WindowsTaskbar from './WindowsTaskbar';
 import WindowsStartMenu from './WindowsStartMenu';
 import WindowsWindowFrame from './WindowsWindowFrame';
@@ -18,6 +31,7 @@ import WindowsResumeViewerApp from './WindowsResumeViewerApp';
 import WindowsMediaApp from './WindowsMediaApp';
 import CodeEditorApp from './CodeEditorApp';
 import { audio } from '@/lib/audio';
+import { useIsMobile } from '@/lib/useIsMobile';
 
 interface WindowsDesktopProps {
     onReturnToRoom: () => void;
@@ -46,8 +60,11 @@ interface DesktopIcon {
 
 // Win7 desktop icons — white text with drop-shadow (renders over the Bliss wallpaper)
 const ICON_SIZE = 76;
+const ICON_SIZE_MOBILE = 64;
 
 export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) {
+    const isMobile = useIsMobile();
+    const iconSize = isMobile ? ICON_SIZE_MOBILE : ICON_SIZE;
     const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
     const [selectedIconId, setSelectedIconId] = useState<string | null>(null);
     const [activeWindowId, setActiveWindowId] = useState<string>('experience');
@@ -58,16 +75,17 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     }>({ startX: 0, startY: 0, currentX: 0, currentY: 0, isSelecting: false });
 
     const desktopIcons: DesktopIcon[] = [
-        { id: 'experience', name: 'Experience', ext: '.exe', icon: <Briefcase className="w-9 h-9 text-amber-300 drop-shadow-lg" /> },
-        { id: 'projects',   name: 'Projects',   ext: '.exe', icon: <FolderGit2 className="w-9 h-9 text-cyan-300 drop-shadow-lg" /> },
-        { id: 'skills',     name: 'Skills',     ext: '.exe', icon: <Cpu className="w-9 h-9 text-purple-300 drop-shadow-lg" /> },
-        { id: 'about',      name: 'About_Aditya', ext: '.txt', icon: <FileText className="w-9 h-9 text-sky-300 drop-shadow-lg" /> },
-        { id: 'terminal',   name: 'cmd',        ext: '.exe', icon: <Terminal className="w-9 h-9 text-emerald-300 drop-shadow-lg" /> },
-        { id: 'code',       name: 'VSCode',     ext: '.exe', icon: <Code2 className="w-9 h-9 text-violet-300 drop-shadow-lg" /> },
-        { id: 'mail',       name: 'Mail',       ext: '.exe', icon: <Mail className="w-9 h-9 text-rose-300 drop-shadow-lg" /> },
-        { id: 'resume',     name: 'Resume',     ext: '.pdf', icon: <Award className="w-9 h-9 text-teal-300 drop-shadow-lg" /> },
-        { id: 'media',      name: 'Groove_Music', ext: '.exe', icon: <Music className="w-9 h-9 text-yellow-300 drop-shadow-lg" /> },
-        { id: 'return',     name: 'Return_To_Room', ext: '.lnk', icon: <LogOut className="w-9 h-9 text-red-300 drop-shadow-lg" /> },
+        { id: 'experience', name: 'Computer', ext: '', icon: <Win7ComputerIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'about',      name: 'Aditya', ext: '', icon: <Win7UserFolderIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'projects',   name: 'Internet Explorer', ext: '', icon: <Win7InternetExplorerIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'skills',     name: 'Control Panel', ext: '', icon: <Win7ControlPanelIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'mail',       name: 'Network', ext: '', icon: <Win7NetworkIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'notepad',    name: 'About_Aditya', ext: '.txt', icon: <Win7NotepadIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'terminal',   name: 'cmd', ext: '.exe', icon: <Win7CmdIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'code',       name: 'VS Code', ext: '', icon: <Win7VSCodeIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'resume',     name: 'Resume', ext: '.pdf', icon: <Win7PdfIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'media',      name: 'Windows Media', ext: '', icon: <Win7MediaPlayerIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'return',     name: 'Recycle Bin', ext: '', icon: <Win7RecycleBinIcon className="w-11 h-11 drop-shadow-md" /> },
     ];
 
     const [openWindows, setOpenWindows] = useState<WindowState[]>([
@@ -89,7 +107,8 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onReturnToRoom]);
 
-    const openApp = (appId: string) => {
+    const openApp = (rawAppId: string) => {
+        const appId = rawAppId === 'notepad' ? 'about' : rawAppId;
         if (appId === 'return') { audio.playWarpOut(); onReturnToRoom(); return; }
         audio.playClick();
         const nextZ = topZIndex + 1;
@@ -159,74 +178,41 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
             onMouseMove={handleDesktopMouseMove}
             onMouseUp={handleDesktopMouseUp}
             onContextMenu={handleContextMenu}
-            className="relative w-full h-screen overflow-hidden select-none font-sans flex flex-col"
+            className="relative w-full h-dvh overflow-hidden select-none font-sans flex flex-col"
             style={{ fontFamily: '"Segoe UI", Tahoma, Geneva, sans-serif' }}
         >
-            {/* ── WINDOWS 7 BLISS WALLPAPER ── */}
+            {/* ── WINDOWS 7 DESKTOP WALLPAPER (image.png) ── */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
-                {/* Sky gradient — the iconic Win7 blue sky */}
-                <div style={{
-                    position: 'absolute', inset: 0,
-                    background: 'linear-gradient(180deg, #4a90d9 0%, #6eaae8 18%, #a5c8f5 35%, #c8dff8 50%, #d8ebfa 60%, #c5e0a0 72%, #7dbf45 82%, #5caa28 100%)',
-                }} />
-                {/* Clouds — upper area */}
-                <div style={{ position: 'absolute', top: '8%', left: '15%', width: 180, height: 70,
-                    background: 'radial-gradient(ellipse at 40% 60%, rgba(255,255,255,0.96) 30%, rgba(230,240,255,0.70) 65%, transparent 100%)',
-                    borderRadius: '50%', filter: 'blur(2px)' }} />
-                <div style={{ position: 'absolute', top: '5%', left: '20%', width: 120, height: 55,
-                    background: 'radial-gradient(ellipse at 50% 70%, rgba(255,255,255,0.92) 35%, rgba(220,235,255,0.60) 70%, transparent 100%)',
-                    borderRadius: '50%', filter: 'blur(1.5px)' }} />
-                <div style={{ position: 'absolute', top: '12%', right: '20%', width: 220, height: 80,
-                    background: 'radial-gradient(ellipse at 40% 55%, rgba(255,255,255,0.94) 28%, rgba(225,238,255,0.65) 62%, transparent 100%)',
-                    borderRadius: '50%', filter: 'blur(2px)' }} />
-                <div style={{ position: 'absolute', top: '6%', right: '30%', width: 140, height: 50,
-                    background: 'radial-gradient(ellipse at 50% 65%, rgba(255,255,255,0.90) 30%, rgba(220,235,255,0.55) 65%, transparent 100%)',
-                    borderRadius: '50%', filter: 'blur(1.5px)' }} />
-                <div style={{ position: 'absolute', top: '18%', left: '45%', width: 160, height: 60,
-                    background: 'radial-gradient(ellipse at 45% 60%, rgba(255,255,255,0.88) 25%, rgba(215,232,255,0.50) 60%, transparent 100%)',
-                    borderRadius: '50%', filter: 'blur(2px)' }} />
-                {/* Rolling green hills — the signature Bliss hill */}
-                <svg viewBox="0 0 1440 900" preserveAspectRatio="none"
-                    style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '55%' }}>
-                    {/* Back distant hill */}
-                    <ellipse cx="720" cy="1000" rx="900" ry="550" fill="#88c840" opacity="0.5"/>
-                    {/* Mid hill right */}
-                    <ellipse cx="1200" cy="950" rx="700" ry="500" fill="#72b832" opacity="0.6"/>
-                    {/* Mid hill left */}
-                    <ellipse cx="240" cy="980" rx="700" ry="520" fill="#78bc38" opacity="0.55"/>
-                    {/* Main iconic Bliss hill center */}
-                    <ellipse cx="720" cy="920" rx="820" ry="480" fill="#82cc40"/>
-                    {/* Bright highlight on hill top */}
-                    <ellipse cx="680" cy="840" rx="320" ry="120" fill="#9adc50" opacity="0.7"/>
-                    {/* Foreground dark grass at bottom */}
-                    <rect x="0" y="820" width="1440" height="80" fill="#5aaa25"/>
-                </svg>
-                {/* Sun glow upper right */}
-                <div style={{
-                    position: 'absolute', top: -60, right: '12%', width: 260, height: 260,
-                    background: 'radial-gradient(circle, rgba(255,248,200,0.55) 0%, rgba(255,230,100,0.25) 45%, transparent 75%)',
-                    borderRadius: '50%',
-                }} />
+                <img
+                    src="/image.png"
+                    alt="Windows 7 Wallpaper"
+                    className="w-full h-full object-cover object-center"
+                    draggable={false}
+                />
             </div>
 
             {/* ── DESKTOP ICONS (left column, Win7 style) ── */}
             <div className="flex-1 relative overflow-hidden" style={{ zIndex: 1 }}>
-                <div style={{
-                    position: 'absolute', top: 16, left: 16,
-                    display: 'grid', gridTemplateRows: 'repeat(6, auto)', gridAutoFlow: 'column',
-                    gap: 8,
-                }}>
+                <div
+                    className="touch-manipulation"
+                    style={{
+                        position: 'absolute', top: 12, left: 12,
+                        display: 'grid',
+                        gridTemplateRows: isMobile ? 'repeat(5, auto)' : 'repeat(6, auto)',
+                        gridAutoFlow: 'column',
+                        gap: isMobile ? 4 : 8,
+                    }}>
                     {desktopIcons.map((item) => {
                         const isSelected = selectedIconId === item.id;
                         return (
                             <div
                                 key={item.id}
                                 className="desktop-icon"
-                                onClick={(e) => { e.stopPropagation(); audio.playHover(); setSelectedIconId(item.id); }}
+                                onClick={(e) => { e.stopPropagation(); audio.playHover(); setSelectedIconId(item.id); if (isMobile) openApp(item.id); }}
                                 onDoubleClick={(e) => { e.stopPropagation(); openApp(item.id); }}
                                 title={`Open ${item.name}${item.ext || ''} (Double-click)`}
                                 style={{
-                                    width: ICON_SIZE, display: 'flex', flexDirection: 'column',
+                                    width: iconSize, display: 'flex', flexDirection: 'column',
                                     alignItems: 'center', padding: '6px 4px', borderRadius: 4,
                                     cursor: 'default',
                                     background: isSelected ? 'rgba(100,160,255,0.30)' : 'transparent',
@@ -251,7 +237,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                                     textShadow: '0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.6)',
                                     textAlign: 'center', lineHeight: 1.3,
                                     wordBreak: 'break-word',
-                                    maxWidth: ICON_SIZE - 8,
+                                    maxWidth: iconSize - 8,
                                 }}>
                                     {item.name}
                                     {item.ext && <span style={{ color: 'rgba(220,235,255,0.85)', fontSize: 10, display: 'block' }}>{item.ext}</span>}
