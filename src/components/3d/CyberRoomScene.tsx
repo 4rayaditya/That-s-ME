@@ -2953,74 +2953,206 @@ const CoffeeStation = React.memo(function CoffeeStation() {
 });
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Aesthetic Solid Oak Platform Bed & Nightstand
+// -------------------------------------------------------------
+// SUB-COMPONENT: Designer Elevated Platform Bed & Slatted Headboard
 // -------------------------------------------------------------
 const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
     return (
         <group position={[-2.65, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
-            {/* Solid Warm Oak Low Platform Bed Frame (1.4m x 2.3m) */}
-            <mesh castShadow receiveShadow position={[0, 0.16, 0]}>
-                <boxGeometry args={[1.4, 0.32, 2.3]} />
-                <meshStandardMaterial color="#6a4c33" roughness={0.5} />
+            {/* ── 1. TAPERED ARCHITECTURAL LEGS (14cm clear air gap from floor/carpet) ── */}
+            {/* 4 Corner Legs + 2 Mid-span Support Legs */}
+            {[
+                [-0.64, -1.02],
+                [0.64, -1.02],
+                [-0.64, 1.02],
+                [0.64, 1.02],
+                [-0.64, 0.0],
+                [0.64, 0.0],
+            ].map(([lx, lz], i) => (
+                <group key={i} position={[lx, 0.07, lz]}>
+                    {/* Tapered Matte Charcoal Steel Leg */}
+                    <mesh castShadow>
+                        <cylinderGeometry args={[0.022, 0.014, 0.14, 14]} />
+                        <meshStandardMaterial color="#1a1815" roughness={0.4} metalness={0.8} />
+                    </mesh>
+                    {/* Brushed Champagne Brass Foot Ferrule */}
+                    <mesh position={[0, -0.052, 0]}>
+                        <cylinderGeometry args={[0.016, 0.014, 0.036, 14]} />
+                        <meshStandardMaterial color="#d97706" metalness={0.9} roughness={0.25} />
+                    </mesh>
+                </group>
+            ))}
+
+            {/* ── 2. UNDERBED ARCHITECTURAL FLOATING GLOW ── */}
+            {/* Creates unmistakable visual separation and floating depth above floor */}
+            <mesh position={[0, 0.138, 0]}>
+                <boxGeometry args={[1.36, 0.012, 2.18]} />
+                <meshBasicMaterial color="#f59e0b" toneMapped={false} transparent opacity={0.35} />
             </mesh>
-            {/* Warm Golden Inset Accent Trim */}
-            <mesh position={[0, 0.02, 0]}>
-                <boxGeometry args={[1.44, 0.02, 2.34]} />
-                <meshBasicMaterial color="#d97706" toneMapped={false} />
+            <pointLight color="#fed7aa" intensity={0.8} distance={1.8} decay={2} position={[0, 0.07, 0]} />
+
+            {/* ── 3. ELEVATED SOLID OAK PLATFORM BED FRAME (y = 0.14 to 0.26) ── */}
+            <mesh castShadow receiveShadow position={[0, 0.20, 0]}>
+                <boxGeometry args={[1.46, 0.12, 2.26]} />
+                <meshStandardMaterial color="#4e3524" roughness={0.55} />
+            </mesh>
+            {/* Warm Inset Border Reveal / Shadow Rail */}
+            <mesh position={[0, 0.145, 0]}>
+                <boxGeometry args={[1.48, 0.016, 2.28]} />
+                <meshStandardMaterial color="#2d1c10" roughness={0.8} />
+            </mesh>
+            {/* Top Perimeter Beveled Border Lip */}
+            <mesh position={[0, 0.265, 0]}>
+                <boxGeometry args={[1.46, 0.015, 2.26]} />
+                <meshStandardMaterial color="#5c4033" roughness={0.5} />
             </mesh>
 
-            {/* Crisp Organic Cotton Futon Mattress */}
-            <mesh position={[0, 0.35, 0.08]} castShadow>
-                <boxGeometry args={[1.30, 0.20, 2.15]} />
-                <meshStandardMaterial color="#f7f4ed" roughness={0.9} />
-            </mesh>
-            {/* Soft Oatmeal / Waffle Linen Duvet */}
-            <mesh position={[0, 0.45, 0.34]} castShadow>
-                <boxGeometry args={[1.26, 0.09, 1.45]} />
-                <meshStandardMaterial color="#ebe3d5" roughness={0.88} />
-            </mesh>
-            {/* Folded Textured Charcoal Bed Runner / Throw across foot of bed */}
-            <mesh position={[0, 0.50, 0.88]} castShadow>
-                <boxGeometry args={[1.28, 0.035, 0.40]} />
-                <meshStandardMaterial color="#334155" roughness={0.92} />
-            </mesh>
-
-            {/* Fluffy Cream Linen Bed Pillows */}
-            <mesh position={[0.32, 0.48, -0.75]} rotation={[0.2, 0, 0]} castShadow>
-                <boxGeometry args={[0.48, 0.15, 0.32]} />
-                <meshStandardMaterial color="#faf6ee" roughness={0.8} />
-            </mesh>
-            <mesh position={[-0.32, 0.48, -0.75]} rotation={[0.2, 0, 0]} castShadow>
-                <boxGeometry args={[0.48, 0.15, 0.32]} />
-                <meshStandardMaterial color="#faf6ee" roughness={0.8} />
-            </mesh>
-            <mesh position={[0.28, 0.52, -0.55]} rotation={[0.26, 0, 0]} castShadow>
-                <boxGeometry args={[0.38, 0.12, 0.24]} />
-                <meshStandardMaterial color="#d6c7b2" roughness={0.85} />
-            </mesh>
-            <mesh position={[-0.28, 0.52, -0.55]} rotation={[0.26, 0, 0]} castShadow>
-                <boxGeometry args={[0.38, 0.12, 0.24]} />
-                <meshStandardMaterial color="#4d6543" roughness={0.88} />
-            </mesh>
-
-            {/* Bedside Solid Walnut Nightstand */}
-            <group position={[0.95, 0.25, -0.75]}>
-                <mesh castShadow>
-                    <boxGeometry args={[0.40, 0.50, 0.44]} />
-                    <meshStandardMaterial color="#553a24" roughness={0.5} />
+            {/* ── 4. DESIGNER SLATTED OAK & BOUCLÉ UPHOLSTERED HEADBOARD (Anchors bed to wall) ── */}
+            <group position={[0, 0.58, -1.13]}>
+                {/* Backing Wood Frame Panel */}
+                <mesh castShadow receiveShadow>
+                    <boxGeometry args={[1.62, 0.92, 0.07]} />
+                    <meshStandardMaterial color="#3d281a" roughness={0.6} />
                 </mesh>
-                {/* Ceramic Water Carafe & Tumbler on Nightstand */}
-                <mesh position={[0, 0.35, -0.06]} castShadow>
-                    <cylinderGeometry args={[0.04, 0.05, 0.16, 16]} />
-                    <meshStandardMaterial color="#f8fafc" roughness={0.2} />
+                {/* Fluted Vertical Slat Accent Stripes */}
+                {[-0.72, -0.62, -0.52, 0.52, 0.62, 0.72].map((sx, idx) => (
+                    <mesh key={idx} position={[sx, 0, 0.038]}>
+                        <boxGeometry args={[0.035, 0.90, 0.015]} />
+                        <meshStandardMaterial color="#543722" roughness={0.5} />
+                    </mesh>
+                ))}
+                {/* Plush Center Padded Bouclé Upholstered Insert */}
+                <mesh position={[0, 0.02, 0.042]} castShadow>
+                    <boxGeometry args={[0.96, 0.76, 0.035]} />
+                    <meshStandardMaterial color="#f5f0e8" roughness={0.92} />
                 </mesh>
-                <mesh position={[0.08, 0.31, 0.08]} castShadow>
-                    <cylinderGeometry args={[0.028, 0.028, 0.07, 12]} />
-                    <meshStandardMaterial color="#e2e8f0" roughness={0.1} />
+                {/* Headboard Top Crown Shelf */}
+                <mesh position={[0, 0.465, 0]}>
+                    <boxGeometry args={[1.66, 0.025, 0.09]} />
+                    <meshStandardMaterial color="#5c4033" roughness={0.45} />
+                </mesh>
+                {/* Subtle Headboard Top Ambient LED Glow Strip */}
+                <mesh position={[0, 0.48, -0.02]}>
+                    <boxGeometry args={[1.56, 0.008, 0.012]} />
+                    <meshBasicMaterial color="#fed7aa" toneMapped={false} />
                 </mesh>
             </group>
 
-            {/* HANGING PENDANT LIGHT ABOVE THE BED */}
+            {/* ── 5. DEEP ORGANIC LINEN MATTRESS (y = 0.25 to 0.46) ── */}
+            <mesh position={[0, 0.355, 0.05]} castShadow>
+                <boxGeometry args={[1.34, 0.21, 2.12]} />
+                <meshStandardMaterial color="#faf8f5" roughness={0.88} />
+            </mesh>
+            {/* Quilted Mattress Border Welt Seam */}
+            <mesh position={[0, 0.455, 0.05]}>
+                <boxGeometry args={[1.35, 0.012, 2.13]} />
+                <meshStandardMaterial color="#e5ded2" roughness={0.9} />
+            </mesh>
+
+            {/* ── 6. PLUSH DRAPED SCANDINAVIAN DUVET & FOLDED TOP SHEET ── */}
+            {/* Crisp White Folded Top Sheet at Upper Chest */}
+            <mesh position={[0, 0.468, -0.32]} castShadow>
+                <boxGeometry args={[1.32, 0.025, 0.22]} />
+                <meshStandardMaterial color="#ffffff" roughness={0.85} />
+            </mesh>
+            {/* Fluffy Warm Oatmeal Waffle Linen Comforter */}
+            <mesh position={[0, 0.485, 0.36]} castShadow>
+                <boxGeometry args={[1.36, 0.075, 1.44]} />
+                <meshStandardMaterial color="#ebe3d6" roughness={0.92} />
+            </mesh>
+            {/* Draped Side Flange Left */}
+            <mesh position={[-0.67, 0.445, 0.36]} rotation={[0, 0, 0.28]} castShadow>
+                <boxGeometry args={[0.07, 0.07, 1.44]} />
+                <meshStandardMaterial color="#e4dbcd" roughness={0.92} />
+            </mesh>
+            {/* Draped Side Flange Right */}
+            <mesh position={[0.67, 0.445, 0.36]} rotation={[0, 0, -0.28]} castShadow>
+                <boxGeometry args={[0.07, 0.07, 1.44]} />
+                <meshStandardMaterial color="#e4dbcd" roughness={0.92} />
+            </mesh>
+
+            {/* ── 7. TEXTURED CHARCOAL BED RUNNER / THROW ACROSS FOOT ── */}
+            <mesh position={[0, 0.528, 0.88]} castShadow>
+                <boxGeometry args={[1.37, 0.024, 0.38]} />
+                <meshStandardMaterial color="#374151" roughness={0.95} />
+            </mesh>
+            {/* Folded Layer Detail on Throw */}
+            <mesh position={[0, 0.542, 0.93]}>
+                <boxGeometry args={[1.35, 0.014, 0.20]} />
+                <meshStandardMaterial color="#4b5563" roughness={0.92} />
+            </mesh>
+
+            {/* ── 8. MULTI-LAYERED FLUFFY BED PILLOWS & ACCENT CUSHIONS ── */}
+            {/* Back King Sleeping Pillows (Crisp White Linen, propped against headboard) */}
+            <mesh position={[0.33, 0.52, -0.80]} rotation={[0.24, 0, 0]} castShadow>
+                <boxGeometry args={[0.50, 0.15, 0.32]} />
+                <meshStandardMaterial color="#faf8f5" roughness={0.8} />
+            </mesh>
+            <mesh position={[-0.33, 0.52, -0.80]} rotation={[0.24, 0, 0]} castShadow>
+                <boxGeometry args={[0.50, 0.15, 0.32]} />
+                <meshStandardMaterial color="#faf8f5" roughness={0.8} />
+            </mesh>
+            {/* Front Accent Sham Pillows (Sage Green & Warm Clay) */}
+            <mesh position={[0.30, 0.55, -0.60]} rotation={[0.30, 0, 0]} castShadow>
+                <boxGeometry args={[0.40, 0.13, 0.24]} />
+                <meshStandardMaterial color="#3f503d" roughness={0.88} />
+            </mesh>
+            <mesh position={[-0.30, 0.55, -0.60]} rotation={[0.30, 0, 0]} castShadow>
+                <boxGeometry args={[0.40, 0.13, 0.24]} />
+                <meshStandardMaterial color="#c2785c" roughness={0.88} />
+            </mesh>
+            {/* Center Cylindrical Lumbar Throw Pillow */}
+            <mesh position={[0, 0.54, -0.48]} rotation={[0, 0, Math.PI / 2]} castShadow>
+                <cylinderGeometry args={[0.055, 0.055, 0.38, 16]} />
+                <meshStandardMaterial color="#e5ded4" roughness={0.9} />
+            </mesh>
+
+            {/* ── 9. ELEVATED SOLID WALNUT NIGHTSTAND (with matching tapered legs) ── */}
+            <group position={[0.98, 0, -0.80]}>
+                {/* Slim Tapered Nightstand Legs */}
+                {[
+                    [-0.15, -0.15],
+                    [0.15, -0.15],
+                    [-0.15, 0.15],
+                    [0.15, 0.15],
+                ].map(([nx, nz], i) => (
+                    <mesh key={i} position={[nx, 0.07, nz]} castShadow>
+                        <cylinderGeometry args={[0.014, 0.009, 0.14, 10]} />
+                        <meshStandardMaterial color="#1a1815" metalness={0.8} roughness={0.3} />
+                    </mesh>
+                ))}
+                {/* Nightstand Main Cabinet Body */}
+                <mesh position={[0, 0.34, 0]} castShadow>
+                    <boxGeometry args={[0.38, 0.40, 0.40]} />
+                    <meshStandardMaterial color="#422c1b" roughness={0.5} />
+                </mesh>
+                {/* Drawer Front Divider & Brushed Brass Pull */}
+                <mesh position={[0, 0.34, 0.202]}>
+                    <boxGeometry args={[0.34, 0.16, 0.008]} />
+                    <meshStandardMaterial color="#4e3523" roughness={0.55} />
+                </mesh>
+                <mesh position={[0, 0.34, 0.215]}>
+                    <boxGeometry args={[0.08, 0.012, 0.012]} />
+                    <meshStandardMaterial color="#d97706" metalness={0.92} roughness={0.2} />
+                </mesh>
+
+                {/* Ceramic Water Carafe & Tumbler on Nightstand */}
+                <mesh position={[-0.06, 0.60, -0.06]} castShadow>
+                    <cylinderGeometry args={[0.038, 0.048, 0.15, 16]} />
+                    <meshStandardMaterial color="#f8fafc" roughness={0.2} />
+                </mesh>
+                <mesh position={[0.07, 0.57, 0.06]} castShadow>
+                    <cylinderGeometry args={[0.026, 0.026, 0.07, 12]} />
+                    <meshStandardMaterial color="#e2e8f0" roughness={0.1} />
+                </mesh>
+                {/* Bedside Hardcover Journal / Book */}
+                <mesh position={[-0.04, 0.55, 0.08]} rotation={[0, 0.15, 0]}>
+                    <boxGeometry args={[0.14, 0.022, 0.18]} />
+                    <meshStandardMaterial color="#2d3748" roughness={0.7} />
+                </mesh>
+            </group>
+
+            {/* ── 10. HANGING PENDANT LIGHT ABOVE THE BED ── */}
             <group position={[0, 2.35, 0.1]}>
                 <mesh>
                     <cylinderGeometry args={[0.045, 0.045, 0.014, 14]} />
