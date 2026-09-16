@@ -21,9 +21,8 @@ export default function WindowsProjectsApp() {
 
     const categories = [
         { id: 'all', label: 'All Projects' },
-        { id: '3d', label: '3D & WebGL' },
-        { id: 'fullstack', label: 'Full-Stack Web' },
-        { id: 'systems', label: 'Systems & Shaders' },
+        { id: 'fullstack', label: 'Full-Stack' },
+        { id: 'systems', label: 'Systems & AI' },
     ];
 
     const filteredProjects = PROJECTS.filter((p) => {

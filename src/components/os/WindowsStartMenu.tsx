@@ -41,14 +41,15 @@ export default function WindowsStartMenu({
     if (!isOpen) return null;
 
     const pinnedApps = [
-        { id: 'resume', label: 'Resume (PDF)', icon: <Award className="w-5 h-5 text-teal-400" />, desc: 'ATS Resume Document' },
-        { id: 'experience', label: 'Experience', icon: <Briefcase className="w-5 h-5 text-amber-400" />, desc: 'Career History' },
         { id: 'projects', label: 'Projects', icon: <FolderGit2 className="w-5 h-5 text-cyan-400" />, desc: 'Flagship Systems' },
+        { id: 'experience', label: 'Experience', icon: <Briefcase className="w-5 h-5 text-amber-400" />, desc: 'Career History' },
         { id: 'skills', label: 'Skills', icon: <Cpu className="w-5 h-5 text-purple-400" />, desc: 'Tech Matrix' },
-        { id: 'terminal', label: 'Command Prompt', icon: <Terminal className="w-5 h-5 text-emerald-400" />, desc: 'cmd.exe' },
-        { id: 'code', label: 'Code Editor', icon: <Code2 className="w-5 h-5 text-violet-400" />, desc: 'Neovim / VSCode' },
+        { id: 'resume', label: 'Resume (PDF)', icon: <Award className="w-5 h-5 text-teal-400" />, desc: 'ATS Resume Document' },
+        { id: 'notepad', label: 'About Me', icon: <FileText className="w-5 h-5 text-sky-400" />, desc: 'Bio & Principles' },
         { id: 'mail', label: 'Contact', icon: <Mail className="w-5 h-5 text-rose-400" />, desc: 'Send Transmission' },
-        { id: 'media', label: 'Groove Music', icon: <Music className="w-5 h-5 text-yellow-400" />, desc: 'Lo-Fi Synthesizer' },
+        { id: 'code', label: 'Code Editor', icon: <Code2 className="w-5 h-5 text-violet-400" />, desc: 'Neovim / VSCode' },
+        { id: 'terminal', label: 'Terminal', icon: <Terminal className="w-5 h-5 text-emerald-400" />, desc: 'cmd.exe' },
+        { id: 'media', label: 'Music Player', icon: <Music className="w-5 h-5 text-yellow-400" />, desc: 'Lo-Fi Synthesizer' },
     ];
 
     const filteredApps = pinnedApps.filter((a) =>
@@ -120,8 +121,8 @@ export default function WindowsStartMenu({
                         >
                             <FolderGit2 className="w-4 h-4 text-cyan-400 flex-shrink-0" />
                             <div className="truncate">
-                                <div className="text-xs font-medium text-white truncate">NexusAI 3D Telemetry</div>
-                                <div className="text-[10px] text-zinc-400">4.1M+ Live Points • Flagship</div>
+                                <div className="text-xs font-medium text-white truncate">Sentinel AI Platform</div>
+                                <div className="text-[10px] text-zinc-400">NGO Rescue • 30+ Endpoints</div>
                             </div>
                         </div>
 

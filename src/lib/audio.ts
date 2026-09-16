@@ -3,6 +3,8 @@
 
 class AudioManager {
     private ctx: AudioContext | null = null;
+    private masterGain: GainNode | null = null;
+    private volume: number = 0.75;
     private isMuted: boolean = false;
     private isLofiPlaying: boolean = false;
     private lofiIntervalId: number | null = null;
@@ -14,6 +16,9 @@ class AudioManager {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('portfolio_audio_muted');
             this.isMuted = saved !== null ? saved === 'true' : false;
+
+            const savedVol = localStorage.getItem('portfolio_audio_volume');
+            this.volume = savedVol !== null ? parseFloat(savedVol) : 0.75;
 
             // Automatically start Lofi on first user interaction if blocked by browser autoplay policy
             this.setupAutoPlayTrigger();
@@ -34,6 +39,32 @@ class AudioManager {
             this.ctx.resume().catch(() => {});
         }
         return this.ctx;
+    }
+
+    public getDest(ctx: AudioContext): AudioNode {
+        if (!this.masterGain || this.masterGain.context !== ctx) {
+            this.masterGain = ctx.createGain();
+            this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, ctx.currentTime);
+            this.masterGain.connect(ctx.destination);
+        }
+        return this.masterGain;
+    }
+
+    public setVolume(val: number): void {
+        this.volume = Math.max(0, Math.min(1, val));
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('portfolio_audio_volume', String(this.volume));
+        }
+        if (this.masterGain && this.ctx) {
+            this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
+        }
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('portfolio_volume_change', { detail: { volume: this.volume } }));
+        }
+    }
+
+    public getVolume(): number {
+        return this.volume;
     }
 
     private setupAutoPlayTrigger() {
@@ -77,6 +108,12 @@ class AudioManager {
         if (typeof window !== 'undefined') {
             localStorage.setItem('portfolio_audio_muted', String(this.isMuted));
         }
+        if (this.masterGain && this.ctx) {
+            this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
+        }
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('portfolio_mute_change', { detail: { isMuted: this.isMuted } }));
+        }
         if (!this.isMuted) {
             this.startLofi();
             this.playSuccess();
@@ -94,6 +131,12 @@ class AudioManager {
         this.isMuted = muted;
         if (typeof window !== 'undefined') {
             localStorage.setItem('portfolio_audio_muted', String(muted));
+        }
+        if (this.masterGain && this.ctx) {
+            this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
+        }
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('portfolio_mute_change', { detail: { isMuted: this.isMuted } }));
         }
         if (muted) {
             this.stopLofi();
@@ -135,7 +178,7 @@ class AudioManager {
 
             noise.connect(filter);
             filter.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             noise.start();
             this.vinylNode = gain;
@@ -261,7 +304,7 @@ class AudioManager {
                 osc1.connect(filter);
                 osc2.connect(filter);
                 filter.connect(gain);
-                gain.connect(ctx.destination);
+                gain.connect(this.getDest(ctx));
 
                 osc1.start(time);
                 osc2.start(time);
@@ -292,7 +335,7 @@ class AudioManager {
 
             osc.connect(filter);
             filter.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             osc.start(time);
             osc.stop(time + duration);
@@ -315,7 +358,7 @@ class AudioManager {
             gain.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
 
             osc.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             osc.start(time);
             osc.stop(time + 0.22);
@@ -335,7 +378,7 @@ class AudioManager {
             oscGain.gain.setValueAtTime(0.025, time);
             oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
             osc.connect(oscGain);
-            oscGain.connect(ctx.destination);
+            oscGain.connect(this.getDest(ctx));
             osc.start(time);
             osc.stop(time + 0.06);
 
@@ -359,7 +402,7 @@ class AudioManager {
 
             noise.connect(filter);
             filter.connect(noiseGain);
-            noiseGain.connect(ctx.destination);
+            noiseGain.connect(this.getDest(ctx));
 
             noise.start(time);
             noise.stop(time + 0.07);
@@ -390,7 +433,7 @@ class AudioManager {
 
             noise.connect(filter);
             filter.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             noise.start(time);
             noise.stop(time + 0.035);
@@ -442,7 +485,7 @@ class AudioManager {
             gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
 
             osc.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             osc.start(now);
             osc.stop(now + 0.05);
@@ -469,7 +512,7 @@ class AudioManager {
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
 
             osc.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             osc.start(now);
             osc.stop(now + 0.07);
@@ -496,7 +539,7 @@ class AudioManager {
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
 
             osc.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
             osc.start(now);
             osc.stop(now + 0.14);
         } catch {
@@ -523,7 +566,7 @@ class AudioManager {
                 gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.06);
 
                 osc.connect(gain);
-                gain.connect(ctx.destination);
+                gain.connect(this.getDest(ctx));
                 osc.start(now + delay);
                 osc.stop(now + delay + 0.06);
             });
@@ -536,7 +579,7 @@ class AudioManager {
             chimeGain.gain.setValueAtTime(0.02, now + 0.15);
             chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.40);
             chime.connect(chimeGain);
-            chimeGain.connect(ctx.destination);
+            chimeGain.connect(this.getDest(ctx));
             chime.start(now + 0.15);
             chime.stop(now + 0.40);
         } catch {
@@ -569,7 +612,7 @@ class AudioManager {
 
             osc.connect(filter);
             filter.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             osc.start(now);
             osc.stop(now + 1.2);
@@ -602,7 +645,7 @@ class AudioManager {
 
             osc.connect(filter);
             filter.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             osc.start(now);
             osc.stop(now + 0.9);
@@ -631,7 +674,7 @@ class AudioManager {
                 gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
 
                 osc.connect(gain);
-                gain.connect(ctx.destination);
+                gain.connect(this.getDest(ctx));
 
                 osc.start(start);
                 osc.stop(start + 0.28);
@@ -658,7 +701,7 @@ class AudioManager {
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
 
             osc.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
 
             osc.start(now);
             osc.stop(now + 0.03);
@@ -681,7 +724,7 @@ class AudioManager {
                 gain.gain.setValueAtTime(0.02, now + i * 0.04);
                 gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.04 + 0.15);
                 osc.connect(gain);
-                gain.connect(ctx.destination);
+                gain.connect(this.getDest(ctx));
                 osc.start(now + i * 0.04);
                 osc.stop(now + i * 0.04 + 0.15);
             });
@@ -703,7 +746,7 @@ class AudioManager {
             gain.gain.setValueAtTime(0.03, now);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
             osc.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.getDest(ctx));
             osc.start(now);
             osc.stop(now + 1.5);
         } catch {
@@ -730,7 +773,7 @@ class AudioManager {
             gain1.gain.setValueAtTime(0.04, now);
             gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
             osc1.connect(gain1);
-            gain1.connect(ctx.destination);
+            gain1.connect(this.getDest(ctx));
             osc1.start(now);
             osc1.stop(now + 0.09);
 
@@ -743,7 +786,7 @@ class AudioManager {
             gain2.gain.setValueAtTime(0.045, now + 0.1);
             gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
             osc2.connect(gain2);
-            gain2.connect(ctx.destination);
+            gain2.connect(this.getDest(ctx));
             osc2.start(now + 0.1);
             osc2.stop(now + 0.2);
         } catch {

@@ -17,6 +17,7 @@ import {
     Win7VSCodeIcon,
     Win7PdfIcon,
     Win7MediaPlayerIcon,
+    Win7ExitIcon,
 } from './Win7Icons';
 import WindowsTaskbar from './WindowsTaskbar';
 import WindowsStartMenu from './WindowsStartMenu';
@@ -69,7 +70,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     const iconSize = isMobile ? ICON_SIZE_MOBILE : ICON_SIZE;
     const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
     const [selectedIconId, setSelectedIconId] = useState<string | null>(null);
-    const [activeWindowId, setActiveWindowId] = useState<string>('experience');
+    const [activeWindowId, setActiveWindowId] = useState<string>('');
     const [topZIndex, setTopZIndex] = useState(10);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; visible: boolean }>({ x: 0, y: 0, visible: false });
     const [selectionBox, setSelectionBox] = useState<{
@@ -77,27 +78,19 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     }>({ startX: 0, startY: 0, currentX: 0, currentY: 0, isSelecting: false });
 
     const desktopIcons: DesktopIcon[] = [
-        { id: 'experience', name: 'Computer', ext: '', icon: <Win7ComputerIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'projects',   name: 'Projects', ext: '', icon: <Win7InternetExplorerIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'experience', name: 'Experience', ext: '', icon: <Win7ComputerIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'skills',     name: 'Skills', ext: '', icon: <Win7ControlPanelIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'resume',     name: 'Resume', ext: '.pdf', icon: <Win7PdfIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'projects',   name: 'Internet Explorer', ext: '', icon: <Win7InternetExplorerIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'skills',     name: 'Control Panel', ext: '', icon: <Win7ControlPanelIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'mail',       name: 'Network', ext: '', icon: <Win7NetworkIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'terminal',   name: 'cmd', ext: '.exe', icon: <Win7CmdIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'code',       name: 'VS Code', ext: '', icon: <Win7VSCodeIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'media',      name: 'Windows Media', ext: '', icon: <Win7MediaPlayerIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'return',     name: 'Recycle Bin', ext: '', icon: <Win7RecycleBinIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'notepad',    name: 'About Me', ext: '.txt', icon: <Win7NotepadIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'mail',       name: 'Contact Me', ext: '', icon: <Win7NetworkIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'code',       name: 'Code Editor', ext: '', icon: <Win7VSCodeIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'terminal',   name: 'Terminal', ext: '.exe', icon: <Win7CmdIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'media',      name: 'Music Player', ext: '', icon: <Win7MediaPlayerIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'return',     name: 'Return to Room', ext: '', icon: <Win7ExitIcon className="w-11 h-11 drop-shadow-md" /> },
     ];
 
-    const [openWindows, setOpenWindows] = useState<WindowState[]>([
-        {
-            id: 'experience', title: 'Career Experience — Aditya Narayan Ray',
-            icon: <Briefcase className="w-4 h-4 text-amber-500" />,
-            subtitle: 'Verified Track Record & Credentials',
-            component: <WindowsExperienceApp />,
-            isMinimized: false, isMaximized: false, zIndex: 10,
-            initialPosition: { x: 180, y: 40 }, initialSize: { width: 840, height: 580 },
-        },
-    ]);
+    const [openWindows, setOpenWindows] = useState<WindowState[]>([]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -126,6 +119,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
             case 'files':      newWindow = { id:'resume', title:'Resume.pdf — PDF Reader', icon:<Win7PdfIcon className="w-4 h-4 text-teal-400"/>, subtitle:'Aditya Narayan Ray (ATS-Optimized)', component:<WindowsResumeViewerApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:190,y:40}, initialSize:{width:840,height:640} }; break;
             case 'projects':   newWindow = { id:'projects', title:'Projects Explorer — Aditya Narayan Ray Flagship Systems', icon:<FolderGit2 className="w-4 h-4 text-cyan-500"/>, subtitle:'Full-Stack & Systems Projects', component:<WindowsProjectsApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:220,y:70}, initialSize:{width:920,height:600} }; break;
             case 'skills':     newWindow = { id:'skills', title:'System Diagnostics // Tech Stack Matrix', icon:<Cpu className="w-4 h-4 text-purple-500"/>, subtitle:'Backend, Systems & Algorithms', component:<WindowsSkillsApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:200,y:60}, initialSize:{width:820,height:560} }; break;
+            case 'about':
             case 'notepad':    newWindow = { id:'notepad', title:'About_Aditya.txt — Notepad', icon:<FileText className="w-4 h-4 text-sky-500"/>, subtitle:'Aditya Narayan Ray Bio & Principles', component:<WindowsNotepadApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:250,y:80}, initialSize:{width:720,height:500} }; break;
             case 'terminal':   newWindow = { id:'terminal', title:'Command Prompt — cmd.exe', icon:<Terminal className="w-4 h-4 text-emerald-500"/>, subtitle:'C:\\Users\\Aditya', component:<WindowsTerminalApp onReturnToRoom={onReturnToRoom}/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:280,y:100}, initialSize:{width:740,height:480} }; break;
             case 'code':       newWindow = { id:'code', title:'VS Code — /home/aditya/portfolio', icon:<Code2 className="w-4 h-4 text-violet-500"/>, subtitle:'Active Workspace', component:<CodeEditorApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:240,y:60}, initialSize:{width:880,height:580} }; break;
@@ -149,8 +143,27 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         setOpenWindows((prev) => prev.map((w) => ({ ...w, isMinimized: anyVisible })));
     };
 
+    const [brightness, setBrightness] = useState<number>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('portfolio_brightness');
+            return saved !== null ? Number(saved) : 100;
+        }
+        return 100;
+    });
+
+    const handleBrightnessChange = (val: number) => {
+        setBrightness(val);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('portfolio_brightness', String(val));
+        }
+    };
+
     const handleDesktopMouseDown = (e: React.MouseEvent) => {
-        if ((e.target as HTMLElement).closest('.desktop-icon') || (e.target as HTMLElement).closest('.window-frame')) return;
+        if (
+            (e.target as HTMLElement).closest('.desktop-icon') ||
+            (e.target as HTMLElement).closest('.window-frame') ||
+            (e.target as HTMLElement).closest('.desktop-context-menu')
+        ) return;
         setIsStartMenuOpen(false);
         setSelectedIconId(null);
         setContextMenu({ ...contextMenu, visible: false });
@@ -211,7 +224,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                                 className="desktop-icon"
                                 onClick={(e) => { e.stopPropagation(); audio.playHover(); setSelectedIconId(item.id); if (isMobile) openApp(item.id); }}
                                 onDoubleClick={(e) => { e.stopPropagation(); openApp(item.id); }}
-                                title={`Open ${item.name}${item.ext || ''} (Double-click)`}
+                                title={item.id === 'return' ? 'Return to 3D Room (Double-click)' : `Open ${item.name}${item.ext || ''} (Double-click)`}
                                 style={{
                                     width: iconSize, display: 'flex', flexDirection: 'column',
                                     alignItems: 'center', padding: '6px 4px', borderRadius: 4,
@@ -297,6 +310,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
             {/* ── Right-click context menu (Win7 styled) ── */}
             {contextMenu.visible && (
                 <div
+                    className="desktop-context-menu"
                     style={{
                         position: 'absolute',
                         left: contextMenu.x, top: contextMenu.y,
@@ -307,17 +321,21 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                         boxShadow: '0 4px 20px rgba(0,0,0,0.38)',
                         zIndex: 50,
                     }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}
                 >
                     {[
-                        { id: 'experience', label: 'Open Experience', icon: <Briefcase className="w-3.5 h-3.5 text-amber-500"/> },
                         { id: 'projects', label: 'Open Projects', icon: <FolderGit2 className="w-3.5 h-3.5 text-cyan-500"/> },
-                        { id: 'terminal', label: 'Open Command Prompt', icon: <Terminal className="w-3.5 h-3.5 text-emerald-500"/> },
+                        { id: 'experience', label: 'Open Experience', icon: <Briefcase className="w-3.5 h-3.5 text-amber-500"/> },
+                        { id: 'skills', label: 'Open Skills', icon: <Cpu className="w-3.5 h-3.5 text-purple-500"/> },
+                        { id: 'resume', label: 'Open Resume (PDF)', icon: <Award className="w-3.5 h-3.5 text-teal-500"/> },
+                        { id: 'notepad', label: 'Open About Me', icon: <FileText className="w-3.5 h-3.5 text-sky-500"/> },
+                        { id: 'terminal', label: 'Open Terminal', icon: <Terminal className="w-3.5 h-3.5 text-emerald-500"/> },
                     ].map(item => (
                         <button key={item.id}
                             onClick={() => { audio.playClick(); openApp(item.id); setContextMenu({ ...contextMenu, visible: false }); }}
                             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                                padding: '5px 16px', cursor: 'default', background: 'transparent',
+                                padding: '5px 16px', cursor: 'pointer', background: 'transparent',
                                 border: 'none', fontSize: 13, color: '#1a2a3a', textAlign: 'left',
                                 fontFamily: '"Segoe UI", Tahoma, sans-serif' }}
                             onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(90deg, #3c78d8, #4a8ae8)'; e.currentTarget.style.color = 'white'; }}
@@ -330,9 +348,11 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                     <button
                         onClick={() => { audio.playClick(); setContextMenu({ ...contextMenu, visible: false }); }}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                            padding: '5px 16px', cursor: 'default', background: 'transparent',
+                            padding: '5px 16px', cursor: 'pointer', background: 'transparent',
                             border: 'none', fontSize: 13, color: '#1a2a3a', textAlign: 'left',
                             fontFamily: '"Segoe UI", Tahoma, sans-serif' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(90deg, #3c78d8, #4a8ae8)'; e.currentTarget.style.color = 'white'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#1a2a3a'; }}
                     >
                         <RefreshCw className="w-3.5 h-3.5 text-gray-500" /> Refresh
                     </button>
@@ -340,13 +360,27 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                     <button
                         onClick={() => { audio.playWarpOut(); onReturnToRoom(); }}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                            padding: '5px 16px', cursor: 'default', background: 'transparent',
+                            padding: '5px 16px', cursor: 'pointer', background: 'transparent',
                             border: 'none', fontSize: 13, color: '#c0392b', textAlign: 'left',
                             fontFamily: '"Segoe UI", Tahoma, sans-serif' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(90deg, #dc2626, #ef4444)'; e.currentTarget.style.color = 'white'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#c0392b'; }}
                     >
                         <LogOut className="w-3.5 h-3.5 text-red-500" /> Return to 3D Room
                     </button>
                 </div>
+            )}
+
+            {/* ── Screen Brightness Dimming Layer ── */}
+            {brightness < 100 && (
+                <div
+                    className="pointer-events-none absolute inset-0 transition-opacity duration-150"
+                    style={{
+                        zIndex: 35,
+                        backgroundColor: '#000000',
+                        opacity: ((100 - brightness) / 100) * 0.85,
+                    }}
+                />
             )}
 
             {/* ── Win7 Aero Glass Taskbar ── */}
@@ -354,6 +388,8 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                 isStartMenuOpen={isStartMenuOpen}
                 onToggleStartMenu={() => setIsStartMenuOpen(!isStartMenuOpen)}
                 openWindows={openWindows.map((w) => ({ id: w.id, title: w.title, isMinimized: w.isMinimized, isActive: activeWindowId === w.id }))}
+                brightness={brightness}
+                onBrightnessChange={handleBrightnessChange}
                 onTaskbarAppClick={(appId) => {
                     const win = openWindows.find((w) => w.id === appId);
                     if (!win) { openApp(appId); return; }
