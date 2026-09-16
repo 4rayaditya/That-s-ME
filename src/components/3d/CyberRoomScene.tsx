@@ -20,10 +20,14 @@ interface CyberRoomSceneProps {
     onReturnComplete: () => void;
     onTourPoiChange?: (poiName: string, index: number, total: number) => void;
     onTourComplete?: () => void;
+    onTourProgress?: (progress: number) => void;
+    forcedTourIndex?: number | null;
     currentRoutine: CharacterRoutine;
     onRoutineChange: (routine: CharacterRoutine, label: string) => void;
     environmentPhase: EnvironmentPhase;
     onJackIn: () => void;
+    onSelectSetup?: () => void;
+    isMenuOpen?: boolean;
 }
 
 // -------------------------------------------------------------
@@ -3537,10 +3541,14 @@ export default function CyberRoomScene({
     onReturnComplete,
     onTourPoiChange,
     onTourComplete,
+    onTourProgress,
+    forcedTourIndex,
     currentRoutine,
     onRoutineChange,
     environmentPhase,
     onJackIn,
+    onSelectSetup,
+    isMenuOpen = false,
 }: CyberRoomSceneProps) {
     const isMobile = useIsMobile();
     const monitorTextures = useMemo(() => new MonitorTextures(), []);
@@ -3591,13 +3599,15 @@ export default function CyberRoomScene({
                 <AdaptiveDpr pixelated={false} />
                 <AdaptiveEvents />
 
-                {/* Camera Choreography (Locked manual orbit or guided room tour) */}
+                {/* Camera Choreography (Locked manual orbit, guided room tour, or GTA 5 walk) */}
                 <CameraController
                     mode={cameraMode}
                     onDollyComplete={onDollyComplete}
                     onReturnComplete={onReturnComplete}
                     onTourPoiChange={onTourPoiChange}
                     onTourComplete={onTourComplete}
+                    onTourProgress={onTourProgress}
+                    forcedTourIndex={forcedTourIndex}
                 />
 
                 {/* Realistic Contact Shadows for all objects - cached to 1 frame for high FPS */}
@@ -3666,9 +3676,11 @@ export default function CyberRoomScene({
 
                 {/* 3D Floating Interactive POI Markers over Bed, Coffee Stand, Battlestation, Mini Fridge & Lounge */}
                 <FloatingPoiMarkers
-                    visible={cameraMode === 'orbit'}
+                    visible={cameraMode === 'orbit' && !isMenuOpen}
                     onSelectSetup={() => {
-                        if (currentRoutine !== 'coding' && currentRoutine !== 'returning_to_desk') {
+                        if (onSelectSetup) {
+                            onSelectSetup();
+                        } else if (currentRoutine !== 'coding' && currentRoutine !== 'returning_to_desk') {
                             onRoutineChange('returning_to_desk', 'Returning to Battlestation...');
                         } else {
                             onJackIn();

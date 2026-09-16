@@ -52,7 +52,7 @@ export default function FloatingPoiMarkers({
         <group>
             {/* 1. SETUP / BATTLESTATION MARKER */}
             <group ref={setupRef} position={[0, 2.05, -2.45]}>
-                <Html center distanceFactor={7} zIndexRange={[100, 0]}>
+                <Html center distanceFactor={7} zIndexRange={[10, 0]}>
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -76,7 +76,7 @@ export default function FloatingPoiMarkers({
 
             {/* 2. ESPRESSO STAND MARKER */}
             <group ref={coffeeRef} position={[2.90, 1.55, -0.28]}>
-                <Html center distanceFactor={7} zIndexRange={[100, 0]}>
+                <Html center distanceFactor={7} zIndexRange={[10, 0]}>
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -100,7 +100,7 @@ export default function FloatingPoiMarkers({
 
             {/* 3. BED / FUTON MARKER */}
             <group ref={bedRef} position={[-2.6, 1.25, 0.8]}>
-                <Html center distanceFactor={7} zIndexRange={[100, 0]}>
+                <Html center distanceFactor={7} zIndexRange={[10, 0]}>
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -125,7 +125,7 @@ export default function FloatingPoiMarkers({
             {/* 4. MINI FRIDGE & SNACK BAR MARKER */}
             {onSelectFridge && (
                 <group ref={fridgeRef} position={[-2.40, 1.65, -2.75]}>
-                    <Html center distanceFactor={7} zIndexRange={[100, 0]}>
+                    <Html center distanceFactor={7} zIndexRange={[10, 0]}>
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -151,7 +151,7 @@ export default function FloatingPoiMarkers({
             {/* 5. LOUNGE SOFA CHILL MARKER (Positioned directly over sofa seat, separated from coffee counter) */}
             {onSelectTv && (
                 <group ref={tvRef} position={[1.45, 1.35, 1.35]}>
-                    <Html center distanceFactor={7} zIndexRange={[100, 0]}>
+                    <Html center distanceFactor={7} zIndexRange={[10, 0]}>
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();

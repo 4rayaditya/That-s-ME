@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { useFrame } from '@react-three/fiber';
 
 interface ArchitecturalRoomProps {
     environmentPhase: 'morning' | 'afternoon' | 'evening' | 'night';
@@ -678,6 +679,10 @@ function CurtainRodWallWashLight({ glowColor }: { glowColor: string }) {
 function AestheticWoodWardrobe() {
     return (
         <group position={[3.15, 1.25, -1.6]} rotation={[0, -Math.PI / 2, 0]}>
+            {/* Dedicated Architectural Warm Accent Lights so the wardrobe and lush cascading pothos are clearly visible */}
+            <pointLight position={[0, 1.45, 0.95]} color="#fff3e0" intensity={4.5} distance={4.0} decay={2} />
+            <pointLight position={[0, -0.15, 0.85]} color="#fed7aa" intensity={2.6} distance={3.0} decay={2} />
+
             {/* Main Solid Oak Wardrobe Cabinet Body */}
             <mesh receiveShadow position={[0, 0, 0]}>
                 <boxGeometry args={[1.32, 2.38, 0.62]} />
@@ -725,35 +730,313 @@ function AestheticWoodWardrobe() {
                 </mesh>
             ))}
 
-            {/* CROWN TOP: TRAILING POTHOS PLANT CASCADING DOWN SIDE */}
-            <group position={[0.32, 1.28, 0.08]}>
-                {/* Fluted Ceramic Pot */}
-                <mesh position={[0, 0.08, 0]}>
-                    <cylinderGeometry args={[0.13, 0.10, 0.16, 16]} />
-                    <meshStandardMaterial color="#f8fafc" roughness={0.3} />
+            {/* CROWN TOP: REALISTIC STONEWARE TERRACOTTA PLANTER WITH CASCADING POTHOS & FALLING LEAVES */}
+            <WardrobeCascadingPothos />
+        </group>
+    );
+}
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Realistic Sculpted Heart-Shaped Pothos Leaf
+// -------------------------------------------------------------
+function SculptedPothosLeaf({
+    scale = 1,
+    variegationTone = '#a3e635',
+}: {
+    scale?: number;
+    variegationTone?: string;
+}) {
+    return (
+        <group scale={scale}>
+            {/* Fine petiole stalk connecting leaf to vine */}
+            <mesh position={[0, -0.012, -0.024]} rotation={[0.3, 0, 0]}>
+                <cylinderGeometry args={[0.0022, 0.003, 0.045, 5]} />
+                <meshStandardMaterial color="#365314" roughness={0.6} />
+            </mesh>
+
+            {/* Heart-shaped leaf blade main base (deep forest emerald) */}
+            <mesh position={[0, 0, 0]}>
+                <boxGeometry args={[0.062, 0.004, 0.078]} />
+                <meshStandardMaterial color="#14532d" roughness={0.35} metalness={0.04} />
+            </mesh>
+
+            {/* Heart rounded lobes */}
+            <mesh position={[-0.018, 0.001, -0.026]}>
+                <sphereGeometry args={[0.022, 8, 8]} />
+                <meshStandardMaterial color="#15803d" roughness={0.35} />
+            </mesh>
+            <mesh position={[0.018, 0.001, -0.026]}>
+                <sphereGeometry args={[0.022, 8, 8]} />
+                <meshStandardMaterial color="#15803d" roughness={0.35} />
+            </mesh>
+
+            {/* Tapered natural heart leaf apex */}
+            <mesh position={[0, 0, 0.045]} rotation={[0, 0, Math.PI / 4]}>
+                <boxGeometry args={[0.030, 0.003, 0.030]} />
+                <meshStandardMaterial color="#166534" roughness={0.35} />
+            </mesh>
+
+            {/* Natural variegated golden chartreuse splash / streak */}
+            <mesh position={[0.011, 0.002, 0.004]} rotation={[0, 0.12, 0]}>
+                <boxGeometry args={[0.026, 0.003, 0.052]} />
+                <meshStandardMaterial color={variegationTone} roughness={0.38} />
+            </mesh>
+        </group>
+    );
+}
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Lightweight Mathematical Falling Leaves Particle Loop
+// -------------------------------------------------------------
+function FallingPothosLeaves() {
+    const leaf1 = useRef<THREE.Group>(null);
+    const leaf2 = useRef<THREE.Group>(null);
+    const leaf3 = useRef<THREE.Group>(null);
+
+    useFrame(({ clock }) => {
+        const t = clock.getElapsedTime();
+        const fallDistance = 2.45; // Wardrobe top down near floor
+
+        const leavesData = [
+            { ref: leaf1, speed: 0.28, offset: 0, startX: 0.08, startZ: 0.24, scale: 0.82 },
+            { ref: leaf2, speed: 0.22, offset: 3.4, startX: 0.24, startZ: 0.16, scale: 0.74 },
+            { ref: leaf3, speed: 0.25, offset: 5.9, startX: -0.06, startZ: 0.26, scale: 0.78 },
+        ];
+
+        leavesData.forEach((l, idx) => {
+            if (!l.ref.current) return;
+            const progress = (t * l.speed + l.offset) % fallDistance;
+            const y = 0.08 - progress;
+
+            // Organic mathematical flutter / air resistance drift
+            const swayX = Math.sin(t * 2.3 + idx * 2.4) * 0.065;
+            const swayZ = Math.cos(t * 1.9 + idx * 1.8) * 0.05;
+            const pitch = Math.sin(t * 2.6 + idx) * 0.55;
+            const yaw = t * 0.9 + idx * 1.7;
+            const roll = Math.cos(t * 2.1 + idx) * 0.45;
+
+            l.ref.current.position.set(l.startX + swayX, y, l.startZ + swayZ);
+            l.ref.current.rotation.set(pitch, yaw, roll);
+        });
+    });
+
+    return (
+        <group>
+            <group ref={leaf1}>
+                <SculptedPothosLeaf scale={0.82} variegationTone="#a3e635" />
+            </group>
+            <group ref={leaf2}>
+                <SculptedPothosLeaf scale={0.74} variegationTone="#facc15" />
+            </group>
+            <group ref={leaf3}>
+                <SculptedPothosLeaf scale={0.78} variegationTone="#84cc16" />
+            </group>
+        </group>
+    );
+}
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Realistic Cascading Golden Pothos in Stoneware Planter
+// -------------------------------------------------------------
+function WardrobeCascadingPothos() {
+    return (
+        <group position={[0.34, 1.19, 0.12]}>
+            {/* 1. STONEWARE RIBBED POT & TERRACOTTA SAUCER */}
+            {/* Base Terracotta Drainage Saucer */}
+            <mesh position={[0, 0.012, 0]}>
+                <cylinderGeometry args={[0.16, 0.17, 0.024, 24]} />
+                <meshStandardMaterial color="#a34726" roughness={0.78} />
+            </mesh>
+            <mesh position={[0, 0.024, 0]}>
+                <cylinderGeometry args={[0.165, 0.165, 0.006, 24]} />
+                <meshStandardMaterial color="#8c3b1e" roughness={0.8} />
+            </mesh>
+
+            {/* Main Ribbed Stoneware Ceramic Pot Body */}
+            <mesh position={[0, 0.105, 0]}>
+                <cylinderGeometry args={[0.15, 0.118, 0.18, 24]} />
+                <meshStandardMaterial color="#b85430" roughness={0.65} />
+            </mesh>
+
+            {/* 4 Raised Stoneware Cream Accent Ribs */}
+            {[0.045, 0.085, 0.125, 0.165].map((ry, i) => (
+                <mesh key={i} position={[0, ry, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                    <torusGeometry args={[0.122 + i * 0.007, 0.005, 8, 24]} />
+                    <meshStandardMaterial color="#dfcfbe" roughness={0.82} />
                 </mesh>
-                {/* Pot Soil */}
-                <mesh position={[0, 0.15, 0]}>
-                    <cylinderGeometry args={[0.12, 0.12, 0.02, 16]} />
-                    <meshStandardMaterial color="#271c15" roughness={0.9} />
+            ))}
+
+            {/* Rolled Pot Top Rim */}
+            <mesh position={[0, 0.192, 0]}>
+                <cylinderGeometry args={[0.156, 0.148, 0.024, 24]} />
+                <meshStandardMaterial color="#a64a27" roughness={0.7} />
+            </mesh>
+
+            {/* Rich Dark Organic Potting Soil */}
+            <mesh position={[0, 0.18, 0]}>
+                <cylinderGeometry args={[0.142, 0.142, 0.02, 20]} />
+                <meshStandardMaterial color="#1a120c" roughness={0.95} />
+            </mesh>
+
+            {/* 2. CROWN CANOPY: DENSE VARIEGATED HEART LEAF CANOPY AT RIM */}
+            {[
+                { angle: 0.1, r: 0.13, y: 0.22, rot: [0.3, 0.1, -0.4], scale: 0.95, varTone: '#a3e635' },
+                { angle: 0.6, r: 0.14, y: 0.23, rot: [0.2, 0.5, -0.3], scale: 1.0, varTone: '#facc15' },
+                { angle: 1.2, r: 0.13, y: 0.24, rot: [-0.1, 1.1, -0.35], scale: 0.9, varTone: '#84cc16' },
+                { angle: 1.8, r: 0.14, y: 0.22, rot: [-0.3, 1.7, -0.2], scale: 1.05, varTone: '#fde047' },
+                { angle: 2.4, r: 0.13, y: 0.23, rot: [-0.35, 2.3, 0.1], scale: 0.92, varTone: '#a3e635' },
+                { angle: 3.0, r: 0.14, y: 0.24, rot: [-0.2, 2.9, 0.3], scale: 1.0, varTone: '#84cc16' },
+                { angle: 3.6, r: 0.13, y: 0.22, rot: [0.1, 3.5, 0.35], scale: 0.88, varTone: '#facc15' },
+                { angle: 4.3, r: 0.14, y: 0.23, rot: [0.3, 4.2, 0.25], scale: 0.95, varTone: '#a3e635' },
+                { angle: 5.0, r: 0.13, y: 0.24, rot: [0.35, 4.9, -0.1], scale: 1.02, varTone: '#fde047' },
+                { angle: 5.7, r: 0.14, y: 0.22, rot: [0.25, 5.6, -0.3], scale: 0.92, varTone: '#84cc16' },
+                // Center Upright Canopy Sprouts
+                { angle: 0.8, r: 0.06, y: 0.27, rot: [0.15, 0.7, -0.15], scale: 0.8, varTone: '#bef264' },
+                { angle: 2.6, r: 0.05, y: 0.28, rot: [-0.1, 2.5, 0.1], scale: 0.85, varTone: '#bef264' },
+                { angle: 4.4, r: 0.06, y: 0.27, rot: [0.1, 4.3, 0.15], scale: 0.82, varTone: '#facc15' },
+            ].map((leaf, li) => (
+                <group
+                    key={`canopy-${li}`}
+                    position={[Math.cos(leaf.angle) * leaf.r, leaf.y, Math.sin(leaf.angle) * leaf.r]}
+                    rotation={leaf.rot as [number, number, number]}
+                >
+                    <SculptedPothosLeaf scale={leaf.scale} variegationTone={leaf.varTone} />
+                </group>
+            ))}
+
+            {/* 3. MULTI-TIERED CASCADING VINES (7 VINES DRAPING DOWN WARDROBE) */}
+
+            {/* VINE 1: PRIMARY LONG FRONT-CORNER DRAPE (Length 0.96m, draping down front door) */}
+            <group position={[0.07, 0.14, 0.15]}>
+                {/* Smooth segmented vine stem curving naturally */}
+                <mesh position={[0, -0.48, 0.04]} rotation={[0.05, 0, -0.04]}>
+                    <cylinderGeometry args={[0.005, 0.008, 0.96, 6]} />
+                    <meshStandardMaterial color="#2d4a12" roughness={0.7} />
                 </mesh>
-                {/* Bushy Foliage Dome */}
-                <mesh position={[0, 0.22, 0]}>
-                    <sphereGeometry args={[0.16, 10, 10]} />
-                    <meshStandardMaterial color="#10b981" roughness={0.6} />
-                </mesh>
-                {/* Trailing Green Pothos Vines */}
-                <mesh position={[0.06, -0.32, 0.18]}>
-                    <cylinderGeometry args={[0.01, 0.015, 0.85, 6]} />
-                    <meshStandardMaterial color="#059669" roughness={0.7} />
-                </mesh>
-                {[-0.1, -0.25, -0.42, -0.6, -0.76].map((vy, vi) => (
-                    <mesh key={vi} position={[0.07 + (vi % 2 === 0 ? 0.04 : -0.03), vy, 0.2]} rotation={[0.2, 0.3, 0.4]}>
-                        <sphereGeometry args={[0.065, 8, 8]} />
-                        <meshStandardMaterial color={vi % 2 === 0 ? '#10b981' : '#34d399'} roughness={0.6} />
-                    </mesh>
+                {/* Alternating variegated heart leaves down Vine 1 */}
+                {[
+                    { y: -0.10, x: 0.03, z: 0.03, rot: [0.4, 0.2, -0.2], scale: 0.95, varTone: '#facc15' },
+                    { y: -0.22, x: -0.03, z: 0.04, rot: [0.3, -0.3, 0.3], scale: 0.92, varTone: '#a3e635' },
+                    { y: -0.36, x: 0.04, z: 0.05, rot: [0.45, 0.35, -0.15], scale: 0.88, varTone: '#fde047' },
+                    { y: -0.50, x: -0.03, z: 0.06, rot: [0.35, -0.25, 0.25], scale: 0.84, varTone: '#84cc16' },
+                    { y: -0.64, x: 0.03, z: 0.07, rot: [0.4, 0.3, -0.2], scale: 0.80, varTone: '#facc15' },
+                    { y: -0.78, x: -0.02, z: 0.07, rot: [0.3, -0.2, 0.15], scale: 0.74, varTone: '#a3e635' },
+                    { y: -0.92, x: 0.01, z: 0.08, rot: [0.25, 0.1, -0.1], scale: 0.68, varTone: '#bef264' },
+                ].map((node, ni) => (
+                    <group key={`v1-${ni}`} position={[node.x, node.y, node.z]} rotation={node.rot as [number, number, number]}>
+                        <SculptedPothosLeaf scale={node.scale} variegationTone={node.varTone} />
+                    </group>
                 ))}
             </group>
+
+            {/* VINE 2: MEDIUM FRONT-LEFT DRAPE (Length 0.68m) */}
+            <group position={[-0.08, 0.13, 0.14]}>
+                <mesh position={[-0.01, -0.34, 0.03]} rotation={[0.04, 0, 0.05]}>
+                    <cylinderGeometry args={[0.004, 0.007, 0.68, 6]} />
+                    <meshStandardMaterial color="#2d4a12" roughness={0.7} />
+                </mesh>
+                {[
+                    { y: -0.12, x: -0.02, z: 0.02, rot: [0.35, -0.3, 0.2], scale: 0.90, varTone: '#a3e635' },
+                    { y: -0.25, x: 0.03, z: 0.03, rot: [0.4, 0.25, -0.2], scale: 0.85, varTone: '#facc15' },
+                    { y: -0.39, x: -0.03, z: 0.04, rot: [0.3, -0.35, 0.25], scale: 0.80, varTone: '#84cc16' },
+                    { y: -0.53, x: 0.02, z: 0.04, rot: [0.4, 0.2, -0.15], scale: 0.75, varTone: '#fde047' },
+                    { y: -0.65, x: -0.01, z: 0.05, rot: [0.25, -0.15, 0.1], scale: 0.66, varTone: '#bef264' },
+                ].map((node, ni) => (
+                    <group key={`v2-${ni}`} position={[node.x, node.y, node.z]} rotation={node.rot as [number, number, number]}>
+                        <SculptedPothosLeaf scale={node.scale} variegationTone={node.varTone} />
+                    </group>
+                ))}
+            </group>
+
+            {/* VINE 3: OUTER RIGHT-CORNER DRAPE (Length 0.82m, hugging the side edge) */}
+            <group position={[0.15, 0.14, 0.05]}>
+                <mesh position={[0.04, -0.41, 0.01]} rotation={[0.02, 0, -0.06]}>
+                    <cylinderGeometry args={[0.005, 0.007, 0.82, 6]} />
+                    <meshStandardMaterial color="#2d4a12" roughness={0.7} />
+                </mesh>
+                {[
+                    { y: -0.09, x: 0.03, z: 0.02, rot: [0.2, 0.4, -0.3], scale: 0.92, varTone: '#84cc16' },
+                    { y: -0.21, x: 0.04, z: -0.02, rot: [-0.2, 0.5, -0.3], scale: 0.88, varTone: '#facc15' },
+                    { y: -0.35, x: 0.05, z: 0.02, rot: [0.25, 0.35, -0.35], scale: 0.84, varTone: '#a3e635' },
+                    { y: -0.49, x: 0.05, z: -0.02, rot: [-0.15, 0.45, -0.25], scale: 0.80, varTone: '#fde047' },
+                    { y: -0.63, x: 0.06, z: 0.01, rot: [0.2, 0.3, -0.2], scale: 0.74, varTone: '#84cc16' },
+                    { y: -0.77, x: 0.05, z: 0.01, rot: [0.15, 0.2, -0.15], scale: 0.65, varTone: '#bef264' },
+                ].map((node, ni) => (
+                    <group key={`v3-${ni}`} position={[node.x, node.y, node.z]} rotation={node.rot as [number, number, number]}>
+                        <SculptedPothosLeaf scale={node.scale} variegationTone={node.varTone} />
+                    </group>
+                ))}
+            </group>
+
+            {/* VINE 4: OUTER SIDE PANEL DRAPE (Length 0.54m) */}
+            <group position={[0.13, 0.13, -0.07]}>
+                <mesh position={[0.03, -0.27, 0]} rotation={[0, 0, -0.05]}>
+                    <cylinderGeometry args={[0.004, 0.006, 0.54, 6]} />
+                    <meshStandardMaterial color="#2d4a12" roughness={0.7} />
+                </mesh>
+                {[
+                    { y: -0.11, x: 0.03, z: 0.01, rot: [0.1, 0.6, -0.3], scale: 0.86, varTone: '#a3e635' },
+                    { y: -0.24, x: 0.04, z: -0.01, rot: [-0.1, 0.7, -0.35], scale: 0.82, varTone: '#facc15' },
+                    { y: -0.38, x: 0.04, z: 0.01, rot: [0.15, 0.5, -0.25], scale: 0.76, varTone: '#84cc16' },
+                    { y: -0.50, x: 0.03, z: 0, rot: [0.1, 0.4, -0.2], scale: 0.68, varTone: '#bef264' },
+                ].map((node, ni) => (
+                    <group key={`v4-${ni}`} position={[node.x, node.y, node.z]} rotation={node.rot as [number, number, number]}>
+                        <SculptedPothosLeaf scale={node.scale} variegationTone={node.varTone} />
+                    </group>
+                ))}
+            </group>
+
+            {/* VINE 5: REAR CORNER DRAPE (Length 0.42m) */}
+            <group position={[-0.04, 0.12, -0.13]}>
+                <mesh position={[0, -0.21, -0.02]} rotation={[-0.04, 0, 0]}>
+                    <cylinderGeometry args={[0.004, 0.006, 0.42, 6]} />
+                    <meshStandardMaterial color="#2d4a12" roughness={0.7} />
+                </mesh>
+                {[
+                    { y: -0.10, x: -0.02, z: -0.02, rot: [-0.3, 1.8, -0.2], scale: 0.82, varTone: '#facc15' },
+                    { y: -0.24, x: 0.02, z: -0.02, rot: [-0.25, 2.2, -0.25], scale: 0.76, varTone: '#84cc16' },
+                    { y: -0.38, x: 0, z: -0.02, rot: [-0.2, 2.0, -0.15], scale: 0.66, varTone: '#bef264' },
+                ].map((node, ni) => (
+                    <group key={`v5-${ni}`} position={[node.x, node.y, node.z]} rotation={node.rot as [number, number, number]}>
+                        <SculptedPothosLeaf scale={node.scale} variegationTone={node.varTone} />
+                    </group>
+                ))}
+            </group>
+
+            {/* VINE 6: SHORT TENDER FRONT SPROUT (Length 0.30m) */}
+            <group position={[0.01, 0.14, 0.15]}>
+                <mesh position={[0, -0.15, 0.02]} rotation={[0.08, 0, 0.02]}>
+                    <cylinderGeometry args={[0.0035, 0.005, 0.30, 6]} />
+                    <meshStandardMaterial color="#365314" roughness={0.65} />
+                </mesh>
+                {[
+                    { y: -0.11, x: 0.02, z: 0.02, rot: [0.45, 0.2, -0.1], scale: 0.80, varTone: '#bef264' },
+                    { y: -0.24, x: -0.01, z: 0.03, rot: [0.4, -0.2, 0.15], scale: 0.70, varTone: '#bef264' },
+                ].map((node, ni) => (
+                    <group key={`v6-${ni}`} position={[node.x, node.y, node.z]} rotation={node.rot as [number, number, number]}>
+                        <SculptedPothosLeaf scale={node.scale} variegationTone={node.varTone} />
+                    </group>
+                ))}
+            </group>
+
+            {/* VINE 7: CURLING CENTRAL TENDRIL (Length 0.22m) */}
+            <group position={[-0.04, 0.15, 0.14]}>
+                <mesh position={[0, -0.11, 0.02]} rotation={[0.1, 0, -0.08]}>
+                    <cylinderGeometry args={[0.003, 0.0045, 0.22, 6]} />
+                    <meshStandardMaterial color="#365314" roughness={0.65} />
+                </mesh>
+                {[
+                    { y: -0.08, x: -0.02, z: 0.02, rot: [0.4, -0.15, 0.1], scale: 0.75, varTone: '#a3e635' },
+                    { y: -0.18, x: 0.01, z: 0.02, rot: [0.35, 0.1, -0.1], scale: 0.65, varTone: '#bef264' },
+                ].map((node, ni) => (
+                    <group key={`v7-${ni}`} position={[node.x, node.y, node.z]} rotation={node.rot as [number, number, number]}>
+                        <SculptedPothosLeaf scale={node.scale} variegationTone={node.varTone} />
+                    </group>
+                ))}
+            </group>
+
+            {/* 4. FALLING LEAVES MICRO-ANIMATION LOOP */}
+            <FallingPothosLeaves />
         </group>
     );
 }
