@@ -147,7 +147,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
             </mesh>
 
             {/* COZY WOVEN TEXTURED CARPET EXTENDING UNDER FUTON BED */}
-            <mesh receiveShadow position={[-2.4, 0.003, 0.8]} rotation={[-Math.PI / 2, 0, 0]}>
+            <mesh receiveShadow position={[-2.4, 0.003, 1.15]} rotation={[-Math.PI / 2, 0, 0]}>
                 <planeGeometry args={[2.8, 3.2]} />
                 <meshStandardMaterial
                     color="#2d241d"
@@ -242,7 +242,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                 {/* ============================================================ */}
                 {/* REALISTIC ARCHITECTURAL OVER-BED FLOATING SHELF & ART        */}
                 {/* ============================================================ */}
-                <group position={[0.8, 0.25, 0.15]}>
+                <group position={[1.15, 0.25, 0.15]}>
                     {/* Solid Live-Edge Smoked Walnut Shelf Plank */}
                     <mesh receiveShadow>
                         <boxGeometry args={[1.9, 0.04, 0.28]} />
@@ -417,7 +417,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                 {/* ============================================================ */}
                 {/* LARGE MINIMALIST ARCHITECTURAL GALLERY ART ABOVE BED         */}
                 {/* ============================================================ */}
-                <group position={[0.8, 0.95, 0.04]}>
+                <group position={[1.15, 0.95, 0.04]}>
                     {/* Slim Dark Oak Gallery Frame */}
                     <mesh>
                         <boxGeometry args={[1.5, 0.95, 0.04]} />
@@ -468,6 +468,81 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                     <planeGeometry args={[10.5, 4.2]} />
                     <meshStandardMaterial color={plasterWallColor} roughness={0.88} />
                 </mesh>
+            </group>
+
+            {/* --- FRONT BOUNDARY WALL: ENCLOSES ROOM PAST BED & TV BOUNDARY LIGHTS --- */}
+            {/* Placed at z = 2.85, facing inwards (towards -Z).
+                Using single-sided FrontSide so it seamlessly encloses the room for interior cameras
+                (tour mode, GTA 5 walk mode), while remaining completely transparent to the master
+                orbit camera positioned outside at z = 5.35. */}
+            <group position={[0, 2.0, 2.85]} rotation={[0, Math.PI, 0]}>
+                {/* 1. Main Limewash Plaster Wall */}
+                <mesh receiveShadow position={[0, 0, 0]}>
+                    <planeGeometry args={[7.02, 4.2]} />
+                    <meshStandardMaterial color={plasterWallColor} roughness={0.88} />
+                </mesh>
+
+                {/* 2. Architectural Baseboard Skirting */}
+                <mesh position={[0, -1.93, 0.005]}>
+                    <planeGeometry args={[7.02, 0.14]} />
+                    <meshStandardMaterial color="#332215" roughness={0.55} />
+                </mesh>
+
+                {/* 3. Ceiling Cornice Trim */}
+                <mesh position={[0, 1.55, 0.005]}>
+                    <planeGeometry args={[7.02, 0.08]} />
+                    <meshStandardMaterial color="#2d1c10" roughness={0.5} />
+                </mesh>
+
+                {/* 4. Luxury Japandi Flush Entryway Door */}
+                <group position={[0.45, -0.9, 0]}>
+                    {/* Dark Smoked Oak Door Frame */}
+                    <mesh position={[0, 0, 0.006]}>
+                        <planeGeometry args={[1.12, 2.22]} />
+                        <meshStandardMaterial color="#22160d" roughness={0.5} />
+                    </mesh>
+                    {/* Flush Hardwood Door Leaf */}
+                    <mesh position={[0, 0, 0.008]}>
+                        <planeGeometry args={[1.04, 2.14]} />
+                        <meshStandardMaterial color="#3d2a1c" roughness={0.6} />
+                    </mesh>
+                    {/* Modern Architectural Vertical Slat Accent on Door */}
+                    {[-0.35, -0.12, 0.12, 0.35].map((sx, idx) => (
+                        <mesh key={idx} position={[sx, 0, 0.010]}>
+                            <planeGeometry args={[0.01, 2.10]} />
+                            <meshStandardMaterial color="#271a10" roughness={0.7} />
+                        </mesh>
+                    ))}
+                    {/* Matte Black Lever Handle */}
+                    <mesh position={[-0.42, -0.05, 0.025]}>
+                        <boxGeometry args={[0.12, 0.022, 0.04]} />
+                        <meshStandardMaterial color="#18181b" metalness={0.85} roughness={0.25} />
+                    </mesh>
+                    {/* Handle Escutcheon Rosette */}
+                    <mesh position={[-0.37, -0.05, 0.011]}>
+                        <cylinderGeometry args={[0.024, 0.024, 0.006, 16]} />
+                        <meshStandardMaterial color="#18181b" metalness={0.85} roughness={0.25} />
+                    </mesh>
+                </group>
+
+                {/* 5. Minimalist Smart Home Thermostat & Keycard Switch */}
+                <group position={[-0.35, -0.75, 0.008]}>
+                    {/* Glass Faceplate */}
+                    <mesh>
+                        <planeGeometry args={[0.09, 0.14]} />
+                        <meshStandardMaterial color="#09090b" roughness={0.15} metalness={0.8} />
+                    </mesh>
+                    {/* Micro Display Screen */}
+                    <mesh position={[0, 0.03, 0.002]}>
+                        <planeGeometry args={[0.065, 0.045]} />
+                        <meshBasicMaterial color="#38bdf8" toneMapped={false} />
+                    </mesh>
+                    {/* Dual Rocker Switch Bars */}
+                    <mesh position={[0, -0.035, 0.002]}>
+                        <planeGeometry args={[0.065, 0.035]} />
+                        <meshStandardMaterial color="#1e293b" roughness={0.4} />
+                    </mesh>
+                </group>
             </group>
 
             {/* ============================================================ */}

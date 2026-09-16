@@ -2122,21 +2122,68 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     </mesh>
                 </group>
 
-                {/* Next-Gen Cyber Game Console (Standing Vertical) */}
-                <group position={[0.02, 0.26, -0.68]}>
-                    <mesh>
-                        <boxGeometry args={[0.09, 0.28, 0.055]} />
-                        <meshStandardMaterial color="#f8fafc" roughness={0.25} metalness={0.1} />
+                {/* High-Detail PlayStation 5 (Vertical with Iconic Flared Collar Plates & Blue LED) */}
+                <group position={[0.02, 0.28, -0.68]}>
+                    {/* 1. Circular Matte Black Desktop Stand Base */}
+                    <mesh position={[0, -0.155, 0]}>
+                        <cylinderGeometry args={[0.055, 0.06, 0.012, 24]} />
+                        <meshStandardMaterial color="#090d16" roughness={0.4} metalness={0.2} />
                     </mesh>
-                    {/* Black Core Inset */}
+
+                    {/* 2. Sleek High-Gloss Obsidian Black Center Core */}
                     <mesh position={[0, 0, 0]}>
-                        <boxGeometry args={[0.086, 0.276, 0.038]} />
-                        <meshStandardMaterial color="#090d16" roughness={0.4} />
+                        <boxGeometry args={[0.076, 0.30, 0.038]} />
+                        <meshStandardMaterial color="#05070c" roughness={0.12} metalness={0.85} />
                     </mesh>
-                    {/* Glowing Status Lightbar (Cyan when TV is ON, muted standby when OFF) */}
-                    <mesh position={[-0.046, 0, 0.01]}>
-                        <boxGeometry args={[0.002, 0.24, 0.004]} />
-                        <meshBasicMaterial color={isTvOn ? '#00f5d4' : '#334155'} toneMapped={false} />
+
+                    {/* 3. Left Flared White Wing Plate (Popped collar flare at top) */}
+                    <group position={[0, 0, -0.022]}>
+                        <mesh position={[0, 0, 0]}>
+                            <boxGeometry args={[0.088, 0.32, 0.007]} />
+                            <meshStandardMaterial color="#f8fafc" roughness={0.3} metalness={0.05} />
+                        </mesh>
+                        <mesh position={[-0.004, 0.165, -0.002]} rotation={[0, 0, -0.08]}>
+                            <boxGeometry args={[0.082, 0.025, 0.007]} />
+                            <meshStandardMaterial color="#f8fafc" roughness={0.3} metalness={0.05} />
+                        </mesh>
+                    </group>
+
+                    {/* 4. Right Flared White Wing Plate (Symmetric popped collar flare at top) */}
+                    <group position={[0, 0, 0.022]}>
+                        <mesh position={[0, 0, 0]}>
+                            <boxGeometry args={[0.088, 0.32, 0.007]} />
+                            <meshStandardMaterial color="#f8fafc" roughness={0.3} metalness={0.05} />
+                        </mesh>
+                        <mesh position={[-0.004, 0.165, 0.002]} rotation={[0, 0, -0.08]}>
+                            <boxGeometry args={[0.082, 0.025, 0.007]} />
+                            <meshStandardMaterial color="#f8fafc" roughness={0.3} metalness={0.05} />
+                        </mesh>
+                    </group>
+
+                    {/* 5. Ultra-Thin Optical Disc Drive Bulge (Right bottom) */}
+                    <mesh position={[0.002, -0.07, 0.025]}>
+                        <boxGeometry args={[0.084, 0.14, 0.008]} />
+                        <meshStandardMaterial color="#f1f5f9" roughness={0.3} metalness={0.05} />
+                    </mesh>
+
+                    {/* 6. Front USB-C & USB-A Ports */}
+                    <mesh position={[-0.040, -0.02, 0]}>
+                        <boxGeometry args={[0.002, 0.012, 0.004]} />
+                        <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.2} />
+                    </mesh>
+                    <mesh position={[-0.040, -0.045, 0]}>
+                        <boxGeometry args={[0.002, 0.014, 0.006]} />
+                        <meshStandardMaterial color="#2563eb" metalness={0.8} roughness={0.3} />
+                    </mesh>
+
+                    {/* 7. Iconic Glowing Blue/Cyan LED Slits along inner fin crease */}
+                    <mesh position={[-0.042, 0.03, -0.018]}>
+                        <boxGeometry args={[0.002, 0.22, 0.002]} />
+                        <meshBasicMaterial color={isTvOn ? '#38bdf8' : '#1d4ed8'} toneMapped={false} />
+                    </mesh>
+                    <mesh position={[-0.042, 0.03, 0.018]}>
+                        <boxGeometry args={[0.002, 0.22, 0.002]} />
+                        <meshBasicMaterial color={isTvOn ? '#38bdf8' : '#1d4ed8'} toneMapped={false} />
                     </mesh>
                 </group>
 
@@ -2267,45 +2314,12 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 </group>
             </group>
 
-            {/* ============================================================ */}
-            {/* 4. OPTION 4: BACKLIT "FIT-CHECK" ARCHED FLOOR MIRROR         */}
-            {/* Leaning against wall at x = 3.38, z = 2.45, y = 0.98         */}
-            {/* ============================================================ */}
-            <group position={[3.38, 0.98, 2.45]} rotation={[0, 0, -0.06]}>
-                {/* Concealed Ambient LED Halo Rim (Warm Backlight) */}
-                <mesh position={[0.025, 0, 0]}>
-                    <boxGeometry args={[0.005, 1.94, 0.76]} />
-                    <meshBasicMaterial color="#fed7aa" transparent opacity={0.28} depthWrite={false} />
-                </mesh>
-
-                {/* Brushed Brass Arched Outer Frame */}
-                <mesh position={[0, 0, 0]}>
-                    <boxGeometry args={[0.035, 1.90, 0.72]} />
-                    <meshStandardMaterial color="#d4af37" metalness={0.88} roughness={0.25} />
-                </mesh>
-
-                {/* Arch Top Rounded Crown */}
-                <mesh position={[0, 0.95, 0]} rotation={[0, 0, Math.PI / 2]}>
-                    <cylinderGeometry args={[0.36, 0.36, 0.035, 24, 1, false, 0, Math.PI]} />
-                    <meshStandardMaterial color="#d4af37" metalness={0.88} roughness={0.25} />
-                </mesh>
-
-                {/* High-Reflectivity PBR Mirror Glass */}
-                <mesh position={[-0.016, 0, 0]}>
-                    <boxGeometry args={[0.002, 1.84, 0.66]} />
-                    <meshStandardMaterial
-                        color="#f1f5f9"
-                        metalness={0.98}
-                        roughness={0.03}
-                    />
-                </mesh>
-            </group>
 
             {/* ============================================================ */}
             {/* 5. OPTION 4: MINIMALIST TECHWEAR COAT & HEADPHONE STAND       */}
-            {/* Corner stand tucked into room corner at x = 3.25, z = 3.15, y = 0 */}
+            {/* Corner stand tucked beside TV lounge console at x = 3.25, z = 2.45 */}
             {/* ============================================================ */}
-            <group position={[3.25, 0, 3.15]}>
+            <group position={[3.25, 0, 2.45]}>
                 {/* Heavy Solid Steel Base Plate */}
                 <mesh position={[0, 0.015, 0]}>
                     <cylinderGeometry args={[0.16, 0.16, 0.03, 16]} />
@@ -2653,7 +2667,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
             {/* 7. MINIMALIST STANDING LIGHT IN LOUNGE NOOK                 */}
             {/* Soft architectural lighting - placed in lounge corner, never blocking TV */}
             {/* ============================================================ */}
-            <group position={[2.95, 0, 2.75]}>
+            <group position={[2.95, 0, 2.70]}>
                 {/* Weighted Nero Marquina Marble Circular Base */}
                 <mesh receiveShadow position={[0, 0.022, 0]}>
                     <cylinderGeometry args={[0.18, 0.20, 0.044, 28]} />
@@ -2956,7 +2970,7 @@ const CoffeeStation = React.memo(function CoffeeStation() {
 // -------------------------------------------------------------
 const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
     return (
-        <group position={[-2.65, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
+        <group position={[-2.65, 0, 1.15]} rotation={[0, Math.PI / 2, 0]}>
             {/* ── 1. TAPERED ARCHITECTURAL LEGS (14cm clear air gap from floor/carpet) ── */}
             {/* 4 Corner Legs + 2 Mid-span Support Legs */}
             {[
@@ -3180,7 +3194,7 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
 // -------------------------------------------------------------
 const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp() {
     return (
-        <group position={[-3.18, 0, 2.65]}>
+        <group position={[-2.95, 0, 2.70]}>
             {/* Weighted Nero Marquina Marble Circular Base */}
             <mesh receiveShadow position={[0, 0.022, 0]}>
                 <cylinderGeometry args={[0.20, 0.22, 0.044, 28]} />

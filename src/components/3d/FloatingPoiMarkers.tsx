@@ -99,7 +99,7 @@ export default function FloatingPoiMarkers({
             </group>
 
             {/* 3. BED / FUTON MARKER */}
-            <group ref={bedRef} position={[-2.6, 1.25, 0.8]}>
+            <group ref={bedRef} position={[-2.6, 1.25, 1.15]}>
                 <Html center distanceFactor={7} zIndexRange={[10, 0]}>
                     <button
                         onClick={(e) => {

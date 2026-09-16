@@ -176,6 +176,10 @@ export default function StoryController() {
                     audio.playClick();
                     setCameraMode('orbit');
                     return;
+                } else if (e.code === 'Space' || e.key === 'Enter') {
+                    e.preventDefault();
+                    handleJackIn();
+                    return;
                 }
             }
         };
@@ -205,10 +209,9 @@ export default function StoryController() {
 
     // Jack In (Subtle, smooth transition into battlestation computer)
     const handleJackIn = useCallback(() => {
-        if (cameraMode !== 'orbit') return;
         audio.playClick();
         setCameraMode('dolly_in');
-    }, [cameraMode]);
+    }, []);
 
     // Setup / Code button action:
     // If character is already on setup -> immediately enter portfolio
@@ -239,16 +242,8 @@ export default function StoryController() {
         setShowTitleMenu(false);
 
         if (option === 'portfolio') {
-            if (currentRoutine === 'coding') {
-                if (cameraMode === 'orbit') {
-                    setCameraMode('dolly_in');
-                }
-            } else {
-                pendingJackInRef.current = true;
-                setCurrentRoutine('returning_to_desk');
-                setDiscoveryHint('Returning to battlestation to launch portfolio...');
-                setTimeout(() => setDiscoveryHint(null), 4000);
-            }
+            setCurrentRoutine('coding');
+            setCameraMode('dolly_in');
         } else if (option === 'tour') {
             setForcedTourIndex(0);
             setCameraMode('tour');

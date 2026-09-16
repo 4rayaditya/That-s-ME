@@ -43,8 +43,8 @@ export default function CyberCharacter({
     // Precise spatial coordinates for locations in the room
     const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, -1.85), []);
     const COFFEE_POS = useMemo(() => new THREE.Vector3(2.75, 0, -0.28), []); // Espresso counter
-    const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.35, 0, 0.70), []); // Stand completely clear of futon on open floor
-    const BED_LIE_POS = useMemo(() => new THREE.Vector3(-2.55, 0, 0.8), []); // Flat on futon mattress
+    const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.35, 0, 1.05), []); // Stand completely clear of futon on open floor
+    const BED_LIE_POS = useMemo(() => new THREE.Vector3(-2.55, 0, 1.15), []); // Flat on futon mattress
     const FRIDGE_STAND_POS = useMemo(() => new THREE.Vector3(-1.95, 0, -2.45), []); // Mini fridge counter
     const SOFA_POS = useMemo(() => new THREE.Vector3(1.82, 0, 1.35), []); // Center of comfy curved sofa facing TV
 

@@ -48,9 +48,9 @@ export const TOUR_STOPS: TourStop[] = [
         id: 'bed',
         name: 'CYBER FUTON // RECHARGE POD',
         subtitle: 'Minimalist platform mattress, designer arc floor lamp, and cozy parquet rug',
-        camPos: new THREE.Vector3(-1.45, 1.42, 1.85),
-        target: new THREE.Vector3(-2.65, 0.72, 0.80),
-        fov: 44,
+        camPos: new THREE.Vector3(-0.95, 1.62, 2.45),
+        target: new THREE.Vector3(-2.65, 0.72, 1.15),
+        fov: 48,
         duration: 5.0,
     },
 ];
@@ -314,13 +314,20 @@ export default function CameraController({
             // Forward and Right vectors projected onto horizontal XZ plane
             const fwdX = Math.sin(walkYawRef.current);
             const fwdZ = -Math.cos(walkYawRef.current);
-            // Steer orientation with A / D or Left / Right keys
+            // Steer orientation with A / D or Left / Right keys (Constrained so 4th wall is never visible)
             if (keys.left) {
                 walkYawRef.current += dt * 2.2;
             }
             if (keys.right) {
                 walkYawRef.current -= dt * 2.2;
             }
+
+            // Stop the GTA walk from turning around to see the open 4th wall
+            walkYawRef.current = THREE.MathUtils.clamp(
+                walkYawRef.current,
+                -Math.PI * 0.55,
+                Math.PI * 0.55
+            );
 
             let moveFwd = 0;
             if (keys.forward) moveFwd += 1;
@@ -334,9 +341,9 @@ export default function CameraController({
             const moveX = fwdX * moveFwd;
             const moveZ = fwdZ * moveFwd;
 
-            // Apply displacement clamped within room walls
-            const nextX = THREE.MathUtils.clamp(walkPosRef.current.x + moveX * speed * dt, -3.15, 3.15);
-            const nextZ = THREE.MathUtils.clamp(walkPosRef.current.z + moveZ * speed * dt, -3.15, 3.20);
+            // Boundaries: cannot walk beyond the bed and TV light towards the unrendered 4th wall
+            const nextX = THREE.MathUtils.clamp(walkPosRef.current.x + moveX * speed * dt, -2.15, 2.15);
+            const nextZ = THREE.MathUtils.clamp(walkPosRef.current.z + moveZ * speed * dt, -2.40, 1.25);
             const headBob = isMoving ? Math.sin(walkStepRef.current) * 0.022 : 0;
             const targetY = 1.65 + headBob;
 
