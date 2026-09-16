@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Cpu, Zap, Code, ShieldCheck } from 'lucide-react';
+import { Cpu, Zap, Code } from 'lucide-react';
 import { SKILL_CATEGORIES } from '@/data/portfolioData';
 
 export default function WindowsSkillsApp() {

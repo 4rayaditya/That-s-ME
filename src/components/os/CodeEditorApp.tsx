@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FileJson, FileCode, FileText, ChevronRight, Folder, Sparkles } from 'lucide-react';
+import { FileJson, FileCode, FileText, ChevronRight, Folder } from 'lucide-react';
 import { SKILL_CATEGORIES, EXPERIENCES, EDUCATION_CERTS, PERSONAL_INFO } from '@/data/portfolioData';
 import { audio } from '@/lib/audio';
 

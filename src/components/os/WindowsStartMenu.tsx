@@ -15,7 +15,6 @@ import {
     Music,
     LogOut,
     RotateCcw,
-    Sparkles,
 } from 'lucide-react';
 import { PERSONAL_INFO } from '@/data/portfolioData';
 import { audio } from '@/lib/audio';

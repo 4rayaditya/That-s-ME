@@ -2,11 +2,9 @@
 
 import React, { useState } from 'react';
 import {
-    FolderGit2,
     ExternalLink,
     Sparkles,
     Layers,
-    Cpu,
     CheckCircle2,
     Search,
 } from 'lucide-react';

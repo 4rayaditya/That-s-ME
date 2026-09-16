@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Music, Disc3, Radio } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Disc3, Radio } from 'lucide-react';
 import { audio } from '@/lib/audio';
 
 export default function WindowsMediaApp() {

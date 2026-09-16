@@ -8,11 +8,7 @@ import WindowsDesktop from '@/components/os/WindowsDesktop';
 import { CharacterRoutine } from '@/components/3d/CyberCharacter';
 import { CameraMode } from '@/components/3d/CameraController';
 import { audio } from '@/lib/audio';
-import {
-    EnvironmentPhase,
-    ENVIRONMENT_CONFIGS,
-    getLiveISTTime,
-} from '@/lib/environment';
+import { EnvironmentPhase } from '@/lib/environment';
 
 const LoadingPlaceholder = () => (
     <div className="w-full h-full bg-[#020408]" />
@@ -33,7 +29,6 @@ export default function StoryController() {
 
     // Character life simulation status
     const [currentRoutine, setCurrentRoutine] = useState<CharacterRoutine>('coding');
-    const [, setRoutineLabel] = useState('Studying & Coding at Battlestation (Desk)');
 
     // Sound state
     const [isMuted, setIsMuted] = useState(false);
@@ -109,25 +104,20 @@ export default function StoryController() {
         if (target === 'coding') {
             if (currentRoutine === 'coding') return;
             setCurrentRoutine('returning_to_desk');
-            setRoutineLabel('Returning to Battlestation...');
         } else if (target === 'brewing') {
             if (currentRoutine === 'brewing_coffee') return;
             setCurrentRoutine('walking_to_coffee');
-            setRoutineLabel('Heading to Neon Espresso Bar...');
         } else if (target === 'bed') {
             if (currentRoutine === 'resting_bed') return;
             setCurrentRoutine('walking_to_bed');
-            setRoutineLabel('Heading to Cyber Futon to Sleep...');
         } else if (target === 'fridge') {
             if (currentRoutine === 'snacking_at_fridge') return;
             setCurrentRoutine('walking_to_fridge');
-            setRoutineLabel('Heading to Cyber Mini Fridge & Snack Bar...');
         }
     };
 
-    const handleRoutineChange = (routine: CharacterRoutine, label: string) => {
+    const handleRoutineChange = (routine: CharacterRoutine) => {
         setCurrentRoutine(routine);
-        setRoutineLabel(label);
     };
 
     const handleToggleSound = () => {

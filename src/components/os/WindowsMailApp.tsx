@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Send, CheckCircle2, User, AtSign, MessageSquare, Inbox, SendHorizontal, Star } from 'lucide-react';
+import { Mail, Send, CheckCircle2, Inbox, SendHorizontal } from 'lucide-react';
 import { PERSONAL_INFO } from '@/data/portfolioData';
 import { audio } from '@/lib/audio';
 

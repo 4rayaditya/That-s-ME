@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Briefcase, Calendar, MapPin, Award, CheckCircle2, Building, Sparkles } from 'lucide-react';
+import { Briefcase, Calendar, MapPin, Award, CheckCircle2, Building } from 'lucide-react';
 import { EXPERIENCES, EDUCATION_CERTS } from '@/data/portfolioData';
 
 export default function WindowsExperienceApp() {

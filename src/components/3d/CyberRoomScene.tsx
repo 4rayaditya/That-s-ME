@@ -823,12 +823,6 @@ const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow() {
                 <boxGeometry args={[3.72, 0.035, 0.07]} />
                 <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
-
-            {/* Dark Night Glass Pane (curtain hangs in front of this) */}
-            <mesh position={[0, 1.9, -3.48]}>
-                <planeGeometry args={[3.68, 1.96]} />
-                <meshStandardMaterial color="#0f172a" transparent opacity={0.45} roughness={0.04} metalness={0.15} />
-            </mesh>
         </group>
     );
 });
@@ -3567,10 +3561,10 @@ export default function CyberRoomScene({
     function SceneLoop() {
         const { gl } = useThree();
 
-        // Smoothly adjust exposure without re-creating Canvas/WebGLRenderer
+        // Set tone mapping exposure for dark cozy atmosphere
         useEffect(() => {
-            gl.toneMappingExposure = environmentPhase === 'morning' ? 1.4 : environmentPhase === 'afternoon' ? 1.35 : 1.25;
-        }, [gl, environmentPhase]);
+            gl.toneMappingExposure = 1.25;
+        }, [gl]);
 
         useFrame((state) => {
             monitorTextures.update(state.clock.elapsedTime);
@@ -3618,26 +3612,13 @@ export default function CyberRoomScene({
                     color="#000000"
                 />
 
-                {/* Dynamic Ambient & Sun Atmospheric Lighting with tightly bounded shadow frustum */}
+                {/* Dynamic Ambient & Sun Atmospheric Lighting */}
                 <ambientLight intensity={envConfig.ambientIntensity} color={envConfig.ambientColor} />
                 <directionalLight
                     position={envConfig.sunPosition}
                     intensity={envConfig.sunIntensity}
                     color={envConfig.sunColor}
-                    shadow-mapSize={[1024, 1024]}
-                    shadow-bias={-0.0001}
-                    shadow-camera-near={0.5}
-                    shadow-camera-far={22}
-                    shadow-camera-left={-4.5}
-                    shadow-camera-right={4.5}
-                    shadow-camera-top={4.5}
-                    shadow-camera-bottom={-4.5}
                 />
-
-                {/* The old "morning sunlight beam" spotlight lived here â€” it only ever lit up
-                    when environmentPhase === 'morning', which can no longer happen now that dark
-                    mode is permanent, so it was a dead light sitting in the shader's light list
-                    for no visual benefit. Removed as part of the room's lighting budget cut. */}
 
                 {/* Real Architectural Room: Hardwood Parquet, Acoustic Slat Walls, Rafter Ceiling, Loft Window */}
                 <ArchitecturalRoom environmentPhase={environmentPhase} />

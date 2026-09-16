@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Download, Printer, ZoomIn, ZoomOut, FileText, CheckCircle2 } from 'lucide-react';
+import { Printer, FileText } from 'lucide-react';
 import { PERSONAL_INFO, EXPERIENCES, EDUCATION_CERTS, SKILL_CATEGORIES } from '@/data/portfolioData';
 
 export default function WindowsResumeViewerApp() {
