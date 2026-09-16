@@ -473,7 +473,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
             {/* --- FRONT BOUNDARY WALL: ENCLOSES ROOM PAST BED & TV BOUNDARY LIGHTS --- */}
             {/* Placed at z = 2.85, facing inwards (towards -Z).
                 Using single-sided FrontSide so it seamlessly encloses the room for interior cameras
-                (tour mode, GTA 5 walk mode), while remaining completely transparent to the master
+                (tour mode, first-person roam mode), while remaining completely transparent to the master
                 orbit camera positioned outside at z = 5.35. */}
             <group position={[0, 2.0, 2.85]} rotation={[0, Math.PI, 0]}>
                 {/* 1. Main Limewash Plaster Wall */}

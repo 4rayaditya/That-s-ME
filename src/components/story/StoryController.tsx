@@ -45,8 +45,8 @@ const MENU_OPTIONS = [
     },
     {
         id: 'walk' as const,
-        title: 'GTA V WALK',
-        description: 'First-person movement with WASD controls and sprint',
+        title: 'FIRST-PERSON EXPLORE',
+        description: 'Free-roam 3D exploration with smooth WASD strafe, 360° mouse look, jump & sprint',
     },
     {
         id: 'tour' as const,
@@ -151,7 +151,7 @@ export default function StoryController() {
                 return;
             }
 
-            // Press 'V' to cycle views (GTA 5 Style camera toggle)
+            // Press 'V' to cycle views (First-person / tour / orbit camera toggle)
             if (e.key === 'v' || e.key === 'V') {
                 if (!showHologram) {
                     handleCycleCameraView();
@@ -191,13 +191,13 @@ export default function StoryController() {
         };
     }, [cameraMode, showHologram, currentRoutine, showTitleMenu]);
 
-    // GTA 5 style Camera View Toggle (V key or button)
+    // First-Person Camera View Toggle (V key or button)
     const handleCycleCameraView = () => {
         audio.playClick();
         if (cameraMode === 'orbit') {
             setCameraMode('walk');
-            setDiscoveryHint('GTA 5 Walk Mode: Use WASD / Arrow Keys to walk, mouse drag to look around.');
-            setTimeout(() => setDiscoveryHint(null), 5000);
+            setDiscoveryHint('First-Person Roam: WASD to walk & strafe, drag mouse to look 360°, Shift to sprint, Space to hop.');
+            setTimeout(() => setDiscoveryHint(null), 5500);
         } else if (cameraMode === 'walk') {
             setCameraMode('tour');
             setDiscoveryHint('Cinematic Tour: Auto-switching camera angles every 5 seconds.');
@@ -249,7 +249,7 @@ export default function StoryController() {
             setCameraMode('tour');
         } else if (option === 'walk') {
             setCameraMode('walk');
-            setDiscoveryHint('GTA 5 Walk Mode: Use WASD / Arrow Keys to walk, mouse to look around.');
+            setDiscoveryHint('First-Person Roam: WASD to walk & strafe, drag mouse to look 360°, Shift to sprint, Space to hop.');
             setTimeout(() => setDiscoveryHint(null), 5500);
         } else {
             // 'explore'
@@ -353,32 +353,32 @@ export default function StoryController() {
             <header className="absolute top-4 right-4 z-30 pointer-events-auto flex items-center gap-2.5">
                 {!showHologram && (
                     <>
-                        {/* GTA 5 Camera View Cycle Button */}
+                        {/* Camera View Cycle Button */}
                         <button
                             onClick={handleCycleCameraView}
                             onMouseEnter={() => audio.playHover()}
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-zinc-950/80 border border-zinc-700/80 hover:border-cyan-400 text-zinc-300 hover:text-cyan-300 text-xs font-mono transition-all shadow-md backdrop-blur-md cursor-pointer"
+                            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-xs font-mono tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
                             title="Cycle Camera View (Press V)"
                         >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span className="hidden sm:inline">View [V]:</span>
-                            <span className="text-cyan-400 uppercase font-semibold">
-                                {cameraMode === 'walk' ? 'Walk' : cameraMode === 'tour' ? 'Tour' : 'Room'}
+                            <Eye className="w-3.5 h-3.5 text-zinc-300" />
+                            <span className="hidden sm:inline text-zinc-400">View [V]:</span>
+                            <span className="text-white font-bold">
+                                {cameraMode === 'walk' ? 'Roam' : cameraMode === 'tour' ? 'Tour' : 'Room'}
                             </span>
                         </button>
 
-                        {/* Minecraft-Style Menu Reopen Button */}
+                        {/* Menu Reopen Button */}
                         <button
                             onClick={() => {
                                 audio.playClick();
                                 setShowTitleMenu(true);
                             }}
                             onMouseEnter={() => audio.playHover()}
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-zinc-950/80 border border-zinc-700/80 hover:border-amber-400 text-zinc-300 hover:text-amber-300 text-xs font-mono transition-all shadow-md backdrop-blur-md cursor-pointer"
+                            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-xs font-mono tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
                             title="Open Experience Selection Menu"
                         >
-                            <Compass className="w-3.5 h-3.5" />
-                            <span>Menu</span>
+                            <Compass className="w-3.5 h-3.5 text-zinc-300" />
+                            <span className="font-bold">Menu</span>
                         </button>
                     </>
                 )}
@@ -387,19 +387,19 @@ export default function StoryController() {
                 <button
                     onClick={handleToggleSound}
                     onMouseEnter={() => audio.playHover()}
-                    className="flex items-center justify-center p-2.5 rounded-full bg-zinc-950/80 border border-zinc-700/80 hover:border-amber-400 text-zinc-400 hover:text-amber-300 transition-all shadow-md backdrop-blur-md cursor-pointer"
+                    className="flex items-center justify-center p-2.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-300 hover:text-white transition-all backdrop-blur-md cursor-pointer"
                     title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
                     aria-label="Toggle Audio"
                 >
                     {isMuted ? (
-                        <VolumeX className="w-4 h-4 text-rose-400" />
+                        <VolumeX className="w-4 h-4 text-zinc-400" />
                     ) : (
-                        <Volume2 className="w-4 h-4 text-amber-300" />
+                        <Volume2 className="w-4 h-4 text-zinc-100" />
                     )}
                 </button>
             </header>
 
-            {/* 3. GTA 5 WALK MODE HUD (When in 'walk' mode - Bottom Left, Styled like Menu) */}
+            {/* 3. FIRST-PERSON FREE ROAM HUD */}
             <AnimatePresence>
                 {cameraMode === 'walk' && !showHologram && !showTitleMenu && (
                     <motion.div
@@ -409,30 +409,42 @@ export default function StoryController() {
                         transition={{ duration: 0.25 }}
                         className="absolute bottom-6 left-6 z-20 pointer-events-auto flex flex-col items-start gap-2 select-none"
                     >
-                        <div className="flex flex-col gap-2.5 p-3.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] backdrop-blur-md font-mono text-zinc-100 min-w-[200px]">
+                        <div className="flex flex-col gap-2.5 p-3.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] backdrop-blur-md font-mono text-zinc-100 min-w-[220px]">
                             <div className="flex items-center justify-between gap-4 pb-1.5 border-b border-zinc-800">
-                                <span className="text-xs font-bold tracking-[0.2em] uppercase text-white">
-                                    GTA V WALK
+                                <span className="text-xs font-bold tracking-[0.2em] uppercase text-white font-mono">
+                                    FIRST-PERSON ROAM
                                 </span>
                                 <button
                                     onClick={() => setCameraMode('orbit')}
-                                    className="px-2 py-0.5 rounded border border-zinc-500 hover:border-white bg-white/5 hover:bg-white/15 text-[10px] text-zinc-300 hover:text-white transition-all cursor-pointer uppercase tracking-wider"
+                                    className="px-2 py-0.5 rounded border border-zinc-600 hover:border-zinc-100 bg-white/5 hover:bg-white/15 text-[10px] text-zinc-300 hover:text-white transition-all cursor-pointer uppercase tracking-wider font-mono"
                                 >
                                     [ESC] Exit
                                 </button>
                             </div>
-                            <div className="flex flex-col gap-1.5 text-[11px] text-zinc-300">
-                                <span className="flex items-center gap-2">
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px] text-zinc-300 font-mono">
+                                <span className="flex items-center gap-1.5">
                                     <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
                                         WASD
                                     </kbd>
-                                    <span>Move & Steer</span>
+                                    <span>Move/Strafe</span>
                                 </span>
-                                <span className="flex items-center gap-2">
+                                <span className="flex items-center gap-1.5">
+                                    <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
+                                        DRAG
+                                    </kbd>
+                                    <span>360° Look</span>
+                                </span>
+                                <span className="flex items-center gap-1.5">
                                     <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
                                         SHIFT
                                     </kbd>
                                     <span>Sprint</span>
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
+                                        SPACE
+                                    </kbd>
+                                    <span>Hop / Jump</span>
                                 </span>
                             </div>
                         </div>

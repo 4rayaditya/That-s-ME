@@ -2103,10 +2103,53 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     <meshStandardMaterial color="#2d1c12" />
                 </mesh>
 
-                {/* Warm LED Under-Cabinet Wash (Active when TV is on) */}
-                <mesh position={[0, -0.12, 0]}>
-                    <boxGeometry args={[0.26, 0.006, 1.76]} />
-                    <meshBasicMaterial color="#f59e0b" transparent opacity={isTvOn ? 0.35 : 0.10} depthWrite={false} />
+                {/* ============================================================ */}
+                {/* ARCHITECTURAL YELLOWISH-WHITE LED UNDERGLOW (JUST LIKE SETUP) */}
+                {/* ============================================================ */}
+                {/* Front linear LED diffuser strip */}
+                <mesh position={[-0.11, -0.121, 0]}>
+                    <boxGeometry args={[0.015, 0.008, 1.80]} />
+                    <meshBasicMaterial color="#fff6d8" toneMapped={false} />
+                </mesh>
+                {/* Rear linear LED diffuser strip */}
+                <mesh position={[0.11, -0.121, 0]}>
+                    <boxGeometry args={[0.015, 0.008, 1.80]} />
+                    <meshBasicMaterial color="#fffaea" toneMapped={false} />
+                </mesh>
+                {/* Recessed underside wash diffuser plate */}
+                <mesh position={[0, -0.122, 0]}>
+                    <boxGeometry args={[0.26, 0.004, 1.82]} />
+                    <meshBasicMaterial color="#fff4d4" toneMapped={false} />
+                </mesh>
+
+                {/* Main yellowish-white under-table point light illuminating the floor & skirting */}
+                <pointLight
+                    color="#fff3cc"
+                    intensity={3.5}
+                    distance={3.4}
+                    decay={2}
+                    position={[-0.05, -0.22, 0]}
+                />
+                {/* Side wing fill lights along console length for seamless linear underglow */}
+                <pointLight
+                    color="#fffae8"
+                    intensity={1.8}
+                    distance={2.4}
+                    decay={2}
+                    position={[-0.05, -0.22, -0.58]}
+                />
+                <pointLight
+                    color="#fffae8"
+                    intensity={1.8}
+                    distance={2.4}
+                    decay={2}
+                    position={[-0.05, -0.22, 0.58]}
+                />
+
+                {/* Soft warm floor glow pool directly under the floating console */}
+                <mesh position={[-0.08, -0.476, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <planeGeometry args={[0.65, 2.10]} />
+                    <meshBasicMaterial color="#fff0be" transparent opacity={0.38} depthWrite={false} />
                 </mesh>
 
                 {/* Sleek Soundbar on Console Surface */}
@@ -3613,7 +3656,7 @@ export default function CyberRoomScene({
                 <AdaptiveDpr pixelated={false} />
                 <AdaptiveEvents />
 
-                {/* Camera Choreography (Locked manual orbit, guided room tour, or GTA 5 walk) */}
+                {/* Camera Choreography (Locked manual orbit, guided room tour, or first-person roam) */}
                 <CameraController
                     mode={cameraMode}
                     onDollyComplete={onDollyComplete}

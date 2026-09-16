@@ -101,17 +101,27 @@ export default function CameraController({
     const SCREEN_LOCK_POS = useMemo(() => new THREE.Vector3(0, 1.45, -2.45), []);
 
     // ============================================================
-    // GTA 5 FREE-ROAM WALK MODE CONTROLS (WASD + MOUSE LOOK)
+    // FIRST-PERSON FREE ROAM EXPLORER CONTROLS
+    // (WASD Strafe + 360° Mouse Look + Jump + Sprint + Inertia)
     // ============================================================
     const walkPosRef = useRef(new THREE.Vector3(0, 1.65, 1.2));
     const walkYawRef = useRef(0); // Horizontal angle in radians
+    const targetYawRef = useRef(0);
     const walkPitchRef = useRef(-0.05); // Vertical pitch in radians
+    const targetPitchRef = useRef(-0.05);
     const walkStepRef = useRef(0);
+    const velocityRef = useRef(new THREE.Vector3(0, 0, 0));
+    const jumpVelRef = useRef(0);
+    const jumpYRef = useRef(0);
+    const isGroundedRef = useRef(true);
+
     const keysRef = useRef({
         forward: false,
         backward: false,
         left: false,
         right: false,
+        turnLeft: false,
+        turnRight: false,
         sprint: false,
     });
     const isPointerDownRef = useRef(false);
@@ -204,30 +214,115 @@ export default function CameraController({
         } else if (mode === 'walk') {
             walkPosRef.current.set(0, 1.65, 1.2);
             walkYawRef.current = 0;
+            targetYawRef.current = 0;
             walkPitchRef.current = -0.05;
+            targetPitchRef.current = -0.05;
+            velocityRef.current.set(0, 0, 0);
+            jumpVelRef.current = 0;
+            jumpYRef.current = 0;
+            isGroundedRef.current = true;
+            keysRef.current = {
+                forward: false,
+                backward: false,
+                left: false,
+                right: false,
+                turnLeft: false,
+                turnRight: false,
+                sprint: false,
+            };
         }
     }, [mode, camera, onTourPoiChange, ROOM_TARGET, FIXED_WALL4_POS, INTRO_START_POS, MONITOR_POS]);
 
-    // Keyboard listeners for GTA 5 Walk Mode (No mouse drag)
+    // Pointer drag / 360-degree mouse look listeners for Free Roam Mode
+    useEffect(() => {
+        if (mode !== 'walk') return;
+
+        const dom = gl.domElement;
+        dom.style.cursor = 'grab';
+
+        const handlePointerDown = (e: PointerEvent) => {
+            // Do not capture if clicking on UI buttons or dialogs
+            if ((e.target as HTMLElement)?.closest('button, a, input, textarea')) return;
+            isPointerDownRef.current = true;
+            lastPointerPosRef.current = { x: e.clientX, y: e.clientY };
+            dom.style.cursor = 'grabbing';
+            try {
+                dom.setPointerCapture(e.pointerId);
+            } catch {}
+        };
+
+        const handlePointerMove = (e: PointerEvent) => {
+            if (!isPointerDownRef.current) return;
+            const dx = e.clientX - lastPointerPosRef.current.x;
+            const dy = e.clientY - lastPointerPosRef.current.y;
+            lastPointerPosRef.current = { x: e.clientX, y: e.clientY };
+
+            const sensitivity = 0.0032;
+            targetYawRef.current -= dx * sensitivity;
+            targetPitchRef.current -= dy * sensitivity;
+            // Vertical pitch clamp: -75° to +75°
+            targetPitchRef.current = THREE.MathUtils.clamp(targetPitchRef.current, -1.3, 1.3);
+        };
+
+        const handlePointerUp = (e: PointerEvent) => {
+            isPointerDownRef.current = false;
+            dom.style.cursor = 'grab';
+            try {
+                if (dom.hasPointerCapture(e.pointerId)) {
+                    dom.releasePointerCapture(e.pointerId);
+                }
+            } catch {}
+        };
+
+        dom.addEventListener('pointerdown', handlePointerDown);
+        window.addEventListener('pointermove', handlePointerMove);
+        window.addEventListener('pointerup', handlePointerUp);
+        window.addEventListener('pointercancel', handlePointerUp);
+
+        return () => {
+            dom.style.cursor = 'auto';
+            dom.removeEventListener('pointerdown', handlePointerDown);
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('pointerup', handlePointerUp);
+            window.removeEventListener('pointercancel', handlePointerUp);
+        };
+    }, [mode, gl]);
+
+    // Keyboard listeners for Free Roam Mode (WASD strafe, Arrow keys, Shift sprint, Space jump)
     useEffect(() => {
         if (mode !== 'walk') return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
             const k = e.key.toLowerCase();
-            if (k === 'w' || e.code === 'ArrowUp') keysRef.current.forward = true;
-            if (k === 's' || e.code === 'ArrowDown') keysRef.current.backward = true;
-            if (k === 'a' || e.code === 'ArrowLeft') keysRef.current.left = true;
-            if (k === 'd' || e.code === 'ArrowRight') keysRef.current.right = true;
-            if (e.shiftKey) keysRef.current.sprint = true;
+            if (k === 'w') keysRef.current.forward = true;
+            if (k === 's') keysRef.current.backward = true;
+            if (k === 'a') keysRef.current.left = true;
+            if (k === 'd') keysRef.current.right = true;
+            if (e.code === 'ArrowUp') keysRef.current.forward = true;
+            if (e.code === 'ArrowDown') keysRef.current.backward = true;
+            if (e.code === 'ArrowLeft') keysRef.current.turnLeft = true;
+            if (e.code === 'ArrowRight') keysRef.current.turnRight = true;
+            if (e.shiftKey || k === 'shift') keysRef.current.sprint = true;
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (isGroundedRef.current) {
+                    jumpVelRef.current = 3.2;
+                    isGroundedRef.current = false;
+                }
+            }
         };
 
         const handleKeyUp = (e: KeyboardEvent) => {
             const k = e.key.toLowerCase();
-            if (k === 'w' || e.code === 'ArrowUp') keysRef.current.forward = false;
-            if (k === 's' || e.code === 'ArrowDown') keysRef.current.backward = false;
-            if (k === 'a' || e.code === 'ArrowLeft') keysRef.current.left = false;
-            if (k === 'd' || e.code === 'ArrowRight') keysRef.current.right = false;
+            if (k === 'w') keysRef.current.forward = false;
+            if (k === 's') keysRef.current.backward = false;
+            if (k === 'a') keysRef.current.left = false;
+            if (k === 'd') keysRef.current.right = false;
+            if (e.code === 'ArrowUp') keysRef.current.forward = false;
+            if (e.code === 'ArrowDown') keysRef.current.backward = false;
+            if (e.code === 'ArrowLeft') keysRef.current.turnLeft = false;
+            if (e.code === 'ArrowRight') keysRef.current.turnRight = false;
             if (!e.shiftKey) keysRef.current.sprint = false;
         };
 
@@ -305,60 +400,124 @@ export default function CameraController({
             }
 
         // ============================================================
-        // 3. GTA 5 FREE ROAM WALK MODE (WASD + SPRINT + HEAD BOB)
+        // 3. FIRST-PERSON FREE ROAM EXPLORER (WASD STRAFE + 360 MOUSE LOOK)
         // ============================================================
         } else if (mode === 'walk') {
             const keys = keysRef.current;
-            const speed = (keys.sprint ? 3.4 : 2.1); // m/s
 
-            // Forward and Right vectors projected onto horizontal XZ plane
+            // Keyboard camera rotation using arrow keys if user prefers keyboard-only look
+            if (keys.turnLeft) {
+                targetYawRef.current += dt * 2.4;
+            }
+            if (keys.turnRight) {
+                targetYawRef.current -= dt * 2.4;
+            }
+
+            // Silky smooth interpolation of look angles towards target
+            walkYawRef.current = THREE.MathUtils.lerp(walkYawRef.current, targetYawRef.current, Math.min(1, dt * 22));
+            walkPitchRef.current = THREE.MathUtils.lerp(walkPitchRef.current, targetPitchRef.current, Math.min(1, dt * 22));
+
+            // Camera forward and right vectors projected onto horizontal XZ plane
             const fwdX = Math.sin(walkYawRef.current);
             const fwdZ = -Math.cos(walkYawRef.current);
-            // Steer orientation with A / D or Left / Right keys (Constrained so 4th wall is never visible)
-            if (keys.left) {
-                walkYawRef.current += dt * 2.2;
-            }
-            if (keys.right) {
-                walkYawRef.current -= dt * 2.2;
+            const rightX = Math.cos(walkYawRef.current);
+            const rightZ = Math.sin(walkYawRef.current);
+
+            // Compute input direction with true FPS strafing (W/S fwd/back, A/D left/right)
+            let dirX = 0;
+            let dirZ = 0;
+            if (keys.forward) { dirX += fwdX; dirZ += fwdZ; }
+            if (keys.backward) { dirX -= fwdX; dirZ -= fwdZ; }
+            if (keys.left) { dirX -= rightX; dirZ -= rightZ; }
+            if (keys.right) { dirX += rightX; dirZ += rightZ; }
+
+            const inputMagnitude = Math.hypot(dirX, dirZ);
+            if (inputMagnitude > 0.001) {
+                dirX /= inputMagnitude;
+                dirZ /= inputMagnitude;
             }
 
-            // Stop the GTA walk from turning around to see the open 4th wall
-            walkYawRef.current = THREE.MathUtils.clamp(
-                walkYawRef.current,
-                -Math.PI * 0.55,
-                Math.PI * 0.55
+            const speed = (keys.sprint ? 3.6 : 2.1); // m/s
+            const targetVelX = dirX * speed;
+            const targetVelZ = dirZ * speed;
+            const accelRate = inputMagnitude > 0.001 ? 14 : 9; // Snappy acceleration, smooth glide damping
+
+            velocityRef.current.x = THREE.MathUtils.lerp(velocityRef.current.x, targetVelX, Math.min(1, dt * accelRate));
+            velocityRef.current.z = THREE.MathUtils.lerp(velocityRef.current.z, targetVelZ, Math.min(1, dt * accelRate));
+
+            const curHorizontalSpeed = Math.hypot(velocityRef.current.x, velocityRef.current.z);
+
+            // Jump Physics & Gravity
+            if (!isGroundedRef.current) {
+                jumpVelRef.current -= 11.5 * dt;
+                jumpYRef.current += jumpVelRef.current * dt;
+                if (jumpYRef.current <= 0) {
+                    jumpYRef.current = 0;
+                    jumpVelRef.current = 0;
+                    isGroundedRef.current = true;
+                }
+            }
+
+            // Head Bob & Footstep cadence
+            const isMovingOnFloor = curHorizontalSpeed > 0.12 && isGroundedRef.current;
+            if (isMovingOnFloor) {
+                const stepCadence = keys.sprint ? 14 : 9.5;
+                walkStepRef.current += dt * stepCadence;
+            }
+            const bobScale = keys.sprint ? 0.030 : 0.016;
+            const headBobY = isMovingOnFloor
+                ? Math.sin(walkStepRef.current * 2) * bobScale
+                : Math.sin(performance.now() * 0.0018) * 0.003; // Gentle breathing idle motion
+            const headBobX = isMovingOnFloor
+                ? Math.cos(walkStepRef.current) * (bobScale * 0.45)
+                : 0;
+
+            // Room collision and position update
+            let nextX = walkPosRef.current.x + velocityRef.current.x * dt;
+            let nextZ = walkPosRef.current.z + velocityRef.current.z * dt;
+
+            // Outer room walls boundary:
+            // Desk wall (z = -3.5), Wardrobe right (x = 3.5), Window left (x = -3.5), Entry front wall (z = 2.85)
+            nextX = THREE.MathUtils.clamp(nextX, -2.60, 2.50);
+            nextZ = THREE.MathUtils.clamp(nextZ, -2.30, 2.10);
+
+            // Furniture collision buffer around bed (x: [-1.55, 0.40], z: [0.70, 2.35])
+            if (nextX > -1.55 && nextX < 0.40 && nextZ > 0.70 && nextZ < 2.35) {
+                const distLeft = Math.abs(nextX - (-1.55));
+                const distRight = Math.abs(nextX - 0.40);
+                const distFront = Math.abs(nextZ - 0.70);
+                const minPush = Math.min(distLeft, distRight, distFront);
+                if (minPush === distFront) nextZ = 0.70;
+                else if (minPush === distLeft) nextX = -1.55;
+                else nextX = 0.40;
+            }
+
+            walkPosRef.current.x = nextX;
+            walkPosRef.current.z = nextZ;
+            walkPosRef.current.y = 1.65 + jumpYRef.current + headBobY;
+
+            // Update camera position with lateral head sway
+            camera.position.set(
+                walkPosRef.current.x + headBobX,
+                walkPosRef.current.y,
+                walkPosRef.current.z
             );
 
-            let moveFwd = 0;
-            if (keys.forward) moveFwd += 1;
-            if (keys.backward) moveFwd -= 1;
+            // Look-at direction computed from yaw and pitch
+            const lookDirX = Math.sin(walkYawRef.current) * Math.cos(walkPitchRef.current);
+            const lookDirY = Math.sin(walkPitchRef.current);
+            const lookDirZ = -Math.cos(walkYawRef.current) * Math.cos(walkPitchRef.current);
 
-            const isMoving = Math.abs(moveFwd) > 0.01;
-            if (isMoving) {
-                walkStepRef.current += dt * (keys.sprint ? 12 : 8);
-            }
+            camera.lookAt(
+                camera.position.x + lookDirX,
+                camera.position.y + lookDirY,
+                camera.position.z + lookDirZ
+            );
 
-            const moveX = fwdX * moveFwd;
-            const moveZ = fwdZ * moveFwd;
-
-            // Boundaries: cannot walk beyond the bed and TV light towards the unrendered 4th wall
-            const nextX = THREE.MathUtils.clamp(walkPosRef.current.x + moveX * speed * dt, -2.15, 2.15);
-            const nextZ = THREE.MathUtils.clamp(walkPosRef.current.z + moveZ * speed * dt, -2.40, 1.25);
-            const headBob = isMoving ? Math.sin(walkStepRef.current) * 0.022 : 0;
-            const targetY = 1.65 + headBob;
-
-            walkPosRef.current.set(nextX, targetY, nextZ);
-            camera.position.lerp(walkPosRef.current, Math.min(1, dt * 14));
-
-            // Compute look-at point based on yaw and pitch
-            const lookX = camera.position.x + Math.sin(walkYawRef.current) * Math.cos(walkPitchRef.current);
-            const lookY = camera.position.y + Math.sin(walkPitchRef.current);
-            const lookZ = camera.position.z - Math.cos(walkYawRef.current) * Math.cos(walkPitchRef.current);
-
-            camera.lookAt(lookX, lookY, lookZ);
-
-            if (camera instanceof THREE.PerspectiveCamera && camera.fov !== 62) {
-                camera.fov = THREE.MathUtils.lerp(camera.fov, 62, Math.min(1, dt * 6));
+            // Dynamic FOV sensation (boosts field of view when sprinting)
+            const targetFov = (keys.sprint && isMovingOnFloor) ? 70 : 62;
+            if (camera instanceof THREE.PerspectiveCamera) {
+                camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, Math.min(1, dt * 7));
                 camera.updateProjectionMatrix();
             }
 
