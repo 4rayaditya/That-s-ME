@@ -33,7 +33,7 @@ function MobileWalkControls({
     onExit,
     onEnterPortfolio,
 }: {
-    onMove: (fwd: number, right: number) => void;
+    onMove: (fwd: number, right: number, isToggling?: boolean) => void;
     onExit: () => void;
     onEnterPortfolio: () => void;
 }) {
@@ -58,6 +58,7 @@ function MobileWalkControls({
                 x: rect.left + rect.width / 2,
                 y: rect.top + rect.height / 2,
             };
+            onMove(0, 0, true);
         };
 
         const onTouchMove = (e: TouchEvent) => {
@@ -85,7 +86,8 @@ function MobileWalkControls({
             const factor = clamped / MAX_R;
             const fwd = -Math.sin(angle) * factor;
             const right = Math.cos(angle) * factor;
-            onMove(fwd, right);
+            const isToggling = clamped > 4;
+            onMove(fwd, right, isToggling);
         };
 
         const onTouchEnd = (e: TouchEvent) => {
@@ -94,7 +96,7 @@ function MobileWalkControls({
                 if (e.changedTouches[i].identifier === touchIdRef.current) {
                     touchIdRef.current = null;
                     if (knob) knob.style.transform = 'translate(-50%, -50%)';
-                    onMove(0, 0);
+                    onMove(0, 0, false);
                     break;
                 }
             }
@@ -596,9 +598,9 @@ export default function StoryController() {
             <AnimatePresence>
                 {cameraMode === 'walk' && !showHologram && !showTitleMenu && (
                     <MobileWalkControls
-                        onMove={(fwd, right) => {
+                        onMove={(fwd, right, isToggling) => {
                             // Dispatch to global walk keys via custom event
-                            window.dispatchEvent(new CustomEvent('mobilewalk', { detail: { fwd, right } }));
+                            window.dispatchEvent(new CustomEvent('mobilewalk', { detail: { fwd, right, isToggling } }));
                         }}
                         onExit={() => setCameraMode('orbit')}
                         onEnterPortfolio={() => handleJackIn()}

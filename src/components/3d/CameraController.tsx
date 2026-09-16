@@ -141,6 +141,7 @@ export default function CameraController({
     const lastPointerPosRef = useRef({ x: 0, y: 0 });
     // Mobile virtual joystick analog input (-1..1)
     const mobileWalkRef = useRef({ fwd: 0, right: 0 });
+    const isJoystickTogglingRef = useRef(false);
 
     const onTourPoiChangeRef = useRef(onTourPoiChange);
     useEffect(() => {
@@ -238,6 +239,7 @@ export default function CameraController({
             jumpYRef.current = 0;
             isGroundedRef.current = true;
             mobileWalkRef.current = { fwd: 0, right: 0 };
+            isJoystickTogglingRef.current = false;
             keysRef.current = {
                 forward: false,
                 backward: false,
@@ -274,11 +276,22 @@ export default function CameraController({
             const dy = e.clientY - lastPointerPosRef.current.y;
             lastPointerPosRef.current = { x: e.clientX, y: e.clientY };
 
-            // Mobile touch: lower sensitivity for smooth, controlled camera rotation
             const isTouchInput = e.pointerType === 'touch';
-            const sensitivity = isTouchInput ? 0.004 : 0.0032;
-            targetYawRef.current -= dx * sensitivity;
-            targetPitchRef.current -= dy * sensitivity;
+            const isJoystickToggling =
+                isJoystickTogglingRef.current ||
+                Math.abs(mobileWalkRef.current.fwd) > 0.05 ||
+                Math.abs(mobileWalkRef.current.right) > 0.05;
+
+            // When joystick is not toggling, significantly boost drag speed for effortless 360° looking.
+            // When joystick is actively toggled, provide smoother, controlled rotation for fine steering.
+            const yawSensitivity = isJoystickToggling
+                ? (isTouchInput ? 0.005 : 0.0036)
+                : (isTouchInput ? 0.0135 : 0.0072);
+
+            const pitchSensitivity = yawSensitivity * 0.82;
+
+            targetYawRef.current -= dx * yawSensitivity;
+            targetPitchRef.current -= dy * pitchSensitivity;
             // Vertical pitch clamp: -75° to +75°
             targetPitchRef.current = THREE.MathUtils.clamp(targetPitchRef.current, -1.3, 1.3);
         };
@@ -300,8 +313,15 @@ export default function CameraController({
 
         // Listen for mobile joystick input from MobileWalkControls
         const handleMobileWalk = (e: Event) => {
-            const { fwd, right } = (e as CustomEvent<{ fwd: number; right: number }>).detail;
+            const { fwd, right, isToggling } = (
+                e as CustomEvent<{ fwd: number; right: number; isToggling?: boolean }>
+            ).detail;
             mobileWalkRef.current = { fwd, right };
+            if (typeof isToggling === 'boolean') {
+                isJoystickTogglingRef.current = isToggling;
+            } else {
+                isJoystickTogglingRef.current = Math.abs(fwd) > 0.05 || Math.abs(right) > 0.05;
+            }
         };
         window.addEventListener('mobilewalk', handleMobileWalk);
 
