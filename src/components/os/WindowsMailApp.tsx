@@ -23,8 +23,8 @@ export default function WindowsMailApp() {
 
     return (
         <div className="flex-1 flex flex-col sm:flex-row overflow-hidden font-sans text-sm bg-[#f8fafc]">
-            {/* Left Mail Sidebar */}
-            <div className="w-full sm:w-48 bg-slate-100/90 border-r border-slate-200 p-3 flex flex-col justify-between">
+            {/* Left Mail Sidebar (Desktop only) */}
+            <div className="hidden sm:flex w-48 bg-slate-100/90 border-r border-slate-200 p-3 flex-col justify-between flex-shrink-0">
                 <div className="space-y-1">
                     <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider px-2 py-1">
                         Folders
@@ -76,7 +76,20 @@ export default function WindowsMailApp() {
             </div>
 
             {/* Right Message Compose Pane */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar flex flex-col justify-between bg-white">
+            <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 custom-scrollbar flex flex-col justify-between bg-white">
+                {/* Mobile Channels Bar (Visible on mobile only) */}
+                <div className="sm:hidden flex items-center justify-between pb-2.5 mb-2 border-b border-slate-200 text-xs">
+                    <span className="font-bold text-slate-900 flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-blue-600" />
+                        Compose Message
+                    </span>
+                    <div className="flex items-center gap-2 text-xs">
+                        <a href={PERSONAL_INFO.github} target="_blank" rel="noreferrer" className="text-blue-700 font-medium hover:underline">GitHub</a>
+                        <span className="text-slate-300">•</span>
+                        <a href={PERSONAL_INFO.linkedin} target="_blank" rel="noreferrer" className="text-blue-700 font-medium hover:underline">LinkedIn</a>
+                    </div>
+                </div>
+
                 {isSent ? (
                     <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-3">
                         <div className="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-700 flex items-center justify-center shadow-md animate-bounce">
@@ -88,46 +101,46 @@ export default function WindowsMailApp() {
                         </p>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="space-y-3.5 flex-1 flex flex-col">
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-slate-200 text-xs">
-                            <span className="w-24 font-semibold text-slate-600">To:</span>
-                            <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-mono border border-blue-200 font-medium">
+                    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5 flex-1 flex flex-col">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 pb-2 border-b border-slate-200 text-xs">
+                            <span className="w-24 font-semibold text-slate-600 flex-shrink-0">To:</span>
+                            <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-mono border border-blue-200 font-medium inline-block w-fit">
                                 {PERSONAL_INFO.email}
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-slate-200 text-xs">
-                            <span className="w-24 font-semibold text-slate-600">From Name:</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 pb-2 border-b border-slate-200 text-xs">
+                            <span className="w-24 font-semibold text-slate-600 flex-shrink-0">From Name:</span>
                             <input
                                 type="text"
                                 placeholder="Your Name or Organization"
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 required
-                                className="flex-1 bg-transparent border-none outline-none text-slate-900 font-medium placeholder-slate-400"
+                                className="flex-1 bg-transparent border-none outline-none text-slate-900 font-medium placeholder-slate-400 py-0.5"
                             />
                         </div>
 
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-slate-200 text-xs">
-                            <span className="w-24 font-semibold text-slate-600">Your Email:</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 pb-2 border-b border-slate-200 text-xs">
+                            <span className="w-24 font-semibold text-slate-600 flex-shrink-0">Your Email:</span>
                             <input
                                 type="email"
                                 placeholder="your.email@company.com"
                                 value={form.email}
                                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                                 required
-                                className="flex-1 bg-transparent border-none outline-none text-slate-900 font-medium placeholder-slate-400"
+                                className="flex-1 bg-transparent border-none outline-none text-slate-900 font-medium placeholder-slate-400 py-0.5"
                             />
                         </div>
 
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-slate-200 text-xs">
-                            <span className="w-24 font-semibold text-slate-600">Subject:</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 pb-2 border-b border-slate-200 text-xs">
+                            <span className="w-24 font-semibold text-slate-600 flex-shrink-0">Subject:</span>
                             <input
                                 type="text"
-                                placeholder="High-Impact Role / Project Collaboration / Inquiry"
+                                placeholder="High-Impact Role / Collaboration / Inquiry"
                                 value={form.subject}
                                 onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                                className="flex-1 bg-transparent border-none outline-none text-slate-900 font-medium placeholder-slate-400"
+                                className="flex-1 bg-transparent border-none outline-none text-slate-900 font-medium placeholder-slate-400 py-0.5"
                             />
                         </div>
 
@@ -137,7 +150,7 @@ export default function WindowsMailApp() {
                                 value={form.message}
                                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                                 required
-                                className="flex-1 min-h-[140px] bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none shadow-inner"
+                                className="flex-1 min-h-[120px] sm:min-h-[140px] bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none shadow-inner"
                             />
                         </div>
 

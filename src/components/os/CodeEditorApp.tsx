@@ -9,6 +9,7 @@ type ActiveFile = 'skills.json' | 'experience.ts' | 'education.md' | 'manifesto.
 
 export default function CodeEditorApp() {
     const [activeFile, setActiveFile] = useState<ActiveFile>('skills.json');
+    const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
     const files: { name: ActiveFile; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
         { name: 'skills.json', icon: FileJson, color: 'text-amber-400' },
@@ -135,12 +136,20 @@ ${PERSONAL_INFO.principles
     };
 
     return (
-        <div className="flex flex-1 min-h-0 font-mono text-xs overflow-hidden select-text bg-[#1e1e1e]">
-            {/* Sidebar File Explorer */}
-            <div className="w-48 bg-[#252526] border-r border-[#333333] p-3 shrink-0 select-none flex flex-col justify-between">
+        <div className="flex flex-1 min-h-0 font-mono text-xs overflow-hidden select-text bg-[#1e1e1e] relative">
+            {/* Sidebar File Explorer (Collapsible overlay on mobile, fixed column on desktop) */}
+            <div className={`${showMobileSidebar ? 'flex absolute inset-y-0 left-0 z-30 shadow-2xl w-52' : 'hidden'} sm:static sm:flex w-48 bg-[#252526] border-r border-[#333333] p-3 shrink-0 select-none flex-col justify-between`}>
                 <div className="space-y-3">
-                    <div className="text-[10px] text-[#cccccc] uppercase tracking-wider font-bold">
-                        EXPLORER: THAT-S-ME
+                    <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-[#cccccc] uppercase tracking-wider font-bold">
+                            EXPLORER: THAT-S-ME
+                        </span>
+                        <button
+                            onClick={() => setShowMobileSidebar(false)}
+                            className="sm:hidden text-xs text-[#888888] hover:text-white px-1"
+                        >
+                            ✕
+                        </button>
                     </div>
                     <div className="space-y-1">
                         <div className="flex items-center gap-1.5 text-[#cccccc] text-[11px] font-medium">
@@ -158,6 +167,7 @@ ${PERSONAL_INFO.principles
                                         onClick={() => {
                                             audio.playClick();
                                             setActiveFile(file.name);
+                                            setShowMobileSidebar(false);
                                         }}
                                         className={`w-full text-left px-2 py-1 rounded flex items-center gap-1.5 transition-colors text-[11px] cursor-pointer ${
                                             isActive
@@ -181,9 +191,18 @@ ${PERSONAL_INFO.principles
             </div>
 
             {/* Editor Body */}
-            <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden">
+            <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden min-w-0">
                 {/* Tabs bar */}
-                <div className="h-8 bg-[#252526] border-b border-[#1e1e1e] flex items-center px-2 gap-1 select-none overflow-x-auto">
+                <div className="h-8 bg-[#252526] border-b border-[#1e1e1e] flex items-center px-1 sm:px-2 gap-1 select-none overflow-x-auto custom-scrollbar flex-shrink-0">
+                    {/* Mobile File Explorer Trigger Button */}
+                    <button
+                        onClick={() => { audio.playClick(); setShowMobileSidebar(!showMobileSidebar); }}
+                        className="sm:hidden px-2 h-6 rounded flex items-center gap-1 text-[11px] text-[#cccccc] hover:text-white bg-[#333333] border border-[#444444] cursor-pointer flex-shrink-0"
+                        title="Toggle Explorer"
+                    >
+                        <Folder className="w-3 h-3 text-sky-400" />
+                        <span className="text-[10px] font-bold">Files</span>
+                    </button>
                     {files.map((file) => {
                         const Icon = file.icon;
                         const isActive = activeFile === file.name;

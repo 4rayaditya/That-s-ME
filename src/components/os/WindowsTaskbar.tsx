@@ -18,6 +18,7 @@ import {
     ShieldCheck,
 } from 'lucide-react';
 import { audio } from '@/lib/audio';
+import { useIsMobile } from '@/lib/useIsMobile';
 
 // Windows 7 pearl orb logo
 const Win7Orb = ({ active }: { active: boolean }) => (
@@ -69,6 +70,7 @@ export default function WindowsTaskbar({
     onTaskbarAppClick,
     onShowDesktop,
 }: WindowsTaskbarProps) {
+    const isMobile = useIsMobile();
     const [currentTime, setCurrentTime] = useState('');
     const [currentDate, setCurrentDate] = useState('');
     const [isMuted, setIsMuted] = useState(false);
@@ -98,11 +100,11 @@ export default function WindowsTaskbar({
         const updateClock = () => {
             const now = new Date();
             setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
-            setCurrentDate(now.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: 'numeric' }));
+            setCurrentDate(now.toLocaleDateString([], { month: 'numeric', day: 'numeric', year: 'numeric' }));
         };
         updateClock();
-        const timer = setInterval(updateClock, 1000);
-        return () => clearInterval(timer);
+        const interval = setInterval(updateClock, 1000);
+        return () => clearInterval(interval);
     }, []);
 
     // Try reading real Battery API if supported by browser
@@ -118,34 +120,27 @@ export default function WindowsTaskbar({
         }
     }, []);
 
-    // Dismiss popups when clicking outside
+    // Close tray popovers when user clicks anywhere on desktop
     useEffect(() => {
-        if (!activeTrayPopup) return;
-        const handleDocumentClick = (e: MouseEvent) => {
+        const handleGlobalClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             if (!target.closest('[data-tray-popup]') && !target.closest('[data-tray-btn]')) {
                 setActiveTrayPopup(null);
             }
         };
-        window.addEventListener('pointerdown', handleDocumentClick);
-        return () => window.removeEventListener('pointerdown', handleDocumentClick);
-    }, [activeTrayPopup]);
+        window.addEventListener('mousedown', handleGlobalClick);
+        return () => window.removeEventListener('mousedown', handleGlobalClick);
+    }, []);
 
-    const handleToggleMute = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleToggleMute = () => {
         const muted = audio.toggleMute();
         setIsMuted(muted);
     };
 
     const handleNetworkSelect = (net: NetworkItem) => {
-        if (isConnecting) return;
-        audio.playClick();
-        if (activeNetworkName === net.name && isWifiConnected) {
-            // Disconnect
-            setIsWifiConnected(false);
-            return;
-        }
+        if (net.name === activeNetworkName && isWifiConnected) return;
         setIsConnecting(true);
+        audio.playClick();
         setTimeout(() => {
             setActiveNetworkName(net.name);
             setIsWifiConnected(true);
@@ -196,7 +191,7 @@ export default function WindowsTaskbar({
                         onClick={() => onTaskbarAppClick(win.id)}
                         title={win.title}
                         style={{
-                            height: 32, maxWidth: 160, flexShrink: 0, padding: '0 10px',
+                            height: 32, maxWidth: isMobile ? 110 : 160, flexShrink: 0, padding: isMobile ? '0 6px' : '0 10px',
                             borderRadius: 3,
                             background: win.isActive && !win.isMinimized
                                 ? 'linear-gradient(180deg, rgba(180,215,255,0.35) 0%, rgba(100,165,245,0.28) 50%, rgba(50,120,220,0.38) 100%)'
@@ -349,7 +344,8 @@ export default function WindowsTaskbar({
                         data-tray-popup="wifi"
                         style={{
                             position: 'absolute',
-                            bottom: 46, right: 38, width: 295,
+                            bottom: 46, right: isMobile ? 8 : 38,
+                            width: 295, maxWidth: 'calc(100vw - 16px)',
                             background: 'linear-gradient(180deg, rgba(22,44,80,0.95) 0%, rgba(12,25,50,0.98) 100%)',
                             border: '1px solid rgba(135,190,255,0.60)',
                             boxShadow: '0 8px 32px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.28)',
@@ -493,7 +489,8 @@ export default function WindowsTaskbar({
                         data-tray-popup="battery"
                         style={{
                             position: 'absolute',
-                            bottom: 46, right: 10, width: 285,
+                            bottom: 46, right: isMobile ? 8 : 10,
+                            width: 285, maxWidth: 'calc(100vw - 16px)',
                             background: 'linear-gradient(180deg, rgba(22,44,80,0.95) 0%, rgba(12,25,50,0.98) 100%)',
                             border: '1px solid rgba(135,190,255,0.60)',
                             boxShadow: '0 8px 32px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.28)',

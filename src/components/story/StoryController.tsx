@@ -27,6 +27,135 @@ const LoadingPlaceholder = () => (
     <div className="w-full h-full bg-[#020408]" />
 );
 
+// ─── Mobile Virtual Joystick + Touch Controls for First-Person Walk Mode ────────
+function MobileWalkControls({
+    onMove,
+    onExit,
+    onEnterPortfolio,
+}: {
+    onMove: (fwd: number, right: number) => void;
+    onExit: () => void;
+    onEnterPortfolio: () => void;
+}) {
+    const stickBaseRef = useRef<HTMLDivElement>(null);
+    const stickKnobRef = useRef<HTMLDivElement>(null);
+    const touchIdRef = useRef<number | null>(null);
+    const baseOriginRef = useRef({ x: 0, y: 0 });
+    const MAX_R = 36;
+
+    useEffect(() => {
+        const base = stickBaseRef.current;
+        const knob = stickKnobRef.current;
+        if (!base || !knob) return;
+
+        const onTouchStart = (e: TouchEvent) => {
+            e.stopPropagation();
+            if (touchIdRef.current !== null) return;
+            const t = e.changedTouches[0];
+            touchIdRef.current = t.identifier;
+            const rect = base.getBoundingClientRect();
+            baseOriginRef.current = {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2,
+            };
+        };
+
+        const onTouchMove = (e: TouchEvent) => {
+            e.stopPropagation();
+            if (touchIdRef.current === null) return;
+            let t: Touch | null = null;
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === touchIdRef.current) {
+                    t = e.changedTouches[i];
+                    break;
+                }
+            }
+            if (!t) return;
+            const dx = t.clientX - baseOriginRef.current.x;
+            const dy = t.clientY - baseOriginRef.current.y;
+            const dist = Math.hypot(dx, dy);
+            const clamped = Math.min(dist, MAX_R);
+            const angle = Math.atan2(dy, dx);
+            const nx = Math.cos(angle) * clamped;
+            const ny = Math.sin(angle) * clamped;
+            if (knob) {
+                knob.style.transform = `translate(calc(-50% + ${nx}px), calc(-50% + ${ny}px))`;
+            }
+            // fwd = -y component, right = x component (normalised -1..1)
+            const factor = clamped / MAX_R;
+            const fwd = -Math.sin(angle) * factor;
+            const right = Math.cos(angle) * factor;
+            onMove(fwd, right);
+        };
+
+        const onTouchEnd = (e: TouchEvent) => {
+            e.stopPropagation();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === touchIdRef.current) {
+                    touchIdRef.current = null;
+                    if (knob) knob.style.transform = 'translate(-50%, -50%)';
+                    onMove(0, 0);
+                    break;
+                }
+            }
+        };
+
+        base.addEventListener('touchstart', onTouchStart, { passive: true });
+        base.addEventListener('touchmove', onTouchMove, { passive: true });
+        base.addEventListener('touchend', onTouchEnd, { passive: true });
+        base.addEventListener('touchcancel', onTouchEnd, { passive: true });
+        return () => {
+            base.removeEventListener('touchstart', onTouchStart);
+            base.removeEventListener('touchmove', onTouchMove);
+            base.removeEventListener('touchend', onTouchEnd);
+            base.removeEventListener('touchcancel', onTouchEnd);
+        };
+    }, [onMove]);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="sm:hidden absolute bottom-0 left-0 right-0 z-20 pointer-events-none"
+        >
+            {/* Left side: virtual joystick */}
+            <div className="absolute bottom-8 left-8 pointer-events-auto">
+                <div
+                    ref={stickBaseRef}
+                    className="relative w-24 h-24 rounded-full bg-white/10 border border-white/30 backdrop-blur-sm"
+                    style={{ touchAction: 'none' }}
+                >
+                    <div
+                        ref={stickKnobRef}
+                        className="absolute top-1/2 left-1/2 w-10 h-10 rounded-full bg-white/40 border border-white/60"
+                        style={{ transform: 'translate(-50%, -50%)' }}
+                    />
+                </div>
+            </div>
+
+            {/* Right side: action buttons */}
+            <div className="absolute bottom-8 right-8 flex flex-col gap-3 pointer-events-auto">
+                <button
+                    onTouchStart={(e) => { e.stopPropagation(); onEnterPortfolio(); }}
+                    className="px-3 py-2 rounded-lg bg-white/15 border border-white/40 text-white text-[11px] font-mono tracking-widest uppercase backdrop-blur-sm active:bg-white/30"
+                    style={{ touchAction: 'none' }}
+                >
+                    Portfolio
+                </button>
+                <button
+                    onTouchStart={(e) => { e.stopPropagation(); onExit(); }}
+                    className="px-3 py-2 rounded-lg bg-white/10 border border-zinc-400/40 text-zinc-300 text-[11px] font-mono tracking-widest uppercase backdrop-blur-sm active:bg-white/20"
+                    style={{ touchAction: 'none' }}
+                >
+                    Exit
+                </button>
+            </div>
+        </motion.div>
+    );
+}
+// ──────────────────────────────────────────────────────────────────────────────
+
 const CyberRoomScene = dynamic(() => import('@/components/3d/CyberRoomScene'), {
     ssr: false,
     loading: LoadingPlaceholder,
@@ -359,17 +488,18 @@ export default function StoryController() {
             </div>
 
             {/* 2. HEADER CONTROLS: CAMERA VIEW SWITCHER, EXPERIENCE MENU & AUDIO */}
-            <header className="absolute top-4 right-4 z-30 pointer-events-auto flex items-center gap-2.5">
+            {!showTitleMenu && (
+            <header className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 pointer-events-auto flex items-center gap-1.5 sm:gap-2.5">
                 {!showHologram && (
                     <>
                         {/* Camera View Cycle Button */}
                         <button
                             onClick={handleCycleCameraView}
                             onMouseEnter={() => audio.playHover()}
-                            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-xs font-mono tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
+                            className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-[11px] sm:text-xs font-mono tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
                             title="Cycle Camera View (Press V)"
                         >
-                            <Eye className="w-3.5 h-3.5 text-zinc-300" />
+                            <Eye className="w-3.5 h-3.5 text-zinc-300 flex-shrink-0" />
                             <span className="hidden sm:inline text-zinc-400">View [V]:</span>
                             <span className="text-white font-bold">
                                 {cameraMode === 'walk' ? 'Roam' : cameraMode === 'tour' ? 'Tour' : 'Room'}
@@ -383,10 +513,10 @@ export default function StoryController() {
                                 setShowTitleMenu(true);
                             }}
                             onMouseEnter={() => audio.playHover()}
-                            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-xs font-mono tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
+                            className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-[11px] sm:text-xs font-mono tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
                             title="Open Experience Selection Menu"
                         >
-                            <Compass className="w-3.5 h-3.5 text-zinc-300" />
+                            <Compass className="w-3.5 h-3.5 text-zinc-300 flex-shrink-0" />
                             <span className="font-bold">Menu</span>
                         </button>
                     </>
@@ -396,7 +526,7 @@ export default function StoryController() {
                 <button
                     onClick={handleToggleSound}
                     onMouseEnter={() => audio.playHover()}
-                    className="flex items-center justify-center p-2.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-300 hover:text-white transition-all backdrop-blur-md cursor-pointer"
+                    className="flex items-center justify-center p-2 sm:p-2.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-300 hover:text-white transition-all backdrop-blur-md cursor-pointer"
                     title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
                     aria-label="Toggle Audio"
                 >
@@ -407,8 +537,9 @@ export default function StoryController() {
                     )}
                 </button>
             </header>
+            )}
 
-            {/* 3. FIRST-PERSON FREE ROAM HUD */}
+            {/* 3. FIRST-PERSON FREE ROAM HUD — desktop only, joystick handles mobile */}
             <AnimatePresence>
                 {cameraMode === 'walk' && !showHologram && !showTitleMenu && (
                     <motion.div
@@ -416,7 +547,7 @@ export default function StoryController() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="absolute bottom-6 left-6 z-20 pointer-events-auto flex flex-col items-start gap-2 select-none"
+                        className="hidden sm:flex absolute bottom-6 left-6 z-20 pointer-events-auto flex-col items-start gap-2 select-none"
                     >
                         <div className="flex flex-col gap-2.5 p-3.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] backdrop-blur-md font-mono text-zinc-100 min-w-[220px]">
                             <div className="flex items-center justify-between gap-4 pb-1.5 border-b border-zinc-800">
@@ -461,27 +592,41 @@ export default function StoryController() {
                 )}
             </AnimatePresence>
 
-            {/* 4. CINEMATIC TOUR HUD (Styled with exact border, font & design as menu page) */}
+            {/* 3b. MOBILE VIRTUAL JOYSTICK FOR FIRST-PERSON ROAM */}
+            <AnimatePresence>
+                {cameraMode === 'walk' && !showHologram && !showTitleMenu && (
+                    <MobileWalkControls
+                        onMove={(fwd, right) => {
+                            // Dispatch to global walk keys via custom event
+                            window.dispatchEvent(new CustomEvent('mobilewalk', { detail: { fwd, right } }));
+                        }}
+                        onExit={() => setCameraMode('orbit')}
+                        onEnterPortfolio={() => handleJackIn()}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* 4. CINEMATIC TOUR HUD */}
             <AnimatePresence>
                 {cameraMode === 'tour' && !showHologram && !showTitleMenu && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
+                        exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="absolute top-6 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex flex-col items-center gap-2 w-[92%] max-w-md select-none"
+                        className="absolute bottom-6 left-4 right-4 z-20 pointer-events-auto select-none"
                     >
-                        <div className="w-full p-3.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] backdrop-blur-md flex flex-col gap-2.5 font-mono text-zinc-100">
+                        <div className="w-full p-3 sm:p-3.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] backdrop-blur-md flex flex-col gap-2 sm:gap-2.5 font-mono text-zinc-100">
                             <div className="flex items-center justify-between text-xs tracking-wider">
-                                <span className="font-bold tracking-[0.2em] text-white uppercase text-[11px] sm:text-xs">
+                                <span className="font-bold tracking-[0.15em] sm:tracking-[0.2em] text-white uppercase text-[10px] sm:text-xs truncate pr-2">
                                     {currentTourName}
                                 </span>
-                                <span className="text-zinc-300 font-bold text-[11px]">
+                                <span className="text-zinc-300 font-bold text-[10px] sm:text-[11px] flex-shrink-0">
                                     [ {currentTourIndex + 1}/{TOUR_STOPS.length} ]
                                 </span>
                             </div>
 
-                            {/* Sleek white progress bar matching menu style */}
+                            {/* Sleek white progress bar */}
                             <div className="w-full h-1 rounded-full bg-white/20 overflow-hidden">
                                 <div
                                     className="h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)] transition-all duration-100 ease-linear rounded-full"
@@ -489,7 +634,7 @@ export default function StoryController() {
                                 />
                             </div>
 
-                            {/* Tour Controls (Next, Prev, Exit) */}
+                            {/* Tour Controls */}
                             <div className="flex items-center justify-between pt-0.5 text-[11px] text-zinc-400">
                                 <div className="flex items-center gap-2">
                                     <button
@@ -524,7 +669,8 @@ export default function StoryController() {
                 )}
             </AnimatePresence>
 
-            {/* 5. DISCOVERY FLOATING TOAST (Shown when entering room explore) */}
+
+            {/* 5. DISCOVERY FLOATING TOAST */}
             <AnimatePresence>
                 {discoveryHint && !showHologram && !showTitleMenu && cameraMode === 'orbit' && (
                     <motion.div
@@ -532,12 +678,12 @@ export default function StoryController() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex items-center gap-3 px-4 py-2.5 rounded-xl bg-zinc-950/90 border border-amber-500/40 shadow-2xl backdrop-blur-md text-xs font-mono text-zinc-200"
+                        className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-zinc-950/90 border border-amber-500/40 shadow-2xl backdrop-blur-md text-[11px] sm:text-xs font-mono text-zinc-200 max-w-[90vw] sm:max-w-sm"
                     >
-                        <div className="p-1 rounded bg-amber-500/20 text-amber-300">
-                            <Info className="w-4 h-4" />
+                        <div className="p-1 rounded bg-amber-500/20 text-amber-300 flex-shrink-0">
+                            <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </div>
-                        <span>{discoveryHint}</span>
+                        <span className="line-clamp-2 sm:line-clamp-none">{discoveryHint}</span>
                         <button
                             onClick={() => setDiscoveryHint(null)}
                             className="p-1 text-zinc-400 hover:text-zinc-200 transition-colors ml-1 cursor-pointer"
@@ -599,8 +745,8 @@ export default function StoryController() {
                                 {MENU_OPTIONS[selectedMenuIndex]?.description}
                             </p>
 
-                            {/* Keyboard controls helper */}
-                            <div className="flex items-center gap-5 text-[11px] font-mono text-zinc-400 drop-shadow">
+                            {/* Keyboard controls helper for desktop / Touch hint for mobile */}
+                            <div className="hidden sm:flex items-center gap-5 text-[11px] font-mono text-zinc-400 drop-shadow">
                                 <span className="flex items-center gap-1.5">
                                     <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
                                         ESC
@@ -614,20 +760,26 @@ export default function StoryController() {
                                     </kbd>
                                     Enter Portfolio
                                 </span>
-                                <span className="text-zinc-600 hidden sm:inline">•</span>
-                                <span className="hidden sm:flex items-center gap-1.5">
+                                <span className="text-zinc-600">•</span>
+                                <span className="flex items-center gap-1.5">
                                     <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
                                         ENTER
                                     </kbd>
                                     Select
                                 </span>
-                                <span className="text-zinc-600 hidden sm:inline">•</span>
-                                <span className="hidden sm:flex items-center gap-1.5">
+                                <span className="text-zinc-600">•</span>
+                                <span className="flex items-center gap-1.5">
                                     <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
                                         ↑ / ↓
                                     </kbd>
                                     Navigate
                                 </span>
+                            </div>
+
+                            {/* Mobile Touch Helper */}
+                            <div className="sm:hidden flex items-center gap-2 text-xs font-mono text-zinc-300 drop-shadow py-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                                <span>Tap any option to enter • Drag to view room</span>
                             </div>
 
                         </div>

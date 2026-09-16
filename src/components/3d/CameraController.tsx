@@ -76,10 +76,23 @@ export default function CameraController({
 }: CameraControllerProps) {
     const { camera, gl } = useThree();
 
-    // Fixed 4th wall camera coordinates
+    // Fixed 4th wall camera coordinates (desktop)
     const FIXED_WALL4_POS = useMemo(() => new THREE.Vector3(-0.40, 1.82, 5.35), []);
+    // Mobile portrait pull-back: higher + further back so full room width fits vertically
+    const FIXED_WALL4_POS_MOBILE = useMemo(() => new THREE.Vector3(0.10, 3.20, 9.50), []);
+    // Mobile room target is more centered (Y a bit lower to show floor/furniture)
+    const ROOM_TARGET_MOBILE = useMemo(() => new THREE.Vector3(0.20, 1.10, -0.20), []);
     const ROOM_TARGET = useMemo(() => new THREE.Vector3(0.60, 1.45, -0.55), []);
     const MASTER_FOV = 58;
+
+    const getResponsiveMasterFov = (aspect: number) => {
+        if (aspect < 1) {
+            // Portrait phone: significantly widen FOV so full room width fits
+            // At aspect 0.46 (typical phone): 58 + 0.54 * 52 = ~86°
+            return Math.min(95, Math.round(58 + (1 - aspect) * 52));
+        }
+        return 58;
+    };
 
     // Cinematic initial load/reload slow zoom-out animation
     const INTRO_START_POS = useMemo(() => new THREE.Vector3(-0.25, 1.68, 3.75), []);
@@ -126,6 +139,8 @@ export default function CameraController({
     });
     const isPointerDownRef = useRef(false);
     const lastPointerPosRef = useRef({ x: 0, y: 0 });
+    // Mobile virtual joystick analog input (-1..1)
+    const mobileWalkRef = useRef({ fwd: 0, right: 0 });
 
     const onTourPoiChangeRef = useRef(onTourPoiChange);
     useEffect(() => {
@@ -222,6 +237,7 @@ export default function CameraController({
             jumpVelRef.current = 0;
             jumpYRef.current = 0;
             isGroundedRef.current = true;
+            mobileWalkRef.current = { fwd: 0, right: 0 };
             keysRef.current = {
                 forward: false,
                 backward: false,
@@ -232,7 +248,7 @@ export default function CameraController({
                 sprint: false,
             };
         }
-    }, [mode, camera, onTourPoiChange, ROOM_TARGET, FIXED_WALL4_POS, INTRO_START_POS, MONITOR_POS]);
+    }, [mode, camera, onTourPoiChange, ROOM_TARGET, ROOM_TARGET_MOBILE, FIXED_WALL4_POS, FIXED_WALL4_POS_MOBILE, INTRO_START_POS, MONITOR_POS]);
 
     // Pointer drag / 360-degree mouse look listeners for Free Roam Mode
     useEffect(() => {
@@ -258,7 +274,9 @@ export default function CameraController({
             const dy = e.clientY - lastPointerPosRef.current.y;
             lastPointerPosRef.current = { x: e.clientX, y: e.clientY };
 
-            const sensitivity = 0.0032;
+            // Mobile touch events have pointerType 'touch' — use higher sensitivity
+            const isTouchInput = e.pointerType === 'touch';
+            const sensitivity = isTouchInput ? 0.009 : 0.0032;
             targetYawRef.current -= dx * sensitivity;
             targetPitchRef.current -= dy * sensitivity;
             // Vertical pitch clamp: -75° to +75°
@@ -280,12 +298,20 @@ export default function CameraController({
         window.addEventListener('pointerup', handlePointerUp);
         window.addEventListener('pointercancel', handlePointerUp);
 
+        // Listen for mobile joystick input from MobileWalkControls
+        const handleMobileWalk = (e: Event) => {
+            const { fwd, right } = (e as CustomEvent<{ fwd: number; right: number }>).detail;
+            mobileWalkRef.current = { fwd, right };
+        };
+        window.addEventListener('mobilewalk', handleMobileWalk);
+
         return () => {
             dom.style.cursor = 'auto';
             dom.removeEventListener('pointerdown', handlePointerDown);
             window.removeEventListener('pointermove', handlePointerMove);
             window.removeEventListener('pointerup', handlePointerUp);
             window.removeEventListener('pointercancel', handlePointerUp);
+            window.removeEventListener('mobilewalk', handleMobileWalk);
         };
     }, [mode, gl]);
 
@@ -342,21 +368,29 @@ export default function CameraController({
         // 1. FIXED 4TH WALL VIEW: SMOOTH SLOW ZOOM-OUT ON LOAD
         // ============================================================
         if (mode === 'orbit') {
+            const aspect = camera instanceof THREE.PerspectiveCamera ? camera.aspect : 1;
+            const isMobilePortrait = aspect < 1;
+            // Choose camera target position based on orientation
+            const activeCamPos = isMobilePortrait ? FIXED_WALL4_POS_MOBILE : FIXED_WALL4_POS;
+            const activeTarget = isMobilePortrait ? ROOM_TARGET_MOBILE : ROOM_TARGET;
+            const targetMasterFov = getResponsiveMasterFov(aspect);
+            const targetIntroFov = aspect < 1 ? Math.min(85, Math.round(46 + (1 - aspect) * 48)) : 46;
+
             if (introProgressRef.current < 1) {
                 introProgressRef.current = Math.min(1, introProgressRef.current + dt * 0.42);
                 const p = introProgressRef.current;
                 const ease = 1 - Math.pow(1 - p, 3);
-                camera.position.lerpVectors(INTRO_START_POS, FIXED_WALL4_POS, ease);
-                camera.lookAt(ROOM_TARGET);
+                camera.position.lerpVectors(INTRO_START_POS, activeCamPos, ease);
+                camera.lookAt(activeTarget);
                 if (camera instanceof THREE.PerspectiveCamera) {
-                    camera.fov = THREE.MathUtils.lerp(INTRO_START_FOV, MASTER_FOV, ease);
+                    camera.fov = THREE.MathUtils.lerp(targetIntroFov, targetMasterFov, ease);
                     camera.updateProjectionMatrix();
                 }
             } else {
-                camera.position.lerp(FIXED_WALL4_POS, Math.min(1, dt * 10));
-                camera.lookAt(ROOM_TARGET);
-                if (camera instanceof THREE.PerspectiveCamera && camera.fov !== MASTER_FOV) {
-                    camera.fov = THREE.MathUtils.lerp(camera.fov, MASTER_FOV, Math.min(1, dt * 8));
+                camera.position.lerp(activeCamPos, Math.min(1, dt * 10));
+                camera.lookAt(activeTarget);
+                if (camera instanceof THREE.PerspectiveCamera && Math.abs(camera.fov - targetMasterFov) > 0.2) {
+                    camera.fov = THREE.MathUtils.lerp(camera.fov, targetMasterFov, Math.min(1, dt * 8));
                     camera.updateProjectionMatrix();
                 }
             }
@@ -387,7 +421,9 @@ export default function CameraController({
             camera.lookAt(currentTourTargetPosRef.current);
 
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(camera.fov, currentStop.fov, Math.min(1, dt * 3));
+                const aspect = camera.aspect;
+                const targetFov = aspect < 1 ? Math.min(90, currentStop.fov + 28) : currentStop.fov;
+                camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, Math.min(1, dt * 3));
                 camera.updateProjectionMatrix();
             }
 
@@ -435,6 +471,13 @@ export default function CameraController({
             if (keys.backward) { dirX -= fwdX; dirZ -= fwdZ; }
             if (keys.left) { dirX -= rightX; dirZ -= rightZ; }
             if (keys.right) { dirX += rightX; dirZ += rightZ; }
+
+            // Apply mobile joystick analog input
+            const mw = mobileWalkRef.current;
+            if (Math.abs(mw.fwd) > 0.05 || Math.abs(mw.right) > 0.05) {
+                dirX += fwdX * mw.fwd + rightX * mw.right;
+                dirZ += fwdZ * mw.fwd + rightZ * mw.right;
+            }
 
             const inputMagnitude = Math.hypot(dirX, dirZ);
             if (inputMagnitude > 0.001) {
@@ -565,11 +608,16 @@ export default function CameraController({
             const p = transitionProgressRef.current;
             const ease = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
-            camera.position.lerpVectors(startCamPosRef.current, FIXED_WALL4_POS, ease);
-            camera.lookAt(ROOM_TARGET);
+            const aspect = camera instanceof THREE.PerspectiveCamera ? camera.aspect : 1;
+            const returnCamPos = aspect < 1 ? FIXED_WALL4_POS_MOBILE : FIXED_WALL4_POS;
+            const returnTarget = aspect < 1 ? ROOM_TARGET_MOBILE : ROOM_TARGET;
+            const returnFov = getResponsiveMasterFov(aspect);
+
+            camera.position.lerpVectors(startCamPosRef.current, returnCamPos, ease);
+            camera.lookAt(returnTarget);
 
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(camera.fov, MASTER_FOV, Math.min(1, dt * 6));
+                camera.fov = THREE.MathUtils.lerp(camera.fov, returnFov, Math.min(1, dt * 6));
                 camera.updateProjectionMatrix();
             }
 

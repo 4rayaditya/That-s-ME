@@ -100,9 +100,9 @@ export default function WindowsResumeViewerApp() {
                         />
                     </div>
                 ) : (
-                    <div className="w-full h-full overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-[#d5dbe4]">
+                    <div className="w-full h-full overflow-y-auto p-2 sm:p-5 md:p-8 custom-scrollbar bg-[#d5dbe4]">
                         {/* Pure White Clean Paper Sheet - Block layout with mx-auto so it covers 100% of height */}
-                        <div className="mx-auto max-w-3xl bg-white text-slate-900 p-6 sm:p-12 space-y-5 shadow-[0_2px_15px_rgba(0,0,0,0.12)] font-sans min-h-full">
+                        <div className="mx-auto max-w-3xl bg-white text-slate-900 p-4 sm:p-8 md:p-12 space-y-5 shadow-[0_2px_15px_rgba(0,0,0,0.12)] font-sans min-h-full">
                             {/* Header Section */}
                             <div className="text-center pb-2 border-b border-slate-400">
                                 <h1 className="text-2xl sm:text-3xl font-bold tracking-wide uppercase text-black font-serif">

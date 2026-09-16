@@ -18,7 +18,7 @@ const getCategoryHeadingColor = (color: string) => {
 
 export default function WindowsSkillsApp() {
     return (
-        <div className="flex-1 overflow-y-auto p-4 sm:p-7 space-y-7 custom-scrollbar font-sans text-sm bg-[#f8fafc]">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-7 space-y-4 sm:space-y-6 custom-scrollbar font-sans text-sm bg-[#f8fafc]">
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-200">
                 <div>
