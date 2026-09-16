@@ -117,7 +117,12 @@ export default function StoryController() {
                     setSelectedMenuIndex((prev) => (prev - 1 + MENU_OPTIONS.length) % MENU_OPTIONS.length);
                     return;
                 }
-                if (e.key === 'Enter' || e.code === 'Space') {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    handleTitleSelect('portfolio');
+                    return;
+                }
+                if (e.key === 'Enter') {
                     e.preventDefault();
                     handleTitleSelect(MENU_OPTIONS[selectedMenuIndex].id);
                     return;
@@ -253,12 +258,12 @@ export default function StoryController() {
             setCameraMode('tour');
         } else if (option === 'walk') {
             setCameraMode('walk');
-            setDiscoveryHint('First-Person Roam: WASD to walk & strafe, drag mouse to look 360°, Shift to sprint, Space to hop.');
+            setDiscoveryHint('First-Person Roam: WASD to walk & strafe, drag mouse to look 360°, Shift to sprint, Space to enter portfolio.');
             setTimeout(() => setDiscoveryHint(null), 5500);
         } else {
             // 'explore'
             setCameraMode('orbit');
-            setDiscoveryHint('Click the battlestation monitors or press [Enter] anytime to open portfolio.');
+            setDiscoveryHint('Click the battlestation monitors or press [Space] anytime to open portfolio.');
             setTimeout(() => setDiscoveryHint(null), 6000);
         }
     };
@@ -448,7 +453,7 @@ export default function StoryController() {
                                     <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
                                         SPACE
                                     </kbd>
-                                    <span>Hop / Jump</span>
+                                    <span>Enter Portfolio</span>
                                 </span>
                             </div>
                         </div>
@@ -604,6 +609,13 @@ export default function StoryController() {
                                 </span>
                                 <span className="text-zinc-600">•</span>
                                 <span className="flex items-center gap-1.5">
+                                    <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
+                                        SPACE
+                                    </kbd>
+                                    Enter Portfolio
+                                </span>
+                                <span className="text-zinc-600 hidden sm:inline">•</span>
+                                <span className="hidden sm:flex items-center gap-1.5">
                                     <kbd className="px-1.5 py-0.5 rounded bg-zinc-900/90 border border-zinc-700 text-[10px] text-zinc-200 font-mono shadow-sm">
                                         ENTER
                                     </kbd>

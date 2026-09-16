@@ -29,9 +29,11 @@ import WindowsTerminalApp from './WindowsTerminalApp';
 import WindowsMailApp from './WindowsMailApp';
 import WindowsResumeViewerApp from './WindowsResumeViewerApp';
 import WindowsMediaApp from './WindowsMediaApp';
+import WindowsFilesFolderApp from './WindowsFilesFolderApp';
 import CodeEditorApp from './CodeEditorApp';
 import { audio } from '@/lib/audio';
 import { useIsMobile } from '@/lib/useIsMobile';
+import { Folder } from 'lucide-react';
 
 interface WindowsDesktopProps {
     onReturnToRoom: () => void;
@@ -76,14 +78,12 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
 
     const desktopIcons: DesktopIcon[] = [
         { id: 'experience', name: 'Computer', ext: '', icon: <Win7ComputerIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'about',      name: 'Aditya', ext: '', icon: <Win7UserFolderIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'files',      name: 'Files', ext: '', icon: <Win7UserFolderIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'projects',   name: 'Internet Explorer', ext: '', icon: <Win7InternetExplorerIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'skills',     name: 'Control Panel', ext: '', icon: <Win7ControlPanelIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'mail',       name: 'Network', ext: '', icon: <Win7NetworkIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'notepad',    name: 'About_Aditya', ext: '.txt', icon: <Win7NotepadIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'terminal',   name: 'cmd', ext: '.exe', icon: <Win7CmdIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'code',       name: 'VS Code', ext: '', icon: <Win7VSCodeIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'resume',     name: 'Resume', ext: '.pdf', icon: <Win7PdfIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'media',      name: 'Windows Media', ext: '', icon: <Win7MediaPlayerIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'return',     name: 'Recycle Bin', ext: '', icon: <Win7RecycleBinIcon className="w-11 h-11 drop-shadow-md" /> },
     ];
@@ -108,7 +108,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     }, [onReturnToRoom]);
 
     const openApp = (rawAppId: string) => {
-        const appId = rawAppId === 'notepad' ? 'about' : rawAppId;
+        const appId = rawAppId;
         if (appId === 'return') { audio.playWarpOut(); onReturnToRoom(); return; }
         audio.playClick();
         const nextZ = topZIndex + 1;
@@ -122,13 +122,15 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         let newWindow: WindowState;
         switch (appId) {
             case 'experience': newWindow = { id:'experience', title:'Career Experience — Aditya Ray', icon:<Briefcase className="w-4 h-4 text-amber-500"/>, subtitle:'Verified Track Record', component:<WindowsExperienceApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:160,y:50}, initialSize:{width:840,height:580} }; break;
+            case 'files':
+            case 'about':      newWindow = { id:'files', title:'Files — C:\\Users\\Aditya\\Documents', icon:<Folder className="w-4 h-4 text-amber-400"/>, subtitle:'Documents & Resumes', component:<WindowsFilesFolderApp onOpenFile={openApp}/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:190,y:55}, initialSize:{width:780,height:520} }; break;
             case 'projects':   newWindow = { id:'projects', title:'Projects Explorer — Aditya Ray Flagship Systems', icon:<FolderGit2 className="w-4 h-4 text-cyan-500"/>, subtitle:'3D WebGL & Full-Stack Projects', component:<WindowsProjectsApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:220,y:70}, initialSize:{width:920,height:600} }; break;
             case 'skills':     newWindow = { id:'skills', title:'System Diagnostics // Tech Stack Matrix', icon:<Cpu className="w-4 h-4 text-purple-500"/>, subtitle:'GPU & Distributed Systems', component:<WindowsSkillsApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:200,y:60}, initialSize:{width:820,height:560} }; break;
-            case 'about':      newWindow = { id:'about', title:'About_Aditya.txt — Notepad', icon:<FileText className="w-4 h-4 text-sky-500"/>, subtitle:'Aditya Ray Bio & Principles', component:<WindowsNotepadApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:250,y:80}, initialSize:{width:720,height:500} }; break;
+            case 'notepad':    newWindow = { id:'notepad', title:'About_Aditya.txt — Notepad', icon:<FileText className="w-4 h-4 text-sky-500"/>, subtitle:'Aditya Ray Bio & Principles', component:<WindowsNotepadApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:250,y:80}, initialSize:{width:720,height:500} }; break;
             case 'terminal':   newWindow = { id:'terminal', title:'Command Prompt — cmd.exe', icon:<Terminal className="w-4 h-4 text-emerald-500"/>, subtitle:'C:\\Users\\Aditya', component:<WindowsTerminalApp onReturnToRoom={onReturnToRoom}/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:280,y:100}, initialSize:{width:740,height:480} }; break;
             case 'code':       newWindow = { id:'code', title:'VS Code — /home/aditya/portfolio', icon:<Code2 className="w-4 h-4 text-violet-500"/>, subtitle:'Active Workspace', component:<CodeEditorApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:240,y:60}, initialSize:{width:880,height:580} }; break;
             case 'mail':       newWindow = { id:'mail', title:'Windows Mail — Contact Uplink', icon:<Mail className="w-4 h-4 text-rose-500"/>, subtitle:'Encrypted Transmission', component:<WindowsMailApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:260,y:80}, initialSize:{width:760,height:520} }; break;
-            case 'resume':     newWindow = { id:'resume', title:'Aditya_Ray_Resume.pdf — PDF Reader', icon:<Award className="w-4 h-4 text-teal-500"/>, subtitle:'Verified Curriculum Vitae', component:<WindowsResumeViewerApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:200,y:40}, initialSize:{width:780,height:620} }; break;
+            case 'resume':     newWindow = { id:'resume', title:'Aditya_Ray_Resume.pdf — PDF Reader', icon:<Award className="w-4 h-4 text-teal-500"/>, subtitle:'Verified Curriculum Vitae', component:<WindowsResumeViewerApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:200,y:40}, initialSize:{width:820,height:640} }; break;
             case 'media':      newWindow = { id:'media', title:'Groove Music — Lo-Fi Synthesizer', icon:<Music className="w-4 h-4 text-yellow-500"/>, subtitle:'Procedural Audio Stream', component:<WindowsMediaApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:320,y:120}, initialSize:{width:500,height:380} }; break;
             default: return;
         }

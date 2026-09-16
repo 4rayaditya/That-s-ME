@@ -305,8 +305,7 @@ export default function CameraController({
             if (e.code === 'ArrowLeft') keysRef.current.turnLeft = true;
             if (e.code === 'ArrowRight') keysRef.current.turnRight = true;
             if (e.shiftKey || k === 'shift') keysRef.current.sprint = true;
-            if (e.code === 'Space') {
-                e.preventDefault();
+            if (e.code === 'KeyJ') {
                 if (isGroundedRef.current) {
                     jumpVelRef.current = 3.2;
                     isGroundedRef.current = false;

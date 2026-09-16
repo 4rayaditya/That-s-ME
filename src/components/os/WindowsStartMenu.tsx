@@ -6,6 +6,7 @@ import {
     Power,
     Briefcase,
     FolderGit2,
+    Folder,
     Cpu,
     FileText,
     Terminal,
@@ -41,9 +42,9 @@ export default function WindowsStartMenu({
 
     const pinnedApps = [
         { id: 'experience', label: 'Experience', icon: <Briefcase className="w-5 h-5 text-amber-400" />, desc: 'Career History' },
+        { id: 'files', label: 'Files (Documents)', icon: <Folder className="w-5 h-5 text-amber-400" />, desc: 'Resume & About.txt' },
         { id: 'projects', label: 'Projects', icon: <FolderGit2 className="w-5 h-5 text-cyan-400" />, desc: 'Flagship Systems' },
         { id: 'skills', label: 'Skills', icon: <Cpu className="w-5 h-5 text-purple-400" />, desc: 'Tech Matrix' },
-        { id: 'about', label: 'About Aditya', icon: <FileText className="w-5 h-5 text-sky-400" />, desc: 'Bio & Values' },
         { id: 'terminal', label: 'Command Prompt', icon: <Terminal className="w-5 h-5 text-emerald-400" />, desc: 'cmd.exe' },
         { id: 'code', label: 'Code Editor', icon: <Code2 className="w-5 h-5 text-violet-400" />, desc: 'Neovim / VSCode' },
         { id: 'mail', label: 'Contact', icon: <Mail className="w-5 h-5 text-rose-400" />, desc: 'Send Transmission' },
