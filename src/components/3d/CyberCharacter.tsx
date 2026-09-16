@@ -484,7 +484,7 @@ export default function CyberCharacter({
             {/* ANATOMICALLY UNIFIED SKELETON ROOT (Hips/Pelvis Center) */}
             <group ref={bodyRootRef} position={[0, 0.55, 0]}>
                 {/* Hips / Waist Connector (Anatomical Pelvis in Techwear Cargo Fabric) */}
-                <mesh castShadow position={[0, 0, 0]}>
+                <mesh position={[0, 0, 0]}>
                     <boxGeometry args={[0.36, 0.16, 0.26]} />
                     <meshStandardMaterial color="#0b0f19" roughness={0.85} />
                 </mesh>
@@ -501,7 +501,7 @@ export default function CyberCharacter({
                 {/* UPPER BODY: TORSO + HEAD + ARMS (Attached directly to Hips) */}
                 <group ref={torsoRef} position={[0, 0.28, 0]}>
                     {/* Inner Techwear Hoodie (Deep Charcoal Textured Fabric) */}
-                    <mesh castShadow position={[0, 0, 0]}>
+                    <mesh position={[0, 0, 0]}>
                         <boxGeometry args={[0.44, 0.42, 0.28]} />
                         <meshStandardMaterial color="#111520" roughness={0.8} />
                     </mesh>
@@ -513,7 +513,7 @@ export default function CyberCharacter({
                     </mesh>
 
                     {/* Outer Techwear Bomber Vest with Tactical Shoulder Pads */}
-                    <mesh castShadow position={[0, 0.02, 0.01]}>
+                    <mesh position={[0, 0.02, 0.01]}>
                         <boxGeometry args={[0.46, 0.38, 0.29]} />
                         <meshStandardMaterial color="#090d16" roughness={0.65} metalness={0.25} />
                     </mesh>
@@ -525,11 +525,11 @@ export default function CyberCharacter({
                     </mesh>
 
                     {/* Tactical Chest Cargo Pockets */}
-                    <mesh position={[-0.12, 0.04, 0.16]} castShadow>
+                    <mesh position={[-0.12, 0.04, 0.16]}>
                         <boxGeometry args={[0.11, 0.13, 0.03]} />
                         <meshStandardMaterial color="#05080f" roughness={0.7} />
                     </mesh>
-                    <mesh position={[0.12, 0.04, 0.16]} castShadow>
+                    <mesh position={[0.12, 0.04, 0.16]}>
                         <boxGeometry args={[0.11, 0.13, 0.03]} />
                         <meshStandardMaterial color="#05080f" roughness={0.7} />
                     </mesh>
@@ -545,7 +545,7 @@ export default function CyberCharacter({
                     </mesh>
 
                     {/* 3D Draped Hood Folds Behind Neck */}
-                    <mesh position={[0, 0.19, -0.12]} rotation={[-0.28, 0, 0]} castShadow>
+                    <mesh position={[0, 0.19, -0.12]} rotation={[-0.28, 0, 0]}>
                         <boxGeometry args={[0.32, 0.14, 0.15]} />
                         <meshStandardMaterial color="#0b0e17" roughness={0.85} />
                     </mesh>
@@ -559,13 +559,13 @@ export default function CyberCharacter({
                     {/* HEAD, SCULPTED FACE, LAYERED HAIR & STUDIO HEADPHONES */}
                     <group ref={headRef} position={[0, 0.38, 0]}>
                         {/* Anatomical Cranium Base (Natural Skin Tone) */}
-                        <mesh castShadow position={[0, 0, 0]}>
+                        <mesh position={[0, 0, 0]}>
                             <boxGeometry args={[0.22, 0.23, 0.22]} />
                             <meshStandardMaterial color="#d4a373" roughness={0.7} />
                         </mesh>
 
                         {/* Tapered Lower Jaw & Chin */}
-                        <mesh castShadow position={[0, -0.08, 0.03]}>
+                        <mesh position={[0, -0.08, 0.03]}>
                             <boxGeometry args={[0.17, 0.09, 0.17]} />
                             <meshStandardMaterial color="#d4a373" roughness={0.7} />
                         </mesh>
@@ -628,7 +628,7 @@ export default function CyberCharacter({
                         </mesh>
                         {/* Left Padded Ear Cup */}
                         <group position={[-0.135, -0.015, 0]}>
-                            <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+                            <mesh rotation={[0, 0, Math.PI / 2]}>
                                 <cylinderGeometry args={[0.055, 0.06, 0.035, 16]} />
                                 <meshStandardMaterial color="#18181b" roughness={0.4} metalness={0.6} />
                             </mesh>
@@ -645,7 +645,7 @@ export default function CyberCharacter({
                         </group>
                         {/* Right Padded Ear Cup */}
                         <group position={[0.135, -0.015, 0]}>
-                            <mesh castShadow rotation={[0, 0, -Math.PI / 2]}>
+                            <mesh rotation={[0, 0, -Math.PI / 2]}>
                                 <cylinderGeometry args={[0.055, 0.06, 0.035, 16]} />
                                 <meshStandardMaterial color="#18181b" roughness={0.4} metalness={0.6} />
                             </mesh>
@@ -663,17 +663,17 @@ export default function CyberCharacter({
                     {/* ARTICULATED LEFT ARM (Shoulder + Bicep + Forearm + Modeled Hand) */}
                     <group ref={leftArmRef} position={[-0.27, 0.16, 0]}>
                         {/* Deltoid / Shoulder Pad */}
-                        <mesh castShadow position={[0, 0, 0]}>
+                        <mesh position={[0, 0, 0]}>
                             <sphereGeometry args={[0.075, 12, 12]} />
                             <meshStandardMaterial color="#0e1422" roughness={0.7} />
                         </mesh>
                         {/* Bicep Sleeve */}
-                        <mesh castShadow position={[0, -0.1, 0]}>
+                        <mesh position={[0, -0.1, 0]}>
                             <cylinderGeometry args={[0.062, 0.055, 0.16, 12]} />
                             <meshStandardMaterial color="#0e1422" roughness={0.75} />
                         </mesh>
                         {/* Forearm with Ribbed Wrist Cuff */}
-                        <mesh castShadow position={[0, -0.24, 0.02]}>
+                        <mesh position={[0, -0.24, 0.02]}>
                             <cylinderGeometry args={[0.054, 0.046, 0.16, 12]} />
                             <meshStandardMaterial color="#111728" roughness={0.8} />
                         </mesh>
@@ -685,7 +685,7 @@ export default function CyberCharacter({
                         {/* Modeled Left Hand (Palm + Curled Fingers on Keyboard) */}
                         <group position={[0, -0.34, 0.04]}>
                             {/* Palm */}
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.075, 0.035, 0.08]} />
                                 <meshStandardMaterial color="#d4a373" roughness={0.7} />
                             </mesh>
@@ -704,15 +704,15 @@ export default function CyberCharacter({
 
                     {/* ARTICULATED RIGHT ARM (Shoulder + Bicep + Forearm + Modeled Hand) */}
                     <group ref={rightArmRef} position={[0.27, 0.16, 0]}>
-                        <mesh castShadow position={[0, 0, 0]}>
+                        <mesh position={[0, 0, 0]}>
                             <sphereGeometry args={[0.075, 12, 12]} />
                             <meshStandardMaterial color="#0e1422" roughness={0.7} />
                         </mesh>
-                        <mesh castShadow position={[0, -0.1, 0]}>
+                        <mesh position={[0, -0.1, 0]}>
                             <cylinderGeometry args={[0.062, 0.055, 0.16, 12]} />
                             <meshStandardMaterial color="#0e1422" roughness={0.75} />
                         </mesh>
-                        <mesh castShadow position={[0, -0.24, 0.02]}>
+                        <mesh position={[0, -0.24, 0.02]}>
                             <cylinderGeometry args={[0.054, 0.046, 0.16, 12]} />
                             <meshStandardMaterial color="#111728" roughness={0.8} />
                         </mesh>
@@ -722,7 +722,7 @@ export default function CyberCharacter({
                         </mesh>
                         {/* Modeled Right Hand (Resting on Mouse / Typing) */}
                         <group position={[0, -0.34, 0.04]}>
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.075, 0.035, 0.08]} />
                                 <meshStandardMaterial color="#d4a373" roughness={0.7} />
                             </mesh>
@@ -738,7 +738,7 @@ export default function CyberCharacter({
 
                         {/* Coffee Cup Item (Held during brewing routine) */}
                         <group ref={coffeeCupRef} position={[0, -0.42, 0.08]} visible={false}>
-                            <mesh castShadow>
+                            <mesh>
                                 <cylinderGeometry args={[0.05, 0.04, 0.1, 14]} />
                                 <meshStandardMaterial color="#18181b" roughness={0.3} metalness={0.7} />
                             </mesh>
@@ -758,7 +758,7 @@ export default function CyberCharacter({
                     {/* Mini Wireless Gamepad Controller (Held while chilling on sofa) */}
                     <group ref={gamepadRef} position={[0, -0.20, 0.28]} rotation={[0.42, 0, 0]} visible={false}>
                         {/* Controller Body */}
-                        <mesh castShadow>
+                        <mesh>
                             <boxGeometry args={[0.16, 0.045, 0.10]} />
                             <meshStandardMaterial color="#090d16" roughness={0.35} metalness={0.6} />
                         </mesh>
@@ -793,7 +793,7 @@ export default function CyberCharacter({
                 {/* Left Leg (Thigh rotates around hip joint [0, 0, 0]) */}
                 <group ref={leftLegRef} position={[-0.13, -0.06, 0]}>
                     {/* Upper Thigh in Tapered Dark Cargo Joggers */}
-                    <mesh castShadow position={[0, -0.11, 0]}>
+                    <mesh position={[0, -0.11, 0]}>
                         <cylinderGeometry args={[0.075, 0.065, 0.22, 12]} />
                         <meshStandardMaterial color="#080c14" roughness={0.85} />
                     </mesh>
@@ -806,12 +806,12 @@ export default function CyberCharacter({
                     {/* Knee & Lower Shin (Joint at y = -0.22) */}
                     <group ref={leftKneeRef} position={[0, -0.22, 0]}>
                         {/* Knee cap */}
-                        <mesh position={[0, 0, 0.03]} castShadow>
+                        <mesh position={[0, 0, 0.03]}>
                             <sphereGeometry args={[0.045, 8, 8]} />
                             <meshStandardMaterial color="#080c14" roughness={0.85} />
                         </mesh>
                         {/* Articulated Shin */}
-                        <mesh castShadow position={[0, -0.11, 0]}>
+                        <mesh position={[0, -0.11, 0]}>
                             <cylinderGeometry args={[0.062, 0.052, 0.22, 12]} />
                             <meshStandardMaterial color="#080c14" roughness={0.85} />
                         </mesh>
@@ -819,12 +819,12 @@ export default function CyberCharacter({
                         {/* High-Top Cyber Streetwear Sneaker */}
                         <group position={[0, -0.23, 0.04]}>
                             {/* Sneaker Ankle Collar & Tongue */}
-                            <mesh castShadow position={[0, 0.04, -0.02]}>
+                            <mesh position={[0, 0.04, -0.02]}>
                                 <boxGeometry args={[0.11, 0.08, 0.12]} />
                                 <meshStandardMaterial color="#18181b" roughness={0.6} />
                             </mesh>
                             {/* Sneaker Leather Upper */}
-                            <mesh castShadow position={[0, 0, 0.02]}>
+                            <mesh position={[0, 0, 0.02]}>
                                 <boxGeometry args={[0.115, 0.07, 0.18]} />
                                 <meshStandardMaterial color="#f8fafc" roughness={0.3} />
                             </mesh>
@@ -844,7 +844,7 @@ export default function CyberCharacter({
 
                 {/* Right Leg (Thigh rotates around hip joint [0, 0, 0]) */}
                 <group ref={rightLegRef} position={[0.13, -0.06, 0]}>
-                    <mesh castShadow position={[0, -0.11, 0]}>
+                    <mesh position={[0, -0.11, 0]}>
                         <cylinderGeometry args={[0.075, 0.065, 0.22, 12]} />
                         <meshStandardMaterial color="#080c14" roughness={0.85} />
                     </mesh>
@@ -855,22 +855,22 @@ export default function CyberCharacter({
 
                     {/* Knee & Lower Shin (Joint at y = -0.22) */}
                     <group ref={rightKneeRef} position={[0, -0.22, 0]}>
-                        <mesh position={[0, 0, 0.03]} castShadow>
+                        <mesh position={[0, 0, 0.03]}>
                             <sphereGeometry args={[0.045, 8, 8]} />
                             <meshStandardMaterial color="#080c14" roughness={0.85} />
                         </mesh>
-                        <mesh castShadow position={[0, -0.11, 0]}>
+                        <mesh position={[0, -0.11, 0]}>
                             <cylinderGeometry args={[0.062, 0.052, 0.22, 12]} />
                             <meshStandardMaterial color="#080c14" roughness={0.85} />
                         </mesh>
 
                         {/* High-Top Cyber Streetwear Sneaker (Sole correctly at -0.045) */}
                         <group position={[0, -0.23, 0.04]}>
-                            <mesh castShadow position={[0, 0.04, -0.02]}>
+                            <mesh position={[0, 0.04, -0.02]}>
                                 <boxGeometry args={[0.11, 0.08, 0.12]} />
                                 <meshStandardMaterial color="#18181b" roughness={0.6} />
                             </mesh>
-                            <mesh castShadow position={[0, 0, 0.02]}>
+                            <mesh position={[0, 0, 0.02]}>
                                 <boxGeometry args={[0.115, 0.07, 0.18]} />
                                 <meshStandardMaterial color="#f8fafc" roughness={0.3} />
                             </mesh>

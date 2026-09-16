@@ -39,7 +39,7 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
             {/* STAND 1: MAIN HORIZONTAL MONITOR STAND (x = 0.28) */}
             <group position={[0.28, 0, 0]}>
                 {/* Heavy CNC Machined Aluminum Desktop Base (resting flat on oak table at y = -0.69) */}
-                <mesh castShadow receiveShadow position={[0, -0.685, 0.06]}>
+                <mesh receiveShadow position={[0, -0.685, 0.06]}>
                     <boxGeometry args={[0.32, 0.018, 0.24]} />
                     <meshStandardMaterial color="#090e18" metalness={0.92} roughness={0.18} />
                 </mesh>
@@ -49,7 +49,7 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
                     <meshStandardMaterial color="#334155" metalness={0.95} roughness={0.15} />
                 </mesh>
                 {/* Solid Vertical Riser Column (from desk to monitor VESA mount) */}
-                <mesh castShadow position={[0, -0.34, -0.04]}>
+                <mesh position={[0, -0.34, -0.04]}>
                     <boxGeometry args={[0.075, 0.68, 0.055]} />
                     <meshStandardMaterial color="#0c121e" metalness={0.9} roughness={0.2} />
                 </mesh>
@@ -72,7 +72,7 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
             {/* STAND 2: SECOND VERTICAL MONITOR STAND (x = -0.56, angled 0.22 rad) */}
             <group position={[-0.56, 0, 0.04]} rotation={[0, 0.22, 0]}>
                 {/* Heavy Aluminum Desktop Base (resting flat on oak table at y = -0.69) */}
-                <mesh castShadow receiveShadow position={[0, -0.685, 0.06]}>
+                <mesh receiveShadow position={[0, -0.685, 0.06]}>
                     <boxGeometry args={[0.26, 0.018, 0.22]} />
                     <meshStandardMaterial color="#090e18" metalness={0.92} roughness={0.18} />
                 </mesh>
@@ -82,7 +82,7 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
                     <meshStandardMaterial color="#334155" metalness={0.95} roughness={0.15} />
                 </mesh>
                 {/* Solid Vertical Riser Column (from desk to vertical monitor VESA mount) */}
-                <mesh castShadow position={[0, -0.32, -0.04]}>
+                <mesh position={[0, -0.32, -0.04]}>
                     <boxGeometry args={[0.065, 0.72, 0.055]} />
                     <meshStandardMaterial color="#0c121e" metalness={0.9} roughness={0.2} />
                 </mesh>
@@ -118,7 +118,7 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
             {/* 1. MAIN HORIZONTAL MONITOR (Positioned at x = 0.28, separated by clean black border) */}
             <group position={[0.28, 0, 0]}>
                 {/* Outer Beveled Chassis (1.14 x 0.62) */}
-                <mesh castShadow>
+                <mesh>
                     <boxGeometry args={[1.14, 0.62, 0.055]} />
                     <meshStandardMaterial color="#050810" metalness={0.92} roughness={0.25} />
                 </mesh>
@@ -162,7 +162,7 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
             {/* 2. SECOND CURVED MONITOR VERTICALLY (Positioned at x = -0.56, angled 0.22 rad, crisp black border, zero overlap) */}
             <group position={[-0.56, 0.04, 0.04]} rotation={[0, 0.22, 0]}>
                 {/* Outer Vertical Chassis (Portrait: 0.42 width x 0.78 height) */}
-                <mesh castShadow>
+                <mesh>
                     <boxGeometry args={[0.42, 0.78, 0.055]} />
                     <meshStandardMaterial color="#050810" metalness={0.92} roughness={0.25} />
                 </mesh>
@@ -417,7 +417,7 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
     return (
         <group position={[0, 0, -2.95]}>
             {/* Desktop Surface - Aesthetic Solid Warm Oak / Live-Edge Walnut */}
-            <mesh receiveShadow castShadow position={[0, 0.72, 0]}>
+            <mesh receiveShadow position={[0, 0.72, 0]}>
                 <boxGeometry args={[3.2, 0.065, 1.25]} />
                 <meshStandardMaterial color="#7c5335" roughness={0.45} metalness={0.06} />
             </mesh>
@@ -448,11 +448,11 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
             />
 
             {/* Solid Oak & Warm Bronze Trestle Legs */}
-            <mesh castShadow position={[-1.48, 0.36, 0]}>
+            <mesh position={[-1.48, 0.36, 0]}>
                 <boxGeometry args={[0.08, 0.72, 1.05]} />
                 <meshStandardMaterial color="#4a3220" roughness={0.5} />
             </mesh>
-            <mesh castShadow position={[1.48, 0.36, 0]}>
+            <mesh position={[1.48, 0.36, 0]}>
                 <boxGeometry args={[0.08, 0.72, 1.05]} />
                 <meshStandardMaterial color="#4a3220" roughness={0.5} />
             </mesh>
@@ -549,7 +549,7 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
 
             {/* ARTICULATED DESK LAMP WITH WARM AMBER GLOW */}
             <group position={[-1.25, 0.75, -0.3]}>
-                <mesh castShadow>
+                <mesh>
                     <cylinderGeometry args={[0.09, 0.1, 0.03, 16]} />
                     <meshStandardMaterial color="#ffb703" metalness={0.8} roughness={0.3} />
                 </mesh>
@@ -575,7 +575,7 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
             <group position={[0, 0, 1.1]}>
                 {/* Five-Star Caster Wheel Base */}
                 <group position={[0, 0.05, 0]}>
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.065, 0.075, 0.05, 16]} />
                         <meshStandardMaterial color="#090d16" metalness={0.9} roughness={0.2} />
                     </mesh>
@@ -602,20 +602,20 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
                 </group>
 
                 {/* Pneumatic Chrome Lift Column */}
-                <mesh position={[0, 0.22, 0]} castShadow>
+                <mesh position={[0, 0.22, 0]}>
                     <cylinderGeometry args={[0.026, 0.034, 0.3, 16]} />
                     <meshStandardMaterial color="#e2e8f0" metalness={0.98} roughness={0.1} />
                 </mesh>
 
                 {/* Under-Seat Tilt Mechanism */}
-                <mesh position={[0, 0.37, 0]} castShadow>
+                <mesh position={[0, 0.37, 0]}>
                     <boxGeometry args={[0.26, 0.05, 0.24]} />
                     <meshStandardMaterial color="#090d16" metalness={0.8} roughness={0.3} />
                 </mesh>
 
                 {/* Waterfall-Edge Contoured Seat Pan */}
                 <group position={[0, 0.42, 0]}>
-                    <mesh castShadow>
+                    <mesh>
                         <boxGeometry args={[0.5, 0.05, 0.48]} />
                         <meshStandardMaterial color="#0b0f19" roughness={0.6} />
                     </mesh>
@@ -627,7 +627,7 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
 
                 {/* Contoured High-Back Spine & Lumbar Support (Facing desk towards -Z) */}
                 <group position={[0, 0.70, 0.22]}>
-                    <mesh castShadow position={[0, 0, 0]} rotation={[-0.1, 0, 0]}>
+                    <mesh position={[0, 0, 0]} rotation={[-0.1, 0, 0]}>
                         <cylinderGeometry args={[0.022, 0.03, 0.52, 12]} />
                         <meshStandardMaterial color="#090d16" metalness={0.85} roughness={0.2} />
                     </mesh>
@@ -637,7 +637,7 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
                         <meshStandardMaterial color="#05080f" roughness={0.7} />
                     </mesh>
                     {/* Breathable Mesh Back Frame */}
-                    <mesh castShadow position={[0, 0.12, -0.02]} rotation={[0.06, 0, 0]}>
+                    <mesh position={[0, 0.12, -0.02]} rotation={[0.06, 0, 0]}>
                         <boxGeometry args={[0.46, 0.46, 0.035]} />
                         <meshStandardMaterial color="#0e1422" roughness={0.7} />
                     </mesh>
@@ -645,21 +645,21 @@ const BattlestationDesk = React.memo(function BattlestationDesk() {
 
                 {/* 3D Adjustable Armrests */}
                 <group position={[-0.26, 0.54, 0.02]}>
-                    <mesh castShadow position={[0, -0.06, 0]}>
+                    <mesh position={[0, -0.06, 0]}>
                         <boxGeometry args={[0.03, 0.18, 0.05]} />
                         <meshStandardMaterial color="#1e293b" metalness={0.8} />
                     </mesh>
-                    <mesh castShadow position={[0, 0.04, 0]}>
+                    <mesh position={[0, 0.04, 0]}>
                         <boxGeometry args={[0.07, 0.03, 0.22]} />
                         <meshStandardMaterial color="#090d16" roughness={0.5} />
                     </mesh>
                 </group>
                 <group position={[0.26, 0.54, 0.02]}>
-                    <mesh castShadow position={[0, -0.06, 0]}>
+                    <mesh position={[0, -0.06, 0]}>
                         <boxGeometry args={[0.03, 0.18, 0.05]} />
                         <meshStandardMaterial color="#1e293b" metalness={0.8} />
                     </mesh>
-                    <mesh castShadow position={[0, 0.04, 0]}>
+                    <mesh position={[0, 0.04, 0]}>
                         <boxGeometry args={[0.07, 0.03, 0.22]} />
                         <meshStandardMaterial color="#090d16" roughness={0.5} />
                     </mesh>
@@ -731,7 +731,7 @@ const ServerRackTower = React.memo(function ServerRackTower() {
     return (
         <group position={[-3.3, 0, -2.4]} rotation={[0, 0.4, 0]}>
             {/* 42U Server Rack Cabinet */}
-            <mesh castShadow position={[0, 1.4, 0]}>
+            <mesh position={[0, 1.4, 0]}>
                 <boxGeometry args={[0.9, 2.8, 0.8]} />
                 <meshStandardMaterial color="#060a12" roughness={0.4} metalness={0.8} />
             </mesh>
@@ -794,7 +794,7 @@ const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow() {
         <group position={[0, 0, 0]}>
             {/* ARCHITECTURAL HOLLOW WINDOW CASING & SLIM BRONZE MULLIONS */}
             {/* Top Frame Beam */}
-            <mesh position={[0, 2.92, -3.46]} castShadow>
+            <mesh position={[0, 2.92, -3.46]}>
                 <boxGeometry args={[3.84, 0.08, 0.12]} />
                 <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
@@ -804,17 +804,17 @@ const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow() {
                 <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
             {/* Left Frame Jamb */}
-            <mesh position={[-1.88, 1.9, -3.46]} castShadow>
+            <mesh position={[-1.88, 1.9, -3.46]}>
                 <boxGeometry args={[0.08, 2.08, 0.12]} />
                 <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
             {/* Right Frame Jamb */}
-            <mesh position={[1.88, 1.9, -3.46]} castShadow>
+            <mesh position={[1.88, 1.9, -3.46]}>
                 <boxGeometry args={[0.08, 2.08, 0.12]} />
                 <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
             {/* Center Slim Vertical Mullion */}
-            <mesh position={[0, 1.9, -3.46]} castShadow>
+            <mesh position={[0, 1.9, -3.46]}>
                 <boxGeometry args={[0.045, 2.0, 0.08]} />
                 <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
@@ -1061,12 +1061,12 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
 
             {/* 1. COUNTERTOP & SOLID CABINET FRAME */}
             {/* Counter Cabinet Body */}
-            <mesh castShadow receiveShadow position={[0, 0.44, 0]}>
+            <mesh receiveShadow position={[0, 0.44, 0]}>
                 <boxGeometry args={[1.15, 0.88, 0.58]} />
                 <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.6} />
             </mesh>
             {/* Live-Edge Walnut Counter Top Surface */}
-            <mesh castShadow receiveShadow position={[0, 0.89, 0]}>
+            <mesh receiveShadow position={[0, 0.89, 0]}>
                 <boxGeometry args={[1.20, 0.04, 0.62]} />
                 <meshStandardMaterial color="#6a4c33" roughness={0.45} metalness={0.06} />
             </mesh>
@@ -1079,7 +1079,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
             {/* 2. GLASS-DOOR RGB MINI FRIDGE (Left Bay, x = -0.28) */}
             <group position={[-0.28, 0.44, 0.02]}>
                 {/* Fridge Chassis Cavity / Dark Interior */}
-                <mesh castShadow>
+                <mesh>
                     <boxGeometry args={[0.50, 0.74, 0.48]} />
                     <meshStandardMaterial color="#030712" roughness={0.7} metalness={0.5} />
                 </mesh>
@@ -1374,7 +1374,7 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                             document.body.style.cursor = 'auto';
                         }}
                     >
-                        <mesh castShadow>
+                        <mesh>
                             <boxGeometry args={[0.48, 0.74, 0.016]} />
                             <meshStandardMaterial color="#0b1220" roughness={0.5} metalness={0.3} />
                         </mesh>
@@ -2018,7 +2018,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 </mesh>
 
                 {/* 1. Main TV Rear Chassis Enclosure (Ultra-slim OLED backing) */}
-                <mesh castShadow position={[0.006, 0, 0]}>
+                <mesh position={[0.006, 0, 0]}>
                     <boxGeometry args={[0.016, 0.846, 1.496]} />
                     <meshStandardMaterial
                         color="#050505"
@@ -2084,7 +2084,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
             {/* ============================================================ */}
             <group position={[3.32, 0.48, 1.35]}>
                 {/* Main Console Cabinet Body */}
-                <mesh castShadow receiveShadow position={[0, 0, 0]}>
+                <mesh receiveShadow position={[0, 0, 0]}>
                     <boxGeometry args={[0.34, 0.24, 1.88]} />
                     <meshStandardMaterial color="#452c1e" roughness={0.42} metalness={0.05} />
                 </mesh>
@@ -2182,7 +2182,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* Skateboard 1: Neo-Tokyo Akita Cyber Kanji Graphic */}
                 <group position={[0, 0, -0.14]}>
                     {/* Deck Body (7-Ply Canadian Maple) */}
-                    <mesh castShadow position={[0, 0, 0]}>
+                    <mesh position={[0, 0, 0]}>
                         <boxGeometry args={[0.014, 0.78, 0.19]} />
                         <meshStandardMaterial color="#0f172a" roughness={0.35} metalness={0.1} />
                     </mesh>
@@ -2208,18 +2208,18 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     {/* Polished Chrome Trucks */}
                     {[-0.24, 0.24].map((ty, ti) => (
                         <group key={ti} position={[-0.02, ty, 0]}>
-                            <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+                            <mesh rotation={[0, 0, Math.PI / 2]}>
                                 <cylinderGeometry args={[0.01, 0.01, 0.025, 8]} />
                                 <meshStandardMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
                             </mesh>
                             {/* Hanger Axle */}
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.016, 0.016, 0.17]} />
                                 <meshStandardMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
                             </mesh>
                             {/* 52mm Urethane Wheels */}
                             {[-0.08, 0.08].map((wz, wi) => (
-                                <mesh key={wi} position={[0, 0, wz]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+                                <mesh key={wi} position={[0, 0, wz]} rotation={[Math.PI / 2, 0, 0]}>
                                     <cylinderGeometry args={[0.024, 0.024, 0.022, 12]} />
                                     <meshStandardMaterial color="#00f5d4" roughness={0.3} />
                                 </mesh>
@@ -2230,7 +2230,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 
                 {/* Skateboard 2: Street Minimal Monochrome / Tokyo Typography */}
                 <group position={[0, 0, 0.14]}>
-                    <mesh castShadow position={[0, 0, 0]}>
+                    <mesh position={[0, 0, 0]}>
                         <boxGeometry args={[0.014, 0.78, 0.19]} />
                         <meshStandardMaterial color="#18181b" roughness={0.35} metalness={0.1} />
                     </mesh>
@@ -2250,16 +2250,16 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     {/* Trucks & Off-White Wheels */}
                     {[-0.24, 0.24].map((ty, ti) => (
                         <group key={ti} position={[-0.02, ty, 0]}>
-                            <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+                            <mesh rotation={[0, 0, Math.PI / 2]}>
                                 <cylinderGeometry args={[0.01, 0.01, 0.025, 8]} />
                                 <meshStandardMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
                             </mesh>
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.016, 0.016, 0.17]} />
                                 <meshStandardMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
                             </mesh>
                             {[-0.08, 0.08].map((wz, wi) => (
-                                <mesh key={wi} position={[0, 0, wz]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+                                <mesh key={wi} position={[0, 0, wz]} rotation={[Math.PI / 2, 0, 0]}>
                                     <cylinderGeometry args={[0.024, 0.024, 0.022, 12]} />
                                     <meshStandardMaterial color="#fef08a" roughness={0.4} />
                                 </mesh>
@@ -2281,7 +2281,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 </mesh>
 
                 {/* Brushed Brass Arched Outer Frame */}
-                <mesh castShadow position={[0, 0, 0]}>
+                <mesh position={[0, 0, 0]}>
                     <boxGeometry args={[0.035, 1.90, 0.72]} />
                     <meshStandardMaterial color="#d4af37" metalness={0.88} roughness={0.25} />
                 </mesh>
@@ -2309,13 +2309,13 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
             {/* ============================================================ */}
             <group position={[3.25, 0, 3.15]}>
                 {/* Heavy Solid Steel Base Plate */}
-                <mesh castShadow position={[0, 0.015, 0]}>
+                <mesh position={[0, 0.015, 0]}>
                     <cylinderGeometry args={[0.16, 0.16, 0.03, 16]} />
                     <meshStandardMaterial color="#0f172a" metalness={0.85} roughness={0.25} />
                 </mesh>
 
                 {/* Matte-Black Steel Upright Mast */}
-                <mesh castShadow position={[0, 0.88, 0]}>
+                <mesh position={[0, 0.88, 0]}>
                     <cylinderGeometry args={[0.016, 0.016, 1.72, 12]} />
                     <meshStandardMaterial color="#090d16" metalness={0.8} roughness={0.3} />
                 </mesh>
@@ -2327,7 +2327,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     { y: 1.25, rotY: 2.2, hookLen: 0.16 },
                 ].map((hook, hi) => (
                     <group key={hi} position={[0, hook.y, 0]} rotation={[0, hook.rotY, 0.35]}>
-                        <mesh castShadow position={[0, hook.hookLen * 0.5, 0]}>
+                        <mesh position={[0, hook.hookLen * 0.5, 0]}>
                             <cylinderGeometry args={[0.008, 0.008, hook.hookLen, 8]} />
                             <meshStandardMaterial color="#eab308" metalness={0.9} roughness={0.2} />
                         </mesh>
@@ -2337,13 +2337,13 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* Wireless Studio Monitor Headphones Hung on Top Hook */}
                 <group position={[0.06, 1.64, 0.04]} rotation={[0.2, 0.4, -0.2]}>
                     {/* Cushioned Headband Arc */}
-                    <mesh castShadow>
+                    <mesh>
                         <torusGeometry args={[0.065, 0.01, 8, 16, Math.PI]} />
                         <meshStandardMaterial color="#090d16" roughness={0.6} />
                     </mesh>
                     {/* Left & Right Memory Foam Earcups */}
                     {[-0.065, 0.065].map((ex, ei) => (
-                        <mesh key={ei} position={[ex, 0, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+                        <mesh key={ei} position={[ex, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
                             <cylinderGeometry args={[0.026, 0.026, 0.024, 12]} />
                             <meshStandardMaterial color="#1e293b" metalness={0.7} roughness={0.3} />
                         </mesh>
@@ -2353,7 +2353,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* Draped Techwear Bomber Jacket Hung on Mid Hook */}
                 <group position={[-0.04, 1.05, 0.05]} rotation={[0, 0.3, 0]}>
                     {/* Jacket Body */}
-                    <mesh castShadow position={[0, 0, 0]}>
+                    <mesh position={[0, 0, 0]}>
                         <boxGeometry args={[0.26, 0.62, 0.18]} />
                         <meshStandardMaterial color="#111827" roughness={0.7} />
                     </mesh>
@@ -2392,7 +2392,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
             >
                 {/* ── SOFA STRUCTURE: Solid Hardwood Frame & Plinth Base ── */}
                 {/* Low Solid Dark-Oak Plinth Base spanning the full sofa width */}
-                <mesh castShadow receiveShadow position={[0, 0.045, 0]}>
+                <mesh receiveShadow position={[0, 0.045, 0]}>
                     <boxGeometry args={[1.46, 0.09, 0.74]} />
                     <meshStandardMaterial color="#1c140d" roughness={0.55} metalness={0.05} />
                 </mesh>
@@ -2404,7 +2404,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* 4 Tapered Cone Walnut Feet with Polished Brass Ferrule Caps */}
                 {([[-0.62, -0.28], [0.62, -0.28], [-0.62, 0.28], [0.62, 0.28]] as [number, number][]).map(([fx, fz], idx) => (
                     <group key={idx} position={[fx, 0.005, fz]}>
-                        <mesh castShadow>
+                        <mesh>
                             <cylinderGeometry args={[0.028, 0.020, 0.082, 14]} />
                             <meshStandardMaterial color="#3d2510" roughness={0.5} />
                         </mesh>
@@ -2418,7 +2418,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 
                 {/* ── UPHOLSTERED FRAME BODY (the structural shell beneath cushions) ── */}
                 {/* Inner foam seating platform */}
-                <mesh castShadow receiveShadow position={[0, 0.14, 0.02]}>
+                <mesh receiveShadow position={[0, 0.14, 0.02]}>
                     <boxGeometry args={[1.38, 0.04, 0.66]} />
                     <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
                 </mesh>
@@ -2426,7 +2426,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* ── THREE INDIVIDUAL SEAT CUSHIONS ── */}
                 {/* Left Seat Cushion */}
                 <group position={[-0.45, 0.255, 0.02]}>
-                    <mesh castShadow receiveShadow>
+                    <mesh receiveShadow>
                         <boxGeometry args={[0.43, 0.22, 0.62]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
@@ -2448,7 +2448,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 </group>
                 {/* Center Seat Cushion */}
                 <group position={[0, 0.255, 0.02]}>
-                    <mesh castShadow receiveShadow>
+                    <mesh receiveShadow>
                         <boxGeometry args={[0.43, 0.22, 0.62]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
@@ -2463,7 +2463,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 </group>
                 {/* Right Seat Cushion */}
                 <group position={[0.45, 0.255, 0.02]}>
-                    <mesh castShadow receiveShadow>
+                    <mesh receiveShadow>
                         <boxGeometry args={[0.43, 0.22, 0.62]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
@@ -2495,7 +2495,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* Structural backrest frame (reclined 12°) */}
                 <group position={[0, 0.44, -0.33]} rotation={[-0.20, 0, 0]}>
                     {/* Solid frame wall */}
-                    <mesh castShadow receiveShadow>
+                    <mesh receiveShadow>
                         <boxGeometry args={[1.40, 0.42, 0.14]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#eae5db" roughness={0.88} />
                     </mesh>
@@ -2503,7 +2503,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     {([-0.45, 0, 0.45] as number[]).map((bx, bi) => (
                         <group key={bi} position={[bx, 0, 0.075]}>
                             {/* Back cushion body */}
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.43, 0.38, 0.10]} />
                                 <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                             </mesh>
@@ -2543,12 +2543,12 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* ── LEFT ARMREST ── */}
                 <group position={[-0.69, 0.36, -0.04]}>
                     {/* Armrest vertical side panel */}
-                    <mesh castShadow receiveShadow>
+                    <mesh receiveShadow>
                         <boxGeometry args={[0.10, 0.44, 0.68]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
                     </mesh>
                     {/* Padded arm top flat surface */}
-                    <mesh castShadow position={[0, 0.22, -0.02]}>
+                    <mesh position={[0, 0.22, -0.02]}>
                         <boxGeometry args={[0.14, 0.06, 0.64]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
@@ -2566,11 +2566,11 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 
                 {/* ── RIGHT ARMREST ── */}
                 <group position={[0.69, 0.36, -0.04]}>
-                    <mesh castShadow receiveShadow>
+                    <mesh receiveShadow>
                         <boxGeometry args={[0.10, 0.44, 0.68]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#ede8de" roughness={0.88} />
                     </mesh>
-                    <mesh castShadow position={[0, 0.22, -0.02]}>
+                    <mesh position={[0, 0.22, -0.02]}>
                         <boxGeometry args={[0.14, 0.06, 0.64]} />
                         <meshStandardMaterial map={boucleTexture || undefined} color="#f5f0e8" roughness={0.90} />
                     </mesh>
@@ -2586,13 +2586,13 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 
                 {/* ── ACCENT PILLOWS & THROW ── */}
                 {/* Round bouclé ball pillow */}
-                <mesh castShadow position={[-0.34, 0.45, -0.25]}>
+                <mesh position={[-0.34, 0.45, -0.25]}>
                     <sphereGeometry args={[0.12, 24, 24]} />
                     <meshStandardMaterial map={boucleTexture || undefined} color="#eae3d6" roughness={0.96} />
                 </mesh>
                 {/* Sage green linen lumbar cushion */}
                 <group position={[0.30, 0.50, -0.30]} rotation={[0.18, -0.24, 0.06]}>
-                    <mesh castShadow>
+                    <mesh>
                         <boxGeometry args={[0.32, 0.26, 0.12]} />
                         <meshStandardMaterial color="#4a5e42" roughness={0.85} />
                     </mesh>
@@ -2603,11 +2603,11 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 </group>
                 {/* Waffle-weave cashmere throw over right armrest */}
                 <group position={[0.70, 0.48, 0.10]} rotation={[0, -0.18, 0.08]}>
-                    <mesh castShadow position={[0, 0, 0]}>
+                    <mesh position={[0, 0, 0]}>
                         <boxGeometry args={[0.18, 0.028, 0.58]} />
                         <meshStandardMaterial color="#dcd3c5" roughness={0.94} />
                     </mesh>
-                    <mesh castShadow position={[0, -0.08, 0.28]} rotation={[0.45, 0, 0]}>
+                    <mesh position={[0, -0.08, 0.28]} rotation={[0.45, 0, 0]}>
                         <boxGeometry args={[0.18, 0.16, 0.022]} />
                         <meshStandardMaterial color="#d2c8b8" roughness={0.94} />
                     </mesh>
@@ -2621,7 +2621,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
             {/* Chic Organic Fluted Oak Cylinder Coffee Table */}
             <group position={[2.42, 0, 1.35]}>
                 {/* Solid Round Fluted Oak Table Drum */}
-                <mesh castShadow receiveShadow position={[0, 0.12, 0]}>
+                <mesh receiveShadow position={[0, 0.12, 0]}>
                     <cylinderGeometry args={[0.24, 0.24, 0.24, 28]} />
                     <meshStandardMaterial color="#7c5838" roughness={0.46} metalness={0.04} />
                 </mesh>
@@ -2657,7 +2657,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
             {/* ============================================================ */}
             <group position={[2.95, 0, 2.75]}>
                 {/* Weighted Nero Marquina Marble Circular Base */}
-                <mesh castShadow receiveShadow position={[0, 0.022, 0]}>
+                <mesh receiveShadow position={[0, 0.022, 0]}>
                     <cylinderGeometry args={[0.18, 0.20, 0.044, 28]} />
                     <meshStandardMaterial color="#0f1117" roughness={0.3} metalness={0.15} />
                 </mesh>
@@ -2760,7 +2760,7 @@ const CoffeeStation = React.memo(function CoffeeStation() {
                 sticking them seamlessly together as a custom built-in architectural unit. */}
 
             {/* COUNTER BASE - 1.0 wide, back face flush against the right wall (wall at world x=3.5) */}
-            <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
+            <mesh receiveShadow position={[0, 0.45, 0]}>
                 <boxGeometry args={[1.0, 0.9, 0.62]} />
                 <meshStandardMaterial color="#0a101b" roughness={0.4} metalness={0.7} />
             </mesh>
@@ -2776,7 +2776,7 @@ const CoffeeStation = React.memo(function CoffeeStation() {
             {/* DETAILED ESPRESSO MACHINE */}
             <group position={[0.08, 0.92, -0.04]}>
                 {/* Stainless body */}
-                <mesh castShadow position={[0, 0.22, 0]}>
+                <mesh position={[0, 0.22, 0]}>
                     <boxGeometry args={[0.42, 0.44, 0.32]} />
                     <meshStandardMaterial color="#1e293b" metalness={0.92} roughness={0.14} />
                 </mesh>
@@ -2892,7 +2892,7 @@ const CoffeeStation = React.memo(function CoffeeStation() {
 
             {/* WALL SHELF */}
             <group position={[0, 1.50, -0.22]}>
-                <mesh castShadow receiveShadow>
+                <mesh receiveShadow>
                     <boxGeometry args={[0.90, 0.030, 0.20]} />
                     <meshStandardMaterial color="#6a4c33" roughness={0.5} />
                 </mesh>
@@ -2902,14 +2902,14 @@ const CoffeeStation = React.memo(function CoffeeStation() {
                 </mesh>
                 {([-0.30, -0.14, 0.16] as number[]).map((mx, idx) => (
                     <group key={idx} position={[mx, 0.052, 0]}>
-                        <mesh castShadow>
+                        <mesh>
                             <cylinderGeometry args={[0.040, 0.034, 0.062, 12]} />
                             <meshStandardMaterial color={idx === 1 ? '#f8fafc' : '#1e293b'} roughness={0.3} />
                         </mesh>
                     </group>
                 ))}
                 <group position={[0.36, 0.080, 0]}>
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.043, 0.043, 0.12, 14]} />
                         <meshStandardMaterial color="#ffffff" transparent opacity={0.4} roughness={0.1} />
                     </mesh>
@@ -2938,7 +2938,7 @@ const CoffeeStation = React.memo(function CoffeeStation() {
                     <cylinderGeometry args={[0.028, 0.028, 0.052, 14]} />
                     <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
                 </mesh>
-                <mesh position={[0, 1.85, 0]} castShadow>
+                <mesh position={[0, 1.85, 0]}>
                     <coneGeometry args={[0.19, 0.15, 20, 1, true]} />
                     <meshStandardMaterial color="#ca8a04" metalness={0.88} roughness={0.22} side={THREE.DoubleSide} />
                 </mesh>
@@ -2971,7 +2971,7 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
             ].map(([lx, lz], i) => (
                 <group key={i} position={[lx, 0.07, lz]}>
                     {/* Tapered Matte Charcoal Steel Leg */}
-                    <mesh castShadow>
+                    <mesh>
                         <cylinderGeometry args={[0.022, 0.014, 0.14, 14]} />
                         <meshStandardMaterial color="#1a1815" roughness={0.4} metalness={0.8} />
                     </mesh>
@@ -2992,7 +2992,7 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
             <pointLight color="#fed7aa" intensity={0.8} distance={1.8} decay={2} position={[0, 0.07, 0]} />
 
             {/* ── 3. ELEVATED SOLID OAK PLATFORM BED FRAME (y = 0.14 to 0.26) ── */}
-            <mesh castShadow receiveShadow position={[0, 0.20, 0]}>
+            <mesh receiveShadow position={[0, 0.20, 0]}>
                 <boxGeometry args={[1.46, 0.12, 2.26]} />
                 <meshStandardMaterial color="#4e3524" roughness={0.55} />
             </mesh>
@@ -3010,7 +3010,7 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
             {/* ── 4. DESIGNER SLATTED OAK & BOUCLÉ UPHOLSTERED HEADBOARD (Anchors bed to wall) ── */}
             <group position={[0, 0.58, -1.13]}>
                 {/* Backing Wood Frame Panel */}
-                <mesh castShadow receiveShadow>
+                <mesh receiveShadow>
                     <boxGeometry args={[1.62, 0.92, 0.07]} />
                     <meshStandardMaterial color="#3d281a" roughness={0.6} />
                 </mesh>
@@ -3022,7 +3022,7 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
                     </mesh>
                 ))}
                 {/* Plush Center Padded Bouclé Upholstered Insert */}
-                <mesh position={[0, 0.02, 0.042]} castShadow>
+                <mesh position={[0, 0.02, 0.042]}>
                     <boxGeometry args={[0.96, 0.76, 0.035]} />
                     <meshStandardMaterial color="#f5f0e8" roughness={0.92} />
                 </mesh>
@@ -3039,7 +3039,7 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
             </group>
 
             {/* ── 5. DEEP ORGANIC LINEN MATTRESS (y = 0.25 to 0.46) ── */}
-            <mesh position={[0, 0.355, 0.05]} castShadow>
+            <mesh position={[0, 0.355, 0.05]}>
                 <boxGeometry args={[1.34, 0.21, 2.12]} />
                 <meshStandardMaterial color="#faf8f5" roughness={0.88} />
             </mesh>
@@ -3051,28 +3051,28 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
 
             {/* ── 6. PLUSH DRAPED SCANDINAVIAN DUVET & FOLDED TOP SHEET ── */}
             {/* Crisp White Folded Top Sheet at Upper Chest */}
-            <mesh position={[0, 0.468, -0.32]} castShadow>
+            <mesh position={[0, 0.468, -0.32]}>
                 <boxGeometry args={[1.32, 0.025, 0.22]} />
                 <meshStandardMaterial color="#ffffff" roughness={0.85} />
             </mesh>
             {/* Fluffy Warm Oatmeal Waffle Linen Comforter */}
-            <mesh position={[0, 0.485, 0.36]} castShadow>
+            <mesh position={[0, 0.485, 0.36]}>
                 <boxGeometry args={[1.36, 0.075, 1.44]} />
                 <meshStandardMaterial color="#ebe3d6" roughness={0.92} />
             </mesh>
             {/* Draped Side Flange Left */}
-            <mesh position={[-0.67, 0.445, 0.36]} rotation={[0, 0, 0.28]} castShadow>
+            <mesh position={[-0.67, 0.445, 0.36]} rotation={[0, 0, 0.28]}>
                 <boxGeometry args={[0.07, 0.07, 1.44]} />
                 <meshStandardMaterial color="#e4dbcd" roughness={0.92} />
             </mesh>
             {/* Draped Side Flange Right */}
-            <mesh position={[0.67, 0.445, 0.36]} rotation={[0, 0, -0.28]} castShadow>
+            <mesh position={[0.67, 0.445, 0.36]} rotation={[0, 0, -0.28]}>
                 <boxGeometry args={[0.07, 0.07, 1.44]} />
                 <meshStandardMaterial color="#e4dbcd" roughness={0.92} />
             </mesh>
 
             {/* ── 7. TEXTURED CHARCOAL BED RUNNER / THROW ACROSS FOOT ── */}
-            <mesh position={[0, 0.528, 0.88]} castShadow>
+            <mesh position={[0, 0.528, 0.88]}>
                 <boxGeometry args={[1.37, 0.024, 0.38]} />
                 <meshStandardMaterial color="#374151" roughness={0.95} />
             </mesh>
@@ -3084,25 +3084,25 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
 
             {/* ── 8. MULTI-LAYERED FLUFFY BED PILLOWS & ACCENT CUSHIONS ── */}
             {/* Back King Sleeping Pillows (Crisp White Linen, propped against headboard) */}
-            <mesh position={[0.33, 0.52, -0.80]} rotation={[0.24, 0, 0]} castShadow>
+            <mesh position={[0.33, 0.52, -0.80]} rotation={[0.24, 0, 0]}>
                 <boxGeometry args={[0.50, 0.15, 0.32]} />
                 <meshStandardMaterial color="#faf8f5" roughness={0.8} />
             </mesh>
-            <mesh position={[-0.33, 0.52, -0.80]} rotation={[0.24, 0, 0]} castShadow>
+            <mesh position={[-0.33, 0.52, -0.80]} rotation={[0.24, 0, 0]}>
                 <boxGeometry args={[0.50, 0.15, 0.32]} />
                 <meshStandardMaterial color="#faf8f5" roughness={0.8} />
             </mesh>
             {/* Front Accent Sham Pillows (Sage Green & Warm Clay) */}
-            <mesh position={[0.30, 0.55, -0.60]} rotation={[0.30, 0, 0]} castShadow>
+            <mesh position={[0.30, 0.55, -0.60]} rotation={[0.30, 0, 0]}>
                 <boxGeometry args={[0.40, 0.13, 0.24]} />
                 <meshStandardMaterial color="#3f503d" roughness={0.88} />
             </mesh>
-            <mesh position={[-0.30, 0.55, -0.60]} rotation={[0.30, 0, 0]} castShadow>
+            <mesh position={[-0.30, 0.55, -0.60]} rotation={[0.30, 0, 0]}>
                 <boxGeometry args={[0.40, 0.13, 0.24]} />
                 <meshStandardMaterial color="#c2785c" roughness={0.88} />
             </mesh>
             {/* Center Cylindrical Lumbar Throw Pillow */}
-            <mesh position={[0, 0.54, -0.48]} rotation={[0, 0, Math.PI / 2]} castShadow>
+            <mesh position={[0, 0.54, -0.48]} rotation={[0, 0, Math.PI / 2]}>
                 <cylinderGeometry args={[0.055, 0.055, 0.38, 16]} />
                 <meshStandardMaterial color="#e5ded4" roughness={0.9} />
             </mesh>
@@ -3116,13 +3116,13 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
                     [-0.15, 0.15],
                     [0.15, 0.15],
                 ].map(([nx, nz], i) => (
-                    <mesh key={i} position={[nx, 0.07, nz]} castShadow>
+                    <mesh key={i} position={[nx, 0.07, nz]}>
                         <cylinderGeometry args={[0.014, 0.009, 0.14, 10]} />
                         <meshStandardMaterial color="#1a1815" metalness={0.8} roughness={0.3} />
                     </mesh>
                 ))}
                 {/* Nightstand Main Cabinet Body */}
-                <mesh position={[0, 0.34, 0]} castShadow>
+                <mesh position={[0, 0.34, 0]}>
                     <boxGeometry args={[0.38, 0.40, 0.40]} />
                     <meshStandardMaterial color="#422c1b" roughness={0.5} />
                 </mesh>
@@ -3137,11 +3137,11 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
                 </mesh>
 
                 {/* Ceramic Water Carafe & Tumbler on Nightstand */}
-                <mesh position={[-0.06, 0.60, -0.06]} castShadow>
+                <mesh position={[-0.06, 0.60, -0.06]}>
                     <cylinderGeometry args={[0.038, 0.048, 0.15, 16]} />
                     <meshStandardMaterial color="#f8fafc" roughness={0.2} />
                 </mesh>
-                <mesh position={[0.07, 0.57, 0.06]} castShadow>
+                <mesh position={[0.07, 0.57, 0.06]}>
                     <cylinderGeometry args={[0.026, 0.026, 0.07, 12]} />
                     <meshStandardMaterial color="#e2e8f0" roughness={0.1} />
                 </mesh>
@@ -3184,7 +3184,7 @@ const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp(
     return (
         <group position={[-3.18, 0, 2.65]}>
             {/* Weighted Nero Marquina Marble Circular Base */}
-            <mesh castShadow receiveShadow position={[0, 0.022, 0]}>
+            <mesh receiveShadow position={[0, 0.022, 0]}>
                 <cylinderGeometry args={[0.20, 0.22, 0.044, 28]} />
                 <meshStandardMaterial color="#0f1117" roughness={0.3} metalness={0.15} />
             </mesh>
@@ -3200,7 +3200,7 @@ const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp(
             </mesh>
 
             {/* Single Slender Vertical Architectural Bronze Stem */}
-            <mesh castShadow position={[0, 0.82, 0]}>
+            <mesh position={[0, 0.82, 0]}>
                 <cylinderGeometry args={[0.012, 0.012, 1.60, 16]} />
                 <meshStandardMaterial color="#1f1813" metalness={0.85} roughness={0.3} />
             </mesh>
@@ -3214,7 +3214,7 @@ const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp(
             {/* Single Fluted Architectural Lampshade */}
             <group position={[0, 1.68, 0]}>
                 {/* Conical Lampshade Exterior */}
-                <mesh castShadow>
+                <mesh>
                     <cylinderGeometry args={[0.10, 0.24, 0.22, 24, 1, true]} />
                     <meshStandardMaterial
                         color="#faf5ee"
@@ -3274,7 +3274,7 @@ const IndustrialCeilingVent = React.memo(function IndustrialCeilingVent() {
             {/* 4-Blade Rotating Fan */}
             <group ref={fanRef} position={[0, -0.05, 0]}>
                 {Array.from({ length: 4 }).map((_, i) => (
-                    <mesh key={i} rotation={[0, 0, (i * Math.PI) / 2]} castShadow>
+                    <mesh key={i} rotation={[0, 0, (i * Math.PI) / 2]}>
                         <boxGeometry args={[0.12, 0.44, 0.02]} />
                         <meshStandardMaterial color="#22150c" roughness={0.6} />
                     </mesh>
@@ -3331,21 +3331,21 @@ function AnimeFigurine({
     return (
         <group position={position}>
             {/* Round Display Base */}
-            <mesh castShadow>
+            <mesh>
                 <cylinderGeometry args={[0.032, 0.032, 0.006, 16]} />
                 <meshStandardMaterial color="#111827" roughness={0.3} metalness={0.3} />
             </mesh>
             {/* Legs in a slight action stance */}
-            <mesh position={[-0.009, 0.03, 0]} rotation={[0, 0, 0.12]} castShadow>
+            <mesh position={[-0.009, 0.03, 0]} rotation={[0, 0, 0.12]}>
                 <cylinderGeometry args={[0.007, 0.008, 0.05, 8]} />
                 <meshStandardMaterial color={primary} roughness={0.45} />
             </mesh>
-            <mesh position={[0.009, 0.028, 0]} rotation={[0, 0, -0.2]} castShadow>
+            <mesh position={[0.009, 0.028, 0]} rotation={[0, 0, -0.2]}>
                 <cylinderGeometry args={[0.007, 0.008, 0.05, 8]} />
                 <meshStandardMaterial color={primary} roughness={0.45} />
             </mesh>
             {/* Torso */}
-            <mesh position={[0, 0.07, 0]} rotation={[0, 0, 0.08]} castShadow>
+            <mesh position={[0, 0.07, 0]} rotation={[0, 0, 0.08]}>
                 <boxGeometry args={[0.026, 0.05, 0.016]} />
                 <meshStandardMaterial color={primary} roughness={0.4} />
             </mesh>
@@ -3355,17 +3355,17 @@ function AnimeFigurine({
                 <meshBasicMaterial color={accent} toneMapped={false} />
             </mesh>
             {/* Raised Arm (action pose) */}
-            <mesh position={[0.016, 0.1, 0]} rotation={[0, 0, -1.1]} castShadow>
+            <mesh position={[0.016, 0.1, 0]} rotation={[0, 0, -1.1]}>
                 <cylinderGeometry args={[0.006, 0.006, 0.045, 8]} />
                 <meshStandardMaterial color={primary} roughness={0.45} />
             </mesh>
             {/* Lowered Arm */}
-            <mesh position={[-0.015, 0.06, 0]} rotation={[0, 0, 0.35]} castShadow>
+            <mesh position={[-0.015, 0.06, 0]} rotation={[0, 0, 0.35]}>
                 <cylinderGeometry args={[0.006, 0.006, 0.045, 8]} />
                 <meshStandardMaterial color={primary} roughness={0.45} />
             </mesh>
             {/* Head */}
-            <mesh position={[0.002, 0.115, 0]} castShadow>
+            <mesh position={[0.002, 0.115, 0]}>
                 <sphereGeometry args={[0.014, 12, 12]} />
                 <meshStandardMaterial color="#d4a373" roughness={0.6} />
             </mesh>
@@ -3375,7 +3375,7 @@ function AnimeFigurine({
                 <meshStandardMaterial color={accent} roughness={0.4} />
             </mesh>
             {/* Flowing Cape Accent */}
-            <mesh position={[0, 0.06, -0.014]} rotation={[0.25, 0, 0]} castShadow>
+            <mesh position={[0, 0.06, -0.014]} rotation={[0.25, 0, 0]}>
                 <boxGeometry args={[0.028, 0.08, 0.004]} />
                 <meshStandardMaterial color={cape} roughness={0.6} side={THREE.DoubleSide} />
             </mesh>
@@ -3399,7 +3399,7 @@ const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
                 [0.20, 0.20],
             ].map(([cx, cz], i) => (
                 <group key={i} position={[cx, 0, cz]}>
-                    <mesh castShadow position={[0, 0.42, 0]}>
+                    <mesh position={[0, 0.42, 0]}>
                         <cylinderGeometry args={[0.016, 0.018, 0.84, 12]} />
                         <meshStandardMaterial color="#1e2433" metalness={0.9} roughness={0.2} />
                     </mesh>
@@ -3423,7 +3423,7 @@ const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
             {/* LOWER TIER (SHELF 1 at y = 0.40m) */}
             <group position={[0, 0.40, 0]}>
                 {/* Dark Walnut Lower Shelf Deck */}
-                <mesh castShadow receiveShadow>
+                <mesh receiveShadow>
                     <cylinderGeometry args={[0.30, 0.29, 0.024, 24]} />
                     <meshStandardMaterial color="#3e2a1b" roughness={0.5} />
                 </mesh>
@@ -3445,7 +3445,7 @@ const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
                 {/* Manga Volume Stack on Lower Shelf */}
                 <group position={[-0.12, 0.015, -0.10]} rotation={[0, 0.45, 0]}>
                     {[0, 1, 2, 3].map((i) => (
-                        <mesh key={i} position={[0, i * 0.016 + 0.008, 0]} castShadow>
+                        <mesh key={i} position={[0, i * 0.016 + 0.008, 0]}>
                             <boxGeometry args={[0.095, 0.014, 0.135]} />
                             <meshStandardMaterial color={['#ef4444', '#f59e0b', '#06b6d4', '#8b5cf6'][i]} roughness={0.5} />
                         </mesh>
@@ -3456,7 +3456,7 @@ const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
             {/* TOP TIER (SHELF 2 at y = 0.81m) */}
             <group position={[0, 0.81, 0]}>
                 {/* Solid Warm Oak Frame Ring */}
-                <mesh castShadow receiveShadow>
+                <mesh receiveShadow>
                     <cylinderGeometry args={[0.32, 0.31, 0.026, 28]} />
                     <meshStandardMaterial color="#6a4c33" roughness={0.45} />
                 </mesh>
@@ -3581,7 +3581,6 @@ export default function CyberRoomScene({
     return (
         <div className="w-full h-full relative cursor-default">
             <Canvas
-                shadows
                 camera={{ position: [-0.25, 1.68, 3.75], fov: 46 }}
                 dpr={isMobile ? [1, 1] : [1, 1.25]}
                 performance={{ min: 0.5 }}
@@ -3622,7 +3621,6 @@ export default function CyberRoomScene({
                 {/* Dynamic Ambient & Sun Atmospheric Lighting with tightly bounded shadow frustum */}
                 <ambientLight intensity={envConfig.ambientIntensity} color={envConfig.ambientColor} />
                 <directionalLight
-                    castShadow
                     position={envConfig.sunPosition}
                     intensity={envConfig.sunIntensity}
                     color={envConfig.sunColor}

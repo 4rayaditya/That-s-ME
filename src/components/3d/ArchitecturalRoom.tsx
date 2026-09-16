@@ -244,7 +244,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                 {/* ============================================================ */}
                 <group position={[0.8, 0.25, 0.15]}>
                     {/* Solid Live-Edge Smoked Walnut Shelf Plank */}
-                    <mesh castShadow receiveShadow>
+                    <mesh receiveShadow>
                         <boxGeometry args={[1.9, 0.04, 0.28]} />
                         <meshStandardMaterial color="#422e1e" roughness={0.4} metalness={0.06} />
                     </mesh>
@@ -275,7 +275,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                     <group position={[-0.55, 0.02, 0.02]}>
                         {/* Book 1: Large Architectural Design Tome (Midnight Charcoal Cloth) */}
                         <group position={[-0.26, 0.14, 0]}>
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.064, 0.28, 0.22]} />
                                 <meshStandardMaterial color="#18181b" roughness={0.7} />
                             </mesh>
@@ -293,7 +293,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                         {/* Book 2: Cyberpunk Art Anthology (Oxford Navy Linen) */}
                         <group position={[-0.19, 0.125, -0.005]}>
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.054, 0.25, 0.21]} />
                                 <meshStandardMaterial color="#1e293b" roughness={0.65} />
                             </mesh>
@@ -305,7 +305,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                         {/* Book 3: Japanese Architecture Monograph (Forest Green) */}
                         <group position={[-0.13, 0.115, 0]}>
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.048, 0.23, 0.20]} />
                                 <meshStandardMaterial color="#14532d" roughness={0.6} />
                             </mesh>
@@ -317,7 +317,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                         {/* Book 4: Minimalist Interiors (Oatmeal Textured Paper) */}
                         <group position={[-0.075, 0.13, 0.005]}>
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.052, 0.26, 0.21]} />
                                 <meshStandardMaterial color="#d6d3d1" roughness={0.8} />
                             </mesh>
@@ -329,7 +329,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                         {/* Book 5: Tilted Leaning Book (Terracotta Leather) */}
                         <group position={[-0.015, 0.115, 0]} rotation={[0, 0, -0.18]}>
-                            <mesh castShadow>
+                            <mesh>
                                 <boxGeometry args={[0.045, 0.23, 0.20]} />
                                 <meshStandardMaterial color="#9a3412" roughness={0.65} />
                             </mesh>
@@ -341,7 +341,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                         {/* Heavy Machined Brushed Brass Triangular Bookend */}
                         <group position={[0.055, 0.07, 0]}>
-                            <mesh castShadow rotation={[0, 0, Math.PI / 4]}>
+                            <mesh rotation={[0, 0, Math.PI / 4]}>
                                 <boxGeometry args={[0.10, 0.10, 0.16]} />
                                 <meshStandardMaterial color="#eab308" metalness={0.95} roughness={0.15} />
                             </mesh>
@@ -350,7 +350,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                     {/* --- CERAMIC ABSTRACT DONUT VASE WITH DRIED FLORAL STEMS --- */}
                     <group position={[0.08, 0.09, -0.02]}>
-                        <mesh castShadow rotation={[0, Math.PI / 2, 0]}>
+                        <mesh rotation={[0, Math.PI / 2, 0]}>
                             <torusGeometry args={[0.065, 0.024, 16, 24]} />
                             <meshStandardMaterial color="#f1f5f9" roughness={0.7} />
                         </mesh>
@@ -369,7 +369,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                     {/* --- REALISTIC TRAILING INDOOR PLANT (Pothos with organic cascading leaves) --- */}
                     <group position={[0.42, 0.02, 0.04]}>
                         {/* Warm Sandstone Fluted Ceramic Planter */}
-                        <mesh castShadow position={[0, 0.07, 0]}>
+                        <mesh position={[0, 0.07, 0]}>
                             <cylinderGeometry args={[0.08, 0.06, 0.14, 18]} />
                             <meshStandardMaterial color="#c2b19d" roughness={0.65} />
                         </mesh>
@@ -394,7 +394,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                             { x: 0.04, y: -0.04, z: 0.10, rx: 1.5, rz: 0.15, s: 0.036 },
                             { x: 0.02, y: -0.10, z: 0.105, rx: 1.6, rz: 0.05, s: 0.032 },
                         ].map((leaf, idx) => (
-                            <mesh key={idx} position={[leaf.x, leaf.y, leaf.z]} rotation={[leaf.rx, 0, leaf.rz]} castShadow>
+                            <mesh key={idx} position={[leaf.x, leaf.y, leaf.z]} rotation={[leaf.rx, 0, leaf.rz]}>
                                 <sphereGeometry args={[leaf.s, 8, 6]} />
                                 <meshStandardMaterial color={idx % 2 === 0 ? '#166534' : '#15803d'} roughness={0.6} />
                             </mesh>
@@ -403,7 +403,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                     {/* Mini Framed Black-and-White Art resting on shelf */}
                     <group position={[0.70, 0.10, -0.02]} rotation={[0, -0.15, 0.04]}>
-                        <mesh castShadow>
+                        <mesh>
                             <boxGeometry args={[0.16, 0.20, 0.014]} />
                             <meshStandardMaterial color="#ca8a04" metalness={0.9} roughness={0.2} />
                         </mesh>
@@ -419,7 +419,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                 {/* ============================================================ */}
                 <group position={[0.8, 0.95, 0.04]}>
                     {/* Slim Dark Oak Gallery Frame */}
-                    <mesh castShadow>
+                    <mesh>
                         <boxGeometry args={[1.5, 0.95, 0.04]} />
                         <meshStandardMaterial color="#2d1c10" roughness={0.4} />
                     </mesh>
@@ -455,7 +455,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                 {/* Architectural Wall Sconce (decorative fixture only now â€” its point light was
                     removed as part of the room's lighting budget cut) */}
                 <group position={[0, 0.6, 0.08]}>
-                    <mesh castShadow>
+                    <mesh>
                         <boxGeometry args={[0.12, 0.32, 0.08]} />
                         <meshStandardMaterial color="#785338" metalness={0.7} />
                     </mesh>
@@ -492,14 +492,14 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                 {/* Architectural Solid Oak Ceiling Rafters */}
                 {[-3.0, -1.8, -0.6, 0.6, 1.8, 3.0].map((rz, i) => (
-                    <mesh key={i} castShadow position={[0, -0.1, rz]}>
+                    <mesh key={i} position={[0, -0.1, rz]}>
                         <boxGeometry args={[10.5, 0.2, 0.12]} />
                         <meshStandardMaterial color={isLight ? '#6a4c33' : '#3a2719'} roughness={0.45} />
                     </mesh>
                 ))}
 
                 {/* Longitudinal Cross Beam */}
-                <mesh castShadow position={[0, -0.22, 0]} rotation={[0, Math.PI / 2, 0]}>
+                <mesh position={[0, -0.22, 0]} rotation={[0, Math.PI / 2, 0]}>
                     <boxGeometry args={[10.5, 0.22, 0.14]} />
                     <meshStandardMaterial color={isLight ? '#5a3d26' : '#2d1d11'} roughness={0.45} />
                 </mesh>
@@ -517,7 +517,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
                         the coffee counter and bed each already get their own dedicated pendant
                         light instead, so lighting the same spots twice would be redundant. */}
                     <group position={[0, -0.08, 0]}>
-                        <mesh castShadow rotation={[0.4, 0, 0]}>
+                        <mesh rotation={[0.4, 0, 0]}>
                             <cylinderGeometry args={[0.045, 0.055, 0.12, 12]} />
                             <meshStandardMaterial color="#4a3726" metalness={0.7} />
                         </mesh>
@@ -533,7 +533,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                     {/* Spot 2: Coffee Bar & Counter (decorative track head only) */}
                     <group position={[1.8, -0.08, 0]}>
-                        <mesh castShadow rotation={[0.3, -0.5, 0]}>
+                        <mesh rotation={[0.3, -0.5, 0]}>
                             <cylinderGeometry args={[0.045, 0.055, 0.12, 12]} />
                             <meshStandardMaterial color="#4a3726" metalness={0.7} />
                         </mesh>
@@ -541,7 +541,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
 
                     {/* Spot 3: Futon Bed (decorative track head only) */}
                     <group position={[-1.8, -0.08, 0]}>
-                        <mesh castShadow rotation={[0.3, 0.5, 0]}>
+                        <mesh rotation={[0.3, 0.5, 0]}>
                             <cylinderGeometry args={[0.045, 0.055, 0.12, 12]} />
                             <meshStandardMaterial color="#4a3726" metalness={0.7} />
                         </mesh>
@@ -554,7 +554,7 @@ function ArchitecturalRoom({ environmentPhase }: ArchitecturalRoomProps) {
             {/* ============================================================ */}
             <group position={[0, 0.82, -3.45]}>
                 {/* Deep Solid Walnut Window Sill Board */}
-                <mesh castShadow receiveShadow position={[0, 0, 0.12]}>
+                <mesh receiveShadow position={[0, 0, 0.12]}>
                     <boxGeometry args={[3.85, 0.07, 0.32]} />
                     <meshStandardMaterial color="#5a3d28" roughness={0.4} />
                 </mesh>
@@ -612,12 +612,12 @@ function ClosedNightCurtain({ curtainColor }: { curtainColor: string }) {
     return (
         <group>
             {/* Left Panel */}
-            <mesh position={[-0.96, 1.1, 0.14]} castShadow>
+            <mesh position={[-0.96, 1.1, 0.14]}>
                 <boxGeometry args={[1.98, 2.2, 0.1]} />
                 <meshStandardMaterial map={pleatTexture || undefined} color={curtainColor} roughness={0.92} />
             </mesh>
             {/* Right Panel */}
-            <mesh position={[0.96, 1.1, 0.14]} castShadow>
+            <mesh position={[0.96, 1.1, 0.14]}>
                 <boxGeometry args={[1.98, 2.2, 0.1]} />
                 <meshStandardMaterial map={pleatTexture || undefined} color={curtainColor} roughness={0.92} />
             </mesh>
@@ -637,7 +637,7 @@ function CurtainRodWallWashLight({ glowColor }: { glowColor: string }) {
     return (
         <group position={[0, 2.28, 0.17]}>
             {/* Slim Bronze Curtain Rod spanning the window */}
-            <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+            <mesh rotation={[0, 0, Math.PI / 2]}>
                 <cylinderGeometry args={[0.018, 0.018, 4.0, 10]} />
                 <meshStandardMaterial color="#3d2b1c" metalness={0.6} roughness={0.35} />
             </mesh>
@@ -680,14 +680,14 @@ function AestheticWoodWardrobe({ isLight }: { isLight: boolean }) {
     return (
         <group position={[3.15, 1.25, -1.6]} rotation={[0, -Math.PI / 2, 0]}>
             {/* Main Solid Oak Wardrobe Cabinet Body */}
-            <mesh castShadow receiveShadow position={[0, 0, 0]}>
+            <mesh receiveShadow position={[0, 0, 0]}>
                 <boxGeometry args={[1.32, 2.38, 0.62]} />
                 <meshStandardMaterial color={isLight ? '#7c5838' : '#4a3320'} roughness={0.45} />
             </mesh>
 
             {/* Fluted Vertical Slat Doors (Left & Right) */}
             {Array.from({ length: 18 }).map((_, i) => (
-                <mesh key={i} position={[-0.58 + i * 0.068, 0, 0.315]} castShadow>
+                <mesh key={i} position={[-0.58 + i * 0.068, 0, 0.315]}>
                     <boxGeometry args={[0.045, 2.32, 0.015]} />
                     <meshStandardMaterial color={isLight ? '#8e6642' : '#573d27'} roughness={0.5} />
                 </mesh>
@@ -701,13 +701,13 @@ function AestheticWoodWardrobe({ isLight }: { isLight: boolean }) {
 
             {/* Minimalist Brushed Brass Vertical Rod Handles */}
             <group position={[-0.04, 0, 0.34]}>
-                <mesh castShadow>
+                <mesh>
                     <cylinderGeometry args={[0.012, 0.012, 0.38, 12]} />
                     <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
                 </mesh>
             </group>
             <group position={[0.04, 0, 0.34]}>
-                <mesh castShadow>
+                <mesh>
                     <cylinderGeometry args={[0.012, 0.012, 0.38, 12]} />
                     <meshStandardMaterial color="#eab308" metalness={0.92} roughness={0.15} />
                 </mesh>
@@ -720,7 +720,7 @@ function AestheticWoodWardrobe({ isLight }: { isLight: boolean }) {
                 [-0.56, 0.24],
                 [0.56, 0.24],
             ].map(([fx, fz], idx) => (
-                <mesh key={idx} position={[fx, -1.24, fz]} castShadow>
+                <mesh key={idx} position={[fx, -1.24, fz]}>
                     <cylinderGeometry args={[0.026, 0.018, 0.12, 8]} />
                     <meshStandardMaterial color={isLight ? '#5a3d26' : '#332115'} roughness={0.5} />
                 </mesh>
@@ -729,7 +729,7 @@ function AestheticWoodWardrobe({ isLight }: { isLight: boolean }) {
             {/* CROWN TOP: TRAILING POTHOS PLANT CASCADING DOWN SIDE */}
             <group position={[0.32, 1.28, 0.08]}>
                 {/* Fluted Ceramic Pot */}
-                <mesh castShadow position={[0, 0.08, 0]}>
+                <mesh position={[0, 0.08, 0]}>
                     <cylinderGeometry args={[0.13, 0.10, 0.16, 16]} />
                     <meshStandardMaterial color="#f8fafc" roughness={0.3} />
                 </mesh>
@@ -739,17 +739,17 @@ function AestheticWoodWardrobe({ isLight }: { isLight: boolean }) {
                     <meshStandardMaterial color="#271c15" roughness={0.9} />
                 </mesh>
                 {/* Bushy Foliage Dome */}
-                <mesh position={[0, 0.22, 0]} castShadow>
+                <mesh position={[0, 0.22, 0]}>
                     <sphereGeometry args={[0.16, 10, 10]} />
                     <meshStandardMaterial color="#10b981" roughness={0.6} />
                 </mesh>
                 {/* Trailing Green Pothos Vines */}
-                <mesh position={[0.06, -0.32, 0.18]} castShadow>
+                <mesh position={[0.06, -0.32, 0.18]}>
                     <cylinderGeometry args={[0.01, 0.015, 0.85, 6]} />
                     <meshStandardMaterial color="#059669" roughness={0.7} />
                 </mesh>
                 {[-0.1, -0.25, -0.42, -0.6, -0.76].map((vy, vi) => (
-                    <mesh key={vi} position={[0.07 + (vi % 2 === 0 ? 0.04 : -0.03), vy, 0.2]} rotation={[0.2, 0.3, 0.4]} castShadow>
+                    <mesh key={vi} position={[0.07 + (vi % 2 === 0 ? 0.04 : -0.03), vy, 0.2]} rotation={[0.2, 0.3, 0.4]}>
                         <sphereGeometry args={[0.065, 8, 8]} />
                         <meshStandardMaterial color={vi % 2 === 0 ? '#10b981' : '#34d399'} roughness={0.6} />
                     </mesh>
@@ -766,7 +766,7 @@ function RealisticZenBonsai() {
     return (
         <group position={[-1.2, 0.05, 0.26]}>
             {/* Low Japanese Ceramic Bonsai Tray */}
-            <mesh castShadow position={[0, 0.03, 0]}>
+            <mesh position={[0, 0.03, 0]}>
                 <boxGeometry args={[0.38, 0.06, 0.24]} />
                 <meshStandardMaterial color="#232326" roughness={0.6} />
             </mesh>
@@ -798,17 +798,17 @@ function RealisticZenBonsai() {
             {/* Sculpted Gnarled Wooden Trunk with Natural S-Curves */}
             <group position={[0.04, 0.06, 0]}>
                 {/* Trunk Base */}
-                <mesh castShadow position={[0, 0.05, 0]} rotation={[0.1, 0, 0.25]}>
+                <mesh position={[0, 0.05, 0]} rotation={[0.1, 0, 0.25]}>
                     <cylinderGeometry args={[0.024, 0.038, 0.12, 10]} />
                     <meshStandardMaterial color="#3d2817" roughness={0.88} />
                 </mesh>
                 {/* Mid Trunk Curving Left */}
-                <mesh castShadow position={[-0.03, 0.14, 0.01]} rotation={[-0.15, 0, -0.35]}>
+                <mesh position={[-0.03, 0.14, 0.01]} rotation={[-0.15, 0, -0.35]}>
                     <cylinderGeometry args={[0.018, 0.024, 0.12, 10]} />
                     <meshStandardMaterial color="#3d2817" roughness={0.88} />
                 </mesh>
                 {/* Upper Crown Bough */}
-                <mesh castShadow position={[-0.06, 0.23, 0]} rotation={[0.1, 0, 0.2]}>
+                <mesh position={[-0.06, 0.23, 0]} rotation={[0.1, 0, 0.2]}>
                     <cylinderGeometry args={[0.012, 0.018, 0.11, 8]} />
                     <meshStandardMaterial color="#452e1b" roughness={0.88} />
                 </mesh>
@@ -821,7 +821,7 @@ function RealisticZenBonsai() {
                 {/* Tiered Evergreen Needle Cloud Pads (Organic Foliage) */}
                 {/* Lower Tier Right Cloud */}
                 <group position={[0.08, 0.13, 0.02]}>
-                    <mesh castShadow position={[0, 0, 0]}>
+                    <mesh position={[0, 0, 0]}>
                         <cylinderGeometry args={[0.075, 0.09, 0.028, 12]} />
                         <meshStandardMaterial color="#142c16" roughness={0.7} />
                     </mesh>
@@ -833,7 +833,7 @@ function RealisticZenBonsai() {
 
                 {/* Mid Tier Left Cloud */}
                 <group position={[-0.10, 0.20, -0.01]}>
-                    <mesh castShadow position={[0, 0, 0]}>
+                    <mesh position={[0, 0, 0]}>
                         <cylinderGeometry args={[0.085, 0.105, 0.032, 12]} />
                         <meshStandardMaterial color="#142c16" roughness={0.7} />
                     </mesh>
@@ -845,7 +845,7 @@ function RealisticZenBonsai() {
 
                 {/* Upper Crown Main Cloud Pad */}
                 <group position={[-0.05, 0.28, 0.01]}>
-                    <mesh castShadow position={[0, 0, 0]}>
+                    <mesh position={[0, 0, 0]}>
                         <cylinderGeometry args={[0.10, 0.12, 0.035, 14]} />
                         <meshStandardMaterial color="#163118" roughness={0.7} />
                     </mesh>
@@ -871,7 +871,7 @@ function AestheticSucculents() {
         <group position={[1.2, 0.05, 0.26]}>
             {/* Pot 1: Matte White Ceramic Fluted Planter */}
             <group position={[-0.12, 0, 0]}>
-                <mesh castShadow position={[0, 0.05, 0]}>
+                <mesh position={[0, 0.05, 0]}>
                     <cylinderGeometry args={[0.07, 0.05, 0.10, 16]} />
                     <meshStandardMaterial color="#ffffff" roughness={0.25} />
                 </mesh>
@@ -880,14 +880,14 @@ function AestheticSucculents() {
                     {[0, 60, 120, 180, 240, 300].map((deg, i) => {
                         const rad = (deg * Math.PI) / 180;
                         return (
-                            <mesh key={i} position={[Math.cos(rad) * 0.035, 0, Math.sin(rad) * 0.035]} rotation={[0.4 * Math.sin(rad), rad, 0.4 * Math.cos(rad)]} castShadow>
+                            <mesh key={i} position={[Math.cos(rad) * 0.035, 0, Math.sin(rad) * 0.035]} rotation={[0.4 * Math.sin(rad), rad, 0.4 * Math.cos(rad)]}>
                                 <boxGeometry args={[0.035, 0.012, 0.055]} />
                                 <meshStandardMaterial color="#2d6a4f" roughness={0.5} />
                             </mesh>
                         );
                     })}
                     {/* Center Rosette Crown */}
-                    <mesh position={[0, 0.02, 0]} castShadow>
+                    <mesh position={[0, 0.02, 0]}>
                         <sphereGeometry args={[0.035, 8, 8]} />
                         <meshStandardMaterial color="#52b788" roughness={0.5} />
                     </mesh>
@@ -896,7 +896,7 @@ function AestheticSucculents() {
 
             {/* Pot 2: Warm Terracotta Cylindrical Planter */}
             <group position={[0.12, 0, 0]}>
-                <mesh castShadow position={[0, 0.045, 0]}>
+                <mesh position={[0, 0.045, 0]}>
                     <cylinderGeometry args={[0.055, 0.045, 0.09, 16]} />
                     <meshStandardMaterial color="#c26338" roughness={0.7} />
                 </mesh>
@@ -908,7 +908,7 @@ function AestheticSucculents() {
                         { pos: [0.025, 0.035, -0.02], scale: [0.032, 0.032, 0.032], color: '#6a994e' },
                         { pos: [0.02, 0.05, 0.015], scale: [0.025, 0.025, 0.025], color: '#a7c957' },
                     ].map((leaf, idx) => (
-                        <mesh key={idx} position={leaf.pos as [number, number, number]} castShadow>
+                        <mesh key={idx} position={leaf.pos as [number, number, number]}>
                             <sphereGeometry args={[leaf.scale[0], 8, 8]} />
                             <meshStandardMaterial color={leaf.color} roughness={0.4} />
                         </mesh>
@@ -926,7 +926,7 @@ function LargeMonsteraPlant() {
     return (
         <group position={[-1.7, 0, -1.8]}>
             {/* Fluted Matte White Ceramic Planter */}
-            <mesh castShadow position={[0, 0.26, 0]}>
+            <mesh position={[0, 0.26, 0]}>
                 <cylinderGeometry args={[0.27, 0.20, 0.52, 24]} />
                 <meshStandardMaterial color="#f7f4ed" roughness={0.3} />
             </mesh>
@@ -954,7 +954,7 @@ function LargeMonsteraPlant() {
             ].map((stem, idx) => (
                 <group key={idx}>
                     {/* Arching Petiole Stem */}
-                    <mesh position={[stem.leafPos[0] * 0.45, 0.49 + stem.stemLen * 0.32, stem.leafPos[2] * 0.45]} rotation={[0, stem.stemAngle, stem.rotZ]} castShadow>
+                    <mesh position={[stem.leafPos[0] * 0.45, 0.49 + stem.stemLen * 0.32, stem.leafPos[2] * 0.45]} rotation={[0, stem.stemAngle, stem.rotZ]}>
                         <cylinderGeometry args={[0.012, 0.022, stem.stemLen, 8]} />
                         <meshStandardMaterial color={stem.isYoung ? '#65a30d' : '#14532d'} roughness={0.5} />
                     </mesh>
@@ -962,7 +962,7 @@ function LargeMonsteraPlant() {
                     {/* Sculpted Heart-Shaped Monstera Leaf Plate */}
                     <group position={stem.leafPos as [number, number, number]} rotation={stem.leafRot as [number, number, number]}>
                         {/* Central Leaf Blade with glossy sheen */}
-                        <mesh castShadow>
+                        <mesh>
                             <boxGeometry args={[stem.size[0], 0.015, stem.size[1]]} />
                             <meshStandardMaterial
                                 color={stem.isYoung ? '#84cc16' : idx % 2 === 0 ? '#143e1f' : '#1a4d27'}
@@ -1011,7 +1011,7 @@ function HangingMacramePlant() {
                 ))
             )}
             {/* Hanging Ceramic Pot */}
-            <mesh castShadow position={[0, 0, 0]}>
+            <mesh position={[0, 0, 0]}>
                 <sphereGeometry args={[0.16, 20, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
                 <meshStandardMaterial color="#faf7f0" roughness={0.3} side={THREE.DoubleSide} />
             </mesh>
@@ -1026,7 +1026,7 @@ function HangingMacramePlant() {
                 <meshStandardMaterial color="#1a140e" roughness={0.9} />
             </mesh>
             {/* Lush Crown of Trailing Foliage */}
-            <mesh position={[0, 0.06, 0]} castShadow>
+            <mesh position={[0, 0.06, 0]}>
                 <sphereGeometry args={[0.17, 12, 12]} />
                 <meshStandardMaterial color="#166534" roughness={0.5} />
             </mesh>
@@ -1055,7 +1055,6 @@ function HangingMacramePlant() {
                                 (li % 3 === 0 ? 0.01 : -0.01),
                             ]}
                             rotation={[0.2, li * 0.8, 0.3]}
-                            castShadow
                         >
                             <boxGeometry args={[0.024, 0.008, 0.028]} />
                             <meshStandardMaterial color={vine.color} roughness={0.4} />
@@ -1079,7 +1078,6 @@ function AkariPaperFloorLamp({ isLight }: { isLight: boolean }) {
                     key={i}
                     position={[Math.cos(angle) * 0.12, 0.34, Math.sin(angle) * 0.12]}
                     rotation={[0.18 * Math.sin(angle), angle, -0.18 * Math.cos(angle)]}
-                    castShadow
                 >
                     <cylinderGeometry args={[0.005, 0.005, 0.72, 6]} />
                     <meshStandardMaterial color="#1c1917" metalness={0.8} roughness={0.3} />
@@ -1095,7 +1093,7 @@ function AkariPaperFloorLamp({ isLight }: { isLight: boolean }) {
             {/* Washi Paper Oval Lantern Shade */}
             <group position={[0, 0.92, 0]}>
                 {/* Translucent Washi Paper Diffuser Body */}
-                <mesh castShadow receiveShadow>
+                <mesh receiveShadow>
                     <sphereGeometry args={[0.24, 20, 20]} />
                     <meshStandardMaterial
                         color="#fef9ee"
