@@ -274,9 +274,9 @@ export default function CameraController({
             const dy = e.clientY - lastPointerPosRef.current.y;
             lastPointerPosRef.current = { x: e.clientX, y: e.clientY };
 
-            // Mobile touch events have pointerType 'touch' — use higher sensitivity
+            // Mobile touch: lower sensitivity for smooth, controlled camera rotation
             const isTouchInput = e.pointerType === 'touch';
-            const sensitivity = isTouchInput ? 0.009 : 0.0032;
+            const sensitivity = isTouchInput ? 0.004 : 0.0032;
             targetYawRef.current -= dx * sensitivity;
             targetPitchRef.current -= dy * sensitivity;
             // Vertical pitch clamp: -75° to +75°
@@ -472,11 +472,12 @@ export default function CameraController({
             if (keys.left) { dirX -= rightX; dirZ -= rightZ; }
             if (keys.right) { dirX += rightX; dirZ += rightZ; }
 
-            // Apply mobile joystick analog input
+            // Apply mobile joystick analog input (scaled to 60% of max speed for control)
             const mw = mobileWalkRef.current;
             if (Math.abs(mw.fwd) > 0.05 || Math.abs(mw.right) > 0.05) {
-                dirX += fwdX * mw.fwd + rightX * mw.right;
-                dirZ += fwdZ * mw.fwd + rightZ * mw.right;
+                const mobileScale = 0.6;
+                dirX += (fwdX * mw.fwd + rightX * mw.right) * mobileScale;
+                dirZ += (fwdZ * mw.fwd + rightZ * mw.right) * mobileScale;
             }
 
             const inputMagnitude = Math.hypot(dirX, dirZ);
