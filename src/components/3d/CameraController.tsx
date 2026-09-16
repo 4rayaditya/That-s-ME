@@ -202,7 +202,8 @@ export default function CameraController({
         } else if (mode === 'dolly_out') {
             transitionProgressRef.current = 0;
             startCamPosRef.current.copy(camera.position);
-            startTargetRef.current.copy(MONITOR_POS);
+            startTargetRef.current.copy(ROOM_TARGET);
+            currentTourTargetPosRef.current.copy(ROOM_TARGET);
         } else if (mode === 'tour') {
             tourIndexRef.current = 0;
             tourTimeInStopRef.current = 0;
@@ -394,9 +395,14 @@ export default function CameraController({
             // Dwell for 5 full seconds before switching to the next angle
             if (tourTimeInStopRef.current >= currentStop.duration) {
                 tourTimeInStopRef.current = 0;
-                const nextIndex = (tourIndexRef.current + 1) % TOUR_STOPS.length;
-                tourIndexRef.current = nextIndex;
-                onTourPoiChangeRef.current?.(TOUR_STOPS[nextIndex].name, nextIndex + 1, TOUR_STOPS.length);
+                const nextIndex = tourIndexRef.current + 1;
+                if (nextIndex >= TOUR_STOPS.length) {
+                    // Guided tour finished all showcase stops!
+                    onTourCompleteRef.current?.();
+                } else {
+                    tourIndexRef.current = nextIndex;
+                    onTourPoiChangeRef.current?.(TOUR_STOPS[nextIndex].name, nextIndex + 1, TOUR_STOPS.length);
+                }
             }
 
         // ============================================================
@@ -560,11 +566,11 @@ export default function CameraController({
             const p = transitionProgressRef.current;
             const ease = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
-            camera.position.lerpVectors(SCREEN_LOCK_POS, FIXED_WALL4_POS, ease);
+            camera.position.lerpVectors(startCamPosRef.current, FIXED_WALL4_POS, ease);
             camera.lookAt(ROOM_TARGET);
 
             if (camera instanceof THREE.PerspectiveCamera) {
-                camera.fov = THREE.MathUtils.lerp(38, 58, ease);
+                camera.fov = THREE.MathUtils.lerp(camera.fov, MASTER_FOV, Math.min(1, dt * 6));
                 camera.updateProjectionMatrix();
             }
 

@@ -174,7 +174,11 @@ export default function StoryController() {
             } else if (cameraMode === 'walk' || cameraMode === 'tour') {
                 if (e.key === 'Escape') {
                     audio.playClick();
-                    setCameraMode('orbit');
+                    if (cameraMode === 'tour') {
+                        setCameraMode('dolly_out');
+                    } else {
+                        setCameraMode('orbit');
+                    }
                     return;
                 } else if (e.code === 'Space' || e.key === 'Enter') {
                     e.preventDefault();
@@ -272,6 +276,7 @@ export default function StoryController() {
 
     const handleReturnComplete = () => {
         setCameraMode('orbit');
+        setShowTitleMenu(true);
     };
 
     const handleTourPoiChange = useCallback((name: string, index: number) => {
@@ -281,9 +286,8 @@ export default function StoryController() {
     }, []);
 
     const handleTourComplete = useCallback(() => {
-        setCameraMode('orbit');
-        setDiscoveryHint('Tour complete. Click the battlestation or press [Enter] to launch portfolio.');
-        setTimeout(() => setDiscoveryHint(null), 6000);
+        audio.playClick();
+        setCameraMode('dolly_out');
     }, []);
 
     const handleNextTourAngle = () => {
@@ -503,7 +507,7 @@ export default function StoryController() {
                                 <button
                                     onClick={() => {
                                         audio.playClick();
-                                        setCameraMode('orbit');
+                                        setCameraMode('dolly_out');
                                     }}
                                     className="px-2.5 py-0.5 rounded border border-zinc-600 hover:border-zinc-200 bg-white/5 hover:bg-white/15 text-zinc-200 hover:text-white transition-all text-[10px] tracking-wider uppercase cursor-pointer"
                                 >
@@ -540,14 +544,14 @@ export default function StoryController() {
                 )}
             </AnimatePresence>
 
-            {/* 6. FULL MODERN MENU (MATCHING REFERENCE IMAGE, TRANSLUCENT GLASSMORPHISM, NO EMOJIS) */}
+            {/* 6. FULL MODERN MENU (WITH CINEMATIC ZOOMOUT ENTRANCE ANIMATION) */}
             <AnimatePresence>
                 {showTitleMenu && !showHologram && (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.28 }}
+                        initial={{ opacity: 0, scale: 1.08 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.96 }}
+                        transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute inset-0 z-[100] flex flex-col justify-between items-center px-6 py-8 sm:py-12 bg-black/35 backdrop-blur-[2px] pointer-events-auto select-none"
                     >
                         {/* TOP: FULL MODERN MENU TITLE (Without subtitle) */}
@@ -614,10 +618,6 @@ export default function StoryController() {
                                 </span>
                             </div>
 
-                            {/* Version Tag (Absolute bottom right like reference screenshot) */}
-                            <div className="absolute bottom-4 right-6 text-[10px] sm:text-xs font-mono text-zinc-500 tracking-wider select-none pointer-events-none">
-                                Ver 2.4.0
-                            </div>
                         </div>
                     </motion.div>
                 )}

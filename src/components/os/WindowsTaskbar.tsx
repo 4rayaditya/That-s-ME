@@ -1,7 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Wifi, Volume2, VolumeX, BatteryCharging } from 'lucide-react';
+import {
+    Wifi,
+    WifiOff,
+    Volume2,
+    VolumeX,
+    BatteryCharging,
+    Battery,
+    Zap,
+    Check,
+    Lock,
+    RefreshCw,
+    Sun,
+    ChevronRight,
+    Activity,
+    ShieldCheck,
+} from 'lucide-react';
 import { audio } from '@/lib/audio';
 
 // Windows 7 pearl orb logo
@@ -23,7 +38,7 @@ const Win7Orb = ({ active }: { active: boolean }) => (
     }}>
         {/* Windows 4-pane logo */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, width: 18, height: 18 }}>
-            {[0,1,2,3].map(i => (
+            {[0, 1, 2, 3].map(i => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 1.5 }} />
             ))}
         </div>
@@ -32,14 +47,51 @@ const Win7Orb = ({ active }: { active: boolean }) => (
 
 interface OpenWindowInfo { id: string; title: string; isMinimized: boolean; isActive: boolean; }
 interface WindowsTaskbarProps {
-    isStartMenuOpen: boolean; onToggleStartMenu: () => void;
-    openWindows: OpenWindowInfo[]; onTaskbarAppClick: (appId: string) => void; onShowDesktop: () => void;
+    isStartMenuOpen: boolean;
+    onToggleStartMenu: () => void;
+    openWindows: OpenWindowInfo[];
+    onTaskbarAppClick: (appId: string) => void;
+    onShowDesktop: () => void;
 }
 
-export default function WindowsTaskbar({ isStartMenuOpen, onToggleStartMenu, openWindows, onTaskbarAppClick, onShowDesktop }: WindowsTaskbarProps) {
+interface NetworkItem {
+    id: string;
+    name: string;
+    bars: number;
+    secure: boolean;
+    speed: string;
+}
+
+export default function WindowsTaskbar({
+    isStartMenuOpen,
+    onToggleStartMenu,
+    openWindows,
+    onTaskbarAppClick,
+    onShowDesktop,
+}: WindowsTaskbarProps) {
     const [currentTime, setCurrentTime] = useState('');
     const [currentDate, setCurrentDate] = useState('');
     const [isMuted, setIsMuted] = useState(false);
+
+    // Tray Popover States
+    const [activeTrayPopup, setActiveTrayPopup] = useState<'wifi' | 'battery' | null>(null);
+
+    // WiFi States
+    const [isWifiConnected, setIsWifiConnected] = useState(true);
+    const [activeNetworkName, setActiveNetworkName] = useState('Aditya_Battlestation_5G');
+    const [isConnecting, setIsConnecting] = useState(false);
+
+    // Battery & Power States
+    const [batteryLevel, setBatteryLevel] = useState(98);
+    const [powerPlan, setPowerPlan] = useState<'performance' | 'balanced' | 'saver'>('performance');
+    const [brightness, setBrightness] = useState(100);
+
+    const AVAILABLE_NETWORKS: NetworkItem[] = [
+        { id: 'home', name: 'Aditya_Battlestation_5G', bars: 5, secure: true, speed: '1.2 Gbps' },
+        { id: 'mesh', name: 'CyberLounge_Mesh_5G', bars: 4, secure: true, speed: '850 Mbps' },
+        { id: 'fiber', name: 'Neural_Fiber_Edge', bars: 3, secure: true, speed: '10 Gbps' },
+        { id: 'guest', name: 'Portfolio_Guest_Hotspot', bars: 3, secure: false, speed: '120 Mbps' },
+    ];
 
     useEffect(() => {
         setIsMuted(audio.getMuted());
@@ -53,10 +105,53 @@ export default function WindowsTaskbar({ isStartMenuOpen, onToggleStartMenu, ope
         return () => clearInterval(timer);
     }, []);
 
+    // Try reading real Battery API if supported by browser
+    useEffect(() => {
+        if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
+            (navigator as any).getBattery?.().then((battery: any) => {
+                const updateBat = () => {
+                    setBatteryLevel(Math.round(battery.level * 100));
+                };
+                updateBat();
+                battery.addEventListener('levelchange', updateBat);
+            }).catch(() => {});
+        }
+    }, []);
+
+    // Dismiss popups when clicking outside
+    useEffect(() => {
+        if (!activeTrayPopup) return;
+        const handleDocumentClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest('[data-tray-popup]') && !target.closest('[data-tray-btn]')) {
+                setActiveTrayPopup(null);
+            }
+        };
+        window.addEventListener('pointerdown', handleDocumentClick);
+        return () => window.removeEventListener('pointerdown', handleDocumentClick);
+    }, [activeTrayPopup]);
+
     const handleToggleMute = (e: React.MouseEvent) => {
         e.stopPropagation();
         const muted = audio.toggleMute();
         setIsMuted(muted);
+    };
+
+    const handleNetworkSelect = (net: NetworkItem) => {
+        if (isConnecting) return;
+        audio.playClick();
+        if (activeNetworkName === net.name && isWifiConnected) {
+            // Disconnect
+            setIsWifiConnected(false);
+            return;
+        }
+        setIsConnecting(true);
+        setTimeout(() => {
+            setActiveNetworkName(net.name);
+            setIsWifiConnected(true);
+            setIsConnecting(false);
+            audio.playClick();
+        }, 700);
     };
 
     // Win7 Aero glass taskbar style
@@ -142,18 +237,82 @@ export default function WindowsTaskbar({ isStartMenuOpen, onToggleStartMenu, ope
 
             {/* System Tray */}
             <div style={{
-                display: 'flex', alignItems: 'center', gap: 4,
+                display: 'flex', alignItems: 'center', gap: 3,
                 padding: '0 8px',
                 height: '100%',
                 borderLeft: '1px solid rgba(100,155,230,0.25)',
+                position: 'relative',
             }}>
-                {/* Volume */}
-                <button onClick={handleToggleMute} title={isMuted ? 'Unmute' : 'Mute'}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: 2, color: 'rgba(210,230,255,0.85)' }}>
+                {/* Volume Button */}
+                <button
+                    onClick={handleToggleMute}
+                    title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
+                    style={{
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        padding: '4px 5px', borderRadius: 2,
+                        color: 'rgba(210,230,255,0.85)',
+                        transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(180,215,255,0.22)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                >
                     {isMuted ? <VolumeX style={{ width: 14, height: 14 }} /> : <Volume2 style={{ width: 14, height: 14 }} />}
                 </button>
-                <Wifi className="hidden sm:block" style={{ width: 14, height: 14, color: 'rgba(210,230,255,0.75)' }} />
-                <BatteryCharging className="hidden sm:block" style={{ width: 14, height: 14, color: 'rgba(210,230,255,0.75)' }} />
+
+                {/* 1. WORKABLE WIFI BUTTON */}
+                <button
+                    data-tray-btn="wifi"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        audio.playClick();
+                        setActiveTrayPopup(prev => prev === 'wifi' ? null : 'wifi');
+                    }}
+                    title={isWifiConnected ? `Connected to ${activeNetworkName}` : 'WiFi Disconnected'}
+                    style={{
+                        background: activeTrayPopup === 'wifi' ? 'rgba(180,215,255,0.35)' : 'none',
+                        border: activeTrayPopup === 'wifi' ? '1px solid rgba(130,185,255,0.55)' : '1px solid transparent',
+                        cursor: 'pointer', padding: '4px 5px', borderRadius: 2,
+                        color: isWifiConnected ? 'rgba(210,230,255,0.95)' : 'rgba(255,140,140,0.85)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => {
+                        if (activeTrayPopup !== 'wifi') e.currentTarget.style.background = 'rgba(180,215,255,0.22)';
+                    }}
+                    onMouseLeave={e => {
+                        if (activeTrayPopup !== 'wifi') e.currentTarget.style.background = 'none';
+                    }}
+                >
+                    {isWifiConnected ? <Wifi style={{ width: 14, height: 14 }} /> : <WifiOff style={{ width: 14, height: 14 }} />}
+                </button>
+
+                {/* 2. WORKABLE BATTERY BUTTON */}
+                <button
+                    data-tray-btn="battery"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        audio.playClick();
+                        setActiveTrayPopup(prev => prev === 'battery' ? null : 'battery');
+                    }}
+                    title={`${batteryLevel}% available (plugged in, charging)`}
+                    style={{
+                        background: activeTrayPopup === 'battery' ? 'rgba(180,215,255,0.35)' : 'none',
+                        border: activeTrayPopup === 'battery' ? '1px solid rgba(130,185,255,0.55)' : '1px solid transparent',
+                        cursor: 'pointer', padding: '4px 5px', borderRadius: 2,
+                        color: 'rgba(210,230,255,0.95)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => {
+                        if (activeTrayPopup !== 'battery') e.currentTarget.style.background = 'rgba(180,215,255,0.22)';
+                    }}
+                    onMouseLeave={e => {
+                        if (activeTrayPopup !== 'battery') e.currentTarget.style.background = 'none';
+                    }}
+                >
+                    <BatteryCharging style={{ width: 14, height: 14 }} />
+                </button>
+
                 {/* Clock */}
                 <div style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -166,6 +325,7 @@ export default function WindowsTaskbar({ isStartMenuOpen, onToggleStartMenu, ope
                         {currentDate}
                     </span>
                 </div>
+
                 {/* Show Desktop button */}
                 <button
                     onClick={onShowDesktop}
@@ -180,6 +340,286 @@ export default function WindowsTaskbar({ isStartMenuOpen, onToggleStartMenu, ope
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(180,215,255,0.35)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'rgba(140,185,240,0.22)')}
                 />
+
+                {/* ============================================================ */}
+                {/* 1. AUTHENTIC WINDOWS 7 AERO WIFI FLYOUT POPOVER             */}
+                {/* ============================================================ */}
+                {activeTrayPopup === 'wifi' && (
+                    <div
+                        data-tray-popup="wifi"
+                        style={{
+                            position: 'absolute',
+                            bottom: 46, right: 38, width: 295,
+                            background: 'linear-gradient(180deg, rgba(22,44,80,0.95) 0%, rgba(12,25,50,0.98) 100%)',
+                            border: '1px solid rgba(135,190,255,0.60)',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.28)',
+                            borderRadius: 5,
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            padding: '12px 14px',
+                            color: 'rgba(230,242,255,0.95)',
+                            fontFamily: '"Segoe UI", Tahoma, sans-serif',
+                            fontSize: 12,
+                            zIndex: 60,
+                        }}
+                    >
+                        {/* Title */}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'between', marginBottom: 8, borderBottom: '1px solid rgba(140,190,255,0.20)', paddingBottom: 6 }}>
+                            <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(190,220,255,0.85)' }}>
+                                Wireless Network Connection
+                            </span>
+                            {isConnecting && (
+                                <RefreshCw className="animate-spin" style={{ width: 11, height: 11, color: '#38bdf8', marginLeft: 'auto' }} />
+                            )}
+                        </div>
+
+                        {/* Currently Connected Network Card */}
+                        <div style={{
+                            padding: '8px 10px',
+                            background: isWifiConnected ? 'rgba(56,189,248,0.12)' : 'rgba(239,68,68,0.10)',
+                            border: isWifiConnected ? '1px solid rgba(56,189,248,0.40)' : '1px solid rgba(239,68,68,0.30)',
+                            borderRadius: 3,
+                            marginBottom: 10,
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    {isWifiConnected ? (
+                                        <Wifi style={{ width: 15, height: 15, color: '#38bdf8' }} />
+                                    ) : (
+                                        <WifiOff style={{ width: 15, height: 15, color: '#f87171' }} />
+                                    )}
+                                    <span style={{ fontWeight: 600, fontSize: 12, color: '#ffffff' }}>
+                                        {activeNetworkName}
+                                    </span>
+                                </div>
+                                <span style={{
+                                    fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
+                                    padding: '2px 5px', borderRadius: 2,
+                                    background: isWifiConnected ? 'rgba(56,189,248,0.25)' : 'rgba(239,68,68,0.25)',
+                                    color: isWifiConnected ? '#7dd3fc' : '#fca5a5',
+                                }}>
+                                    {isWifiConnected ? 'Connected' : 'Off'}
+                                </span>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6, fontSize: 11, color: 'rgba(200,225,255,0.75)' }}>
+                                <span>{isWifiConnected ? 'Internet access • 1.2 Gbps' : 'No connection'}</span>
+                                <button
+                                    onClick={() => {
+                                        audio.playClick();
+                                        setIsWifiConnected(!isWifiConnected);
+                                    }}
+                                    style={{
+                                        background: 'rgba(255,255,255,0.12)',
+                                        border: '1px solid rgba(255,255,255,0.30)',
+                                        borderRadius: 2, padding: '2px 8px',
+                                        fontSize: 10, color: '#fff', cursor: 'pointer',
+                                    }}
+                                >
+                                    {isWifiConnected ? 'Disconnect' : 'Connect'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Available Networks List */}
+                        <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(190,220,255,0.85)', marginBottom: 6 }}>
+                            Available Networks
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 150, overflowY: 'auto' }}>
+                            {AVAILABLE_NETWORKS.map((net) => {
+                                const isCurrent = isWifiConnected && activeNetworkName === net.name;
+                                return (
+                                    <div
+                                        key={net.id}
+                                        onClick={() => handleNetworkSelect(net)}
+                                        style={{
+                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                            padding: '6px 8px', borderRadius: 3,
+                                            background: isCurrent ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.04)',
+                                            border: isCurrent ? '1px solid rgba(135,190,255,0.45)' : '1px solid transparent',
+                                            cursor: 'pointer',
+                                            transition: 'background 0.12s',
+                                        }}
+                                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.18)')}
+                                        onMouseLeave={e => (e.currentTarget.style.background = isCurrent ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.04)')}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                            <Wifi style={{ width: 13, height: 13, color: isCurrent ? '#38bdf8' : 'rgba(200,225,255,0.65)' }} />
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontSize: 11, color: isCurrent ? '#fff' : 'rgba(230,242,255,0.90)', fontWeight: isCurrent ? 600 : 400 }}>
+                                                    {net.name}
+                                                </span>
+                                                <span style={{ fontSize: 9, color: 'rgba(180,210,245,0.60)' }}>
+                                                    {net.speed}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                            {net.secure && <Lock style={{ width: 10, height: 10, color: 'rgba(200,225,255,0.50)' }} />}
+                                            {isCurrent && <Check style={{ width: 12, height: 12, color: '#38bdf8' }} />}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Footer Action Link */}
+                        <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(140,190,255,0.20)' }}>
+                            <button
+                                onClick={() => {
+                                    audio.playClick();
+                                    setActiveTrayPopup(null);
+                                    onTaskbarAppClick('mail');
+                                }}
+                                style={{
+                                    background: 'none', border: 'none',
+                                    color: '#7dd3fc', fontSize: 11, cursor: 'pointer',
+                                    display: 'flex', alignItems: 'center', gap: 3,
+                                    padding: 0, textDecoration: 'underline',
+                                }}
+                            >
+                                <span>Open Network and Sharing Center</span>
+                                <ChevronRight style={{ width: 11, height: 11 }} />
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* ============================================================ */}
+                {/* 2. AUTHENTIC WINDOWS 7 AERO BATTERY FLYOUT POPOVER           */}
+                {/* ============================================================ */}
+                {activeTrayPopup === 'battery' && (
+                    <div
+                        data-tray-popup="battery"
+                        style={{
+                            position: 'absolute',
+                            bottom: 46, right: 10, width: 285,
+                            background: 'linear-gradient(180deg, rgba(22,44,80,0.95) 0%, rgba(12,25,50,0.98) 100%)',
+                            border: '1px solid rgba(135,190,255,0.60)',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.28)',
+                            borderRadius: 5,
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            padding: '12px 14px',
+                            color: 'rgba(230,242,255,0.95)',
+                            fontFamily: '"Segoe UI", Tahoma, sans-serif',
+                            fontSize: 12,
+                            zIndex: 60,
+                        }}
+                    >
+                        {/* Title Header with Battery Visual */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingBottom: 10, borderBottom: '1px solid rgba(140,190,255,0.20)' }}>
+                            <div style={{
+                                width: 34, height: 34, borderRadius: '50%',
+                                background: 'rgba(56,189,248,0.18)',
+                                border: '1px solid rgba(56,189,248,0.45)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                color: '#38bdf8',
+                            }}>
+                                <BatteryCharging style={{ width: 18, height: 18 }} />
+                            </div>
+                            <div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>
+                                    {batteryLevel}% remaining
+                                </div>
+                                <div style={{ fontSize: 10, color: 'rgba(180,215,250,0.75)' }}>
+                                    Plugged in, charging (AC Wall Power)
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Power Plans Selector */}
+                        <div style={{ marginTop: 10 }}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(190,220,255,0.85)', marginBottom: 6 }}>
+                                Select a Power Plan:
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                                {[
+                                    { id: 'performance', name: 'High Performance', desc: 'Unlocked 60 FPS WebGL & RTX GPU', icon: <Zap style={{ width: 12, height: 12, color: '#facc15' }} /> },
+                                    { id: 'balanced', name: 'Balanced', desc: 'Optimal frame rate & battery life', icon: <Activity style={{ width: 12, height: 12, color: '#38bdf8' }} /> },
+                                    { id: 'saver', name: 'Power Saver', desc: 'Battery conservation mode', icon: <ShieldCheck style={{ width: 12, height: 12, color: '#4ade80' }} /> },
+                                ].map(plan => {
+                                    const isSelected = powerPlan === plan.id;
+                                    return (
+                                        <div
+                                            key={plan.id}
+                                            onClick={() => {
+                                                audio.playClick();
+                                                setPowerPlan(plan.id as any);
+                                            }}
+                                            style={{
+                                                display: 'flex', alignItems: 'flex-start', gap: 7,
+                                                padding: '6px 8px', borderRadius: 3,
+                                                background: isSelected ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.03)',
+                                                border: isSelected ? '1px solid rgba(135,190,255,0.40)' : '1px solid transparent',
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="powerPlan"
+                                                checked={isSelected}
+                                                onChange={() => setPowerPlan(plan.id as any)}
+                                                style={{ marginTop: 2, cursor: 'pointer' }}
+                                            />
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontSize: 11, fontWeight: isSelected ? 600 : 400, color: isSelected ? '#ffffff' : 'rgba(220,235,255,0.85)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                    {plan.icon}
+                                                    {plan.name}
+                                                </span>
+                                                <span style={{ fontSize: 9, color: 'rgba(180,210,245,0.60)' }}>
+                                                    {plan.desc}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Adjust Display Brightness */}
+                        <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(140,190,255,0.18)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                                <span style={{ fontSize: 10, color: 'rgba(190,220,255,0.85)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <Sun style={{ width: 11, height: 11, color: '#facc15' }} />
+                                    Adjust display brightness
+                                </span>
+                                <span style={{ fontSize: 10, fontWeight: 700, color: '#fff' }}>
+                                    {brightness}%
+                                </span>
+                            </div>
+                            <input
+                                type="range"
+                                min={20}
+                                max={100}
+                                value={brightness}
+                                onChange={(e) => setBrightness(Number(e.target.value))}
+                                style={{ width: '100%', height: 4, cursor: 'pointer', accentColor: '#38bdf8' }}
+                            />
+                        </div>
+
+                        {/* Footer Action Link */}
+                        <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(140,190,255,0.20)' }}>
+                            <button
+                                onClick={() => {
+                                    audio.playClick();
+                                    setActiveTrayPopup(null);
+                                    onTaskbarAppClick('skills');
+                                }}
+                                style={{
+                                    background: 'none', border: 'none',
+                                    color: '#7dd3fc', fontSize: 11, cursor: 'pointer',
+                                    display: 'flex', alignItems: 'center', gap: 3,
+                                    padding: 0, textDecoration: 'underline',
+                                }}
+                            >
+                                <span>More power options...</span>
+                                <ChevronRight style={{ width: 11, height: 11 }} />
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
