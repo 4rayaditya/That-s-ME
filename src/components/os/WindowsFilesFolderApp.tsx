@@ -49,41 +49,8 @@ export default function WindowsFilesFolderApp({ onOpenFile }: WindowsFilesFolder
             type: 'Adobe Acrobat Document',
             size: '146 KB',
             date: 'Today, 2:40 PM',
-            description: 'Curriculum Vitae — Aditya Ray (Software Engineer & Creative Technologist)',
+            description: 'Curriculum Vitae — Aditya Narayan Ray (Software Engineer & Systems)',
             downloadUrl: '/resume.pdf',
-        },
-        {
-            id: 'about',
-            appId: 'notepad',
-            name: 'About_Aditya',
-            ext: '.txt',
-            icon: <Win7NotepadIcon className="w-10 h-10 drop-shadow-md" />,
-            type: 'Text Document',
-            size: '2.4 KB',
-            date: 'Today, 1:15 PM',
-            description: 'Core developer biography, engineering principles, and contact information',
-        },
-        {
-            id: 'projects',
-            appId: 'projects',
-            name: 'Flagship_Projects',
-            ext: '.url',
-            icon: <Win7InternetExplorerIcon className="w-10 h-10 drop-shadow-md" />,
-            type: 'Internet Shortcut',
-            size: '1.2 KB',
-            date: 'Yesterday',
-            description: 'Interactive 3D WebGL telemetry, full-stack architectures & systems',
-        },
-        {
-            id: 'experience',
-            appId: 'experience',
-            name: 'Career_TrackRecord',
-            ext: '.url',
-            icon: <Win7ComputerIcon className="w-10 h-10 drop-shadow-md" />,
-            type: 'System Shortcut',
-            size: '1.8 KB',
-            date: 'Yesterday',
-            description: 'Verified track record, achievements, metrics, and production honors',
         },
     ];
 
@@ -129,7 +96,7 @@ export default function WindowsFilesFolderApp({ onOpenFile }: WindowsFilesFolder
                     <span className="text-zinc-600">▶</span>
                     <span className="text-zinc-500">Aditya</span>
                     <span className="text-zinc-600">▶</span>
-                    <span className="text-white font-semibold">Documents & Files</span>
+                    <span className="text-white font-semibold">Resume</span>
                 </div>
 
                 {/* Search Bar */}
@@ -137,7 +104,7 @@ export default function WindowsFilesFolderApp({ onOpenFile }: WindowsFilesFolder
                     <Search className="w-3 h-3 text-zinc-400" />
                     <input
                         type="text"
-                        placeholder="Search Files"
+                        placeholder="Search Resume"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-transparent outline-none text-white placeholder:text-zinc-500"

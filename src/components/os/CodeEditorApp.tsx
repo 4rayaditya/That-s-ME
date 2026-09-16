@@ -12,8 +12,8 @@ export default function CodeEditorApp() {
 
     const files: { name: ActiveFile; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
         { name: 'skills.json', icon: FileJson, color: 'text-amber-400' },
-        { name: 'experience.ts', icon: FileCode, color: 'text-brand-blue' },
-        { name: 'education.md', icon: FileText, color: 'text-brand-purple' },
+        { name: 'experience.ts', icon: FileCode, color: 'text-sky-400' },
+        { name: 'education.md', icon: FileText, color: 'text-purple-400' },
         { name: 'manifesto.md', icon: FileText, color: 'text-emerald-400' },
     ];
 
@@ -26,7 +26,6 @@ export default function CodeEditorApp() {
                         handle: PERSONAL_INFO.handle,
                         competencies: SKILL_CATEGORIES.map((cat) => ({
                             category: cat.title,
-                            color: cat.color,
                             skills: cat.skills.map((s) => ({
                                 name: s.name,
                                 proficiency: `${s.level}%`,
@@ -68,10 +67,10 @@ ${exp.achievements.map((a) => `      "${a}"`).join(',\n')}
 
 ${EDUCATION_CERTS.map(
     (edu) => `### ${edu.degree}
-- **Institution**: ${edu.institution}
-- **Period**: ${edu.year}
-- **Distinction**: ${edu.badge}
-- **Focus**: ${edu.description}
+- Institution: ${edu.institution}
+- Period: ${edu.year}
+- Distinction: ${edu.badge}
+- Focus: ${edu.description}
 `
 ).join('\n---\n\n')}`;
 
@@ -95,18 +94,58 @@ ${PERSONAL_INFO.principles
     const content = renderFileContent();
     const lines = content.split('\n');
 
+    const renderCodeLine = (line: string) => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('//') || trimmed.startsWith('#')) {
+            return <span className="text-[#6a9955] italic">{line}</span>;
+        }
+        if (trimmed.startsWith('>') || trimmed.startsWith('-')) {
+            return <span className="text-[#ce9178]">{line}</span>;
+        }
+
+        const parts = line.split(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g);
+        return (
+            <span>
+                {parts.map((part, i) => {
+                    if (part.startsWith('"') || part.startsWith("'")) {
+                        const isKey = line.indexOf(part + ':') !== -1 || line.indexOf(part + ' :') !== -1;
+                        return (
+                            <span key={i} className={isKey ? 'text-[#9cdcfe]' : 'text-[#ce9178]'}>
+                                {part}
+                            </span>
+                        );
+                    }
+                    const words = part.split(/\b(export|interface|const|return|null|true|false)\b/g);
+                    return (
+                        <span key={i}>
+                            {words.map((w, j) => {
+                                if (['export', 'interface', 'const', 'return', 'null', 'true', 'false'].includes(w)) {
+                                    return <span key={j} className="text-[#569cd6] font-semibold">{w}</span>;
+                                }
+                                if (['Position', 'string', 'number'].includes(w)) {
+                                    return <span key={j} className="text-[#4ec9b0]">{w}</span>;
+                                }
+                                return <span key={j} className="text-[#d4d4d4]">{w}</span>;
+                            })}
+                        </span>
+                    );
+                })}
+            </span>
+        );
+    };
+
     return (
-        <div className="flex flex-1 min-h-0 font-mono text-xs overflow-hidden select-text">
+        <div className="flex flex-1 min-h-0 font-mono text-xs overflow-hidden select-text bg-[#1e1e1e]">
             {/* Sidebar File Explorer */}
-            <div className="w-48 bg-space-950/60 border-r border-white/5 p-3 shrink-0 select-none flex flex-col justify-between">
+            <div className="w-48 bg-[#252526] border-r border-[#333333] p-3 shrink-0 select-none flex flex-col justify-between">
                 <div className="space-y-3">
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">
+                    <div className="text-[10px] text-[#cccccc] uppercase tracking-wider font-bold">
                         EXPLORER: THAT-S-ME
                     </div>
                     <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-zinc-400 text-[11px]">
-                            <ChevronRight className="w-3.5 h-3.5" />
-                            <Folder className="w-3.5 h-3.5 text-brand-cyan" />
+                        <div className="flex items-center gap-1.5 text-[#cccccc] text-[11px] font-medium">
+                            <ChevronRight className="w-3.5 h-3.5 text-sky-400" />
+                            <Folder className="w-3.5 h-3.5 text-sky-400" />
                             <span>src/portfolio</span>
                         </div>
                         <div className="pl-4 space-y-1">
@@ -120,10 +159,10 @@ ${PERSONAL_INFO.principles
                                             audio.playClick();
                                             setActiveFile(file.name);
                                         }}
-                                        className={`w-full text-left px-2 py-1 rounded flex items-center gap-1.5 transition-all text-[11px] ${
+                                        className={`w-full text-left px-2 py-1 rounded flex items-center gap-1.5 transition-colors text-[11px] cursor-pointer ${
                                             isActive
-                                                ? 'bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30'
-                                                : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
+                                                ? 'bg-[#37373d] text-white font-medium border-l-2 border-[#007acc]'
+                                                : 'text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]'
                                         }`}
                                     >
                                         <Icon className={`w-3.5 h-3.5 ${file.color}`} />
@@ -135,16 +174,16 @@ ${PERSONAL_INFO.principles
                     </div>
                 </div>
 
-                <div className="p-2 rounded bg-white/[0.02] border border-white/5 text-[10px] text-zinc-500">
+                <div className="p-2 rounded bg-[#1e1e1e] border border-[#333333] text-[10px] text-[#aaaaaa]">
                     <div>Branch: main*</div>
-                    <div className="text-brand-cyan">0 errors, 0 warnings</div>
+                    <div className="text-emerald-400 font-medium">0 errors, 0 warnings</div>
                 </div>
             </div>
 
             {/* Editor Body */}
-            <div className="flex-1 flex flex-col bg-space-950/90 overflow-hidden">
+            <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden">
                 {/* Tabs bar */}
-                <div className="h-8 bg-white/[0.03] border-b border-white/5 flex items-center px-2 gap-1 select-none overflow-x-auto">
+                <div className="h-8 bg-[#252526] border-b border-[#1e1e1e] flex items-center px-2 gap-1 select-none overflow-x-auto">
                     {files.map((file) => {
                         const Icon = file.icon;
                         const isActive = activeFile === file.name;
@@ -155,10 +194,10 @@ ${PERSONAL_INFO.principles
                                     audio.playClick();
                                     setActiveFile(file.name);
                                 }}
-                                className={`h-full px-3 text-[11px] flex items-center gap-1.5 border-t-2 transition-all ${
+                                className={`h-full px-3 text-[11px] flex items-center gap-1.5 border-t-2 transition-colors cursor-pointer ${
                                     isActive
-                                        ? 'bg-space-950/80 text-white border-brand-cyan'
-                                        : 'text-zinc-500 border-transparent hover:text-zinc-300'
+                                        ? 'bg-[#1e1e1e] text-white border-[#007acc] font-medium'
+                                        : 'bg-[#2d2d2d] text-[#969696] border-transparent hover:text-[#e0e0e0]'
                                 }`}
                             >
                                 <Icon className={`w-3.5 h-3.5 ${file.color}`} />
@@ -172,7 +211,7 @@ ${PERSONAL_INFO.principles
                 <div className="flex-1 overflow-auto p-4 custom-scrollbar">
                     <div className="flex">
                         {/* Line numbers */}
-                        <div className="pr-4 select-none text-zinc-600 text-right space-y-0.5 border-r border-white/5">
+                        <div className="pr-4 select-none text-[#858585] text-right space-y-0.5 border-r border-[#333333] font-mono">
                             {lines.map((_, idx) => (
                                 <div key={idx} className="leading-relaxed">
                                     {idx + 1}
@@ -181,21 +220,10 @@ ${PERSONAL_INFO.principles
                         </div>
 
                         {/* Code Content */}
-                        <div className="pl-4 space-y-0.5 text-zinc-300 overflow-x-auto flex-1">
+                        <div className="pl-4 space-y-0.5 text-[#d4d4d4] overflow-x-auto flex-1 font-mono">
                             {lines.map((line, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`leading-relaxed whitespace-pre font-mono ${
-                                        line.startsWith('//') || line.startsWith('#')
-                                            ? 'text-zinc-500 italic'
-                                            : line.includes(':') && line.includes('"')
-                                            ? 'text-cyan-300'
-                                            : line.includes('export') || line.includes('interface')
-                                            ? 'text-purple-400 font-semibold'
-                                            : 'text-zinc-300'
-                                    }`}
-                                >
-                                    {line || ' '}
+                                <div key={idx} className="leading-relaxed whitespace-pre font-mono">
+                                    {renderCodeLine(line) || ' '}
                                 </div>
                             ))}
                         </div>

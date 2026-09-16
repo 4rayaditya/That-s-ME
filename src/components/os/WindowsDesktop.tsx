@@ -78,7 +78,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
 
     const desktopIcons: DesktopIcon[] = [
         { id: 'experience', name: 'Computer', ext: '', icon: <Win7ComputerIcon className="w-11 h-11 drop-shadow-md" /> },
-        { id: 'files',      name: 'Files', ext: '', icon: <Win7UserFolderIcon className="w-11 h-11 drop-shadow-md" /> },
+        { id: 'resume',     name: 'Resume', ext: '.pdf', icon: <Win7PdfIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'projects',   name: 'Internet Explorer', ext: '', icon: <Win7InternetExplorerIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'skills',     name: 'Control Panel', ext: '', icon: <Win7ControlPanelIcon className="w-11 h-11 drop-shadow-md" /> },
         { id: 'mail',       name: 'Network', ext: '', icon: <Win7NetworkIcon className="w-11 h-11 drop-shadow-md" /> },
@@ -90,7 +90,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
 
     const [openWindows, setOpenWindows] = useState<WindowState[]>([
         {
-            id: 'experience', title: 'Career Experience — Aditya Ray',
+            id: 'experience', title: 'Career Experience — Aditya Narayan Ray',
             icon: <Briefcase className="w-4 h-4 text-amber-500" />,
             subtitle: 'Verified Track Record & Credentials',
             component: <WindowsExperienceApp />,
@@ -121,16 +121,15 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         }
         let newWindow: WindowState;
         switch (appId) {
-            case 'experience': newWindow = { id:'experience', title:'Career Experience — Aditya Ray', icon:<Briefcase className="w-4 h-4 text-amber-500"/>, subtitle:'Verified Track Record', component:<WindowsExperienceApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:160,y:50}, initialSize:{width:840,height:580} }; break;
-            case 'files':
-            case 'about':      newWindow = { id:'files', title:'Files — C:\\Users\\Aditya\\Documents', icon:<Folder className="w-4 h-4 text-amber-400"/>, subtitle:'Documents & Resumes', component:<WindowsFilesFolderApp onOpenFile={openApp}/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:190,y:55}, initialSize:{width:780,height:520} }; break;
-            case 'projects':   newWindow = { id:'projects', title:'Projects Explorer — Aditya Ray Flagship Systems', icon:<FolderGit2 className="w-4 h-4 text-cyan-500"/>, subtitle:'3D WebGL & Full-Stack Projects', component:<WindowsProjectsApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:220,y:70}, initialSize:{width:920,height:600} }; break;
-            case 'skills':     newWindow = { id:'skills', title:'System Diagnostics // Tech Stack Matrix', icon:<Cpu className="w-4 h-4 text-purple-500"/>, subtitle:'GPU & Distributed Systems', component:<WindowsSkillsApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:200,y:60}, initialSize:{width:820,height:560} }; break;
-            case 'notepad':    newWindow = { id:'notepad', title:'About_Aditya.txt — Notepad', icon:<FileText className="w-4 h-4 text-sky-500"/>, subtitle:'Aditya Ray Bio & Principles', component:<WindowsNotepadApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:250,y:80}, initialSize:{width:720,height:500} }; break;
+            case 'experience': newWindow = { id:'experience', title:'Career Experience — Aditya Narayan Ray', icon:<Briefcase className="w-4 h-4 text-amber-500"/>, subtitle:'Verified Track Record', component:<WindowsExperienceApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:160,y:50}, initialSize:{width:840,height:580} }; break;
+            case 'resume':
+            case 'files':      newWindow = { id:'resume', title:'Resume.pdf — PDF Reader', icon:<Win7PdfIcon className="w-4 h-4 text-teal-400"/>, subtitle:'Aditya Narayan Ray (ATS-Optimized)', component:<WindowsResumeViewerApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:190,y:40}, initialSize:{width:840,height:640} }; break;
+            case 'projects':   newWindow = { id:'projects', title:'Projects Explorer — Aditya Narayan Ray Flagship Systems', icon:<FolderGit2 className="w-4 h-4 text-cyan-500"/>, subtitle:'Full-Stack & Systems Projects', component:<WindowsProjectsApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:220,y:70}, initialSize:{width:920,height:600} }; break;
+            case 'skills':     newWindow = { id:'skills', title:'System Diagnostics // Tech Stack Matrix', icon:<Cpu className="w-4 h-4 text-purple-500"/>, subtitle:'Backend, Systems & Algorithms', component:<WindowsSkillsApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:200,y:60}, initialSize:{width:820,height:560} }; break;
+            case 'notepad':    newWindow = { id:'notepad', title:'About_Aditya.txt — Notepad', icon:<FileText className="w-4 h-4 text-sky-500"/>, subtitle:'Aditya Narayan Ray Bio & Principles', component:<WindowsNotepadApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:250,y:80}, initialSize:{width:720,height:500} }; break;
             case 'terminal':   newWindow = { id:'terminal', title:'Command Prompt — cmd.exe', icon:<Terminal className="w-4 h-4 text-emerald-500"/>, subtitle:'C:\\Users\\Aditya', component:<WindowsTerminalApp onReturnToRoom={onReturnToRoom}/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:280,y:100}, initialSize:{width:740,height:480} }; break;
             case 'code':       newWindow = { id:'code', title:'VS Code — /home/aditya/portfolio', icon:<Code2 className="w-4 h-4 text-violet-500"/>, subtitle:'Active Workspace', component:<CodeEditorApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:240,y:60}, initialSize:{width:880,height:580} }; break;
             case 'mail':       newWindow = { id:'mail', title:'Windows Mail — Contact Uplink', icon:<Mail className="w-4 h-4 text-rose-500"/>, subtitle:'Encrypted Transmission', component:<WindowsMailApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:260,y:80}, initialSize:{width:760,height:520} }; break;
-            case 'resume':     newWindow = { id:'resume', title:'Aditya_Ray_Resume.pdf — PDF Reader', icon:<Award className="w-4 h-4 text-teal-500"/>, subtitle:'Verified Curriculum Vitae', component:<WindowsResumeViewerApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:200,y:40}, initialSize:{width:820,height:640} }; break;
             case 'media':      newWindow = { id:'media', title:'Groove Music — Lo-Fi Synthesizer', icon:<Music className="w-4 h-4 text-yellow-500"/>, subtitle:'Procedural Audio Stream', component:<WindowsMediaApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:320,y:120}, initialSize:{width:500,height:380} }; break;
             default: return;
         }
@@ -141,7 +140,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         const nextZ = topZIndex + 1;
         setTopZIndex(nextZ);
         setActiveWindowId(id);
-        setOpenWindows((prev) => prev.map((win) => win.id === id ? { ...win, zIndex: nextZ } : win));
+        setOpenWindows((prev) => prev.map((win) => win.id === id ? { ...win, zIndex: nextZ, isMinimized: false } : win));
     };
 
     const handleShowDesktop = () => {
@@ -250,26 +249,29 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                 </div>
 
                 {/* ── Open Window Frames ── */}
-                {openWindows.map((win) => (
-                    <WindowsWindowFrame
-                        key={win.id}
-                        id={win.id}
-                        title={win.title}
-                        icon={win.icon}
-                        subtitle={win.subtitle}
-                        isActive={activeWindowId === win.id}
-                        isMinimized={win.isMinimized}
-                        isMaximized={win.isMaximized}
-                        onFocus={() => bringToFront(win.id)}
-                        onMinimize={() => setOpenWindows((prev) => prev.map((w) => w.id === win.id ? { ...w, isMinimized: true } : w))}
-                        onMaximizeToggle={() => setOpenWindows((prev) => prev.map((w) => w.id === win.id ? { ...w, isMaximized: !w.isMaximized } : w))}
-                        onClose={() => setOpenWindows((prev) => prev.filter((w) => w.id !== win.id))}
-                        initialPosition={win.initialPosition}
-                        initialSize={win.initialSize}
-                    >
-                        {win.component}
-                    </WindowsWindowFrame>
-                ))}
+                {[...openWindows]
+                    .sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0))
+                    .map((win) => (
+                        <WindowsWindowFrame
+                            key={win.id}
+                            id={win.id}
+                            title={win.title}
+                            icon={win.icon}
+                            subtitle={win.subtitle}
+                            isActive={activeWindowId === win.id}
+                            isMinimized={win.isMinimized}
+                            isMaximized={win.isMaximized}
+                            zIndex={win.zIndex}
+                            onFocus={() => bringToFront(win.id)}
+                            onMinimize={() => setOpenWindows((prev) => prev.map((w) => w.id === win.id ? { ...w, isMinimized: true } : w))}
+                            onMaximizeToggle={() => setOpenWindows((prev) => prev.map((w) => w.id === win.id ? { ...w, isMaximized: !w.isMaximized } : w))}
+                            onClose={() => setOpenWindows((prev) => prev.filter((w) => w.id !== win.id))}
+                            initialPosition={win.initialPosition}
+                            initialSize={win.initialSize}
+                        >
+                            {win.component}
+                        </WindowsWindowFrame>
+                    ))}
 
                 {/* Selection marquee */}
                 {selectionBox.isSelecting && (
@@ -360,6 +362,13 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                         setOpenWindows((prev) => prev.map((w) => w.id === appId ? { ...w, isMinimized: false } : w));
                     } else if (activeWindowId === appId) {
                         setOpenWindows((prev) => prev.map((w) => w.id === appId ? { ...w, isMinimized: true } : w));
+                        const remaining = openWindows.filter((w) => w.id !== appId && !w.isMinimized);
+                        if (remaining.length > 0) {
+                            const sortedRemaining = [...remaining].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0));
+                            setActiveWindowId(sortedRemaining[0].id);
+                        } else {
+                            setActiveWindowId('');
+                        }
                     } else {
                         bringToFront(appId);
                     }

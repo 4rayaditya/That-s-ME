@@ -21,6 +21,7 @@ interface WindowsWindowFrameProps {
     initialSize?: { width: number; height: number };
     minWidth?: number;
     minHeight?: number;
+    zIndex?: number;
 }
 
 function Win7Btn({ children, onClick, title, variant, touch }: {
@@ -62,6 +63,7 @@ export default function WindowsWindowFrame({
     initialSize = { width: 880, height: 600 },
     minWidth = 480,
     minHeight = 360,
+    zIndex,
 }: WindowsWindowFrameProps) {
     const isMobile = useIsMobile();
     // On phones there's no reliable way to drag a floating window with a
@@ -111,6 +113,7 @@ export default function WindowsWindowFrame({
             className="window-frame absolute flex flex-col select-none"
             onMouseDown={onFocus}
             style={{
+                zIndex: zIndex ?? (isActive ? 30 : 10),
                 left: effectiveMaximized ? 0 : `${position.x}px`,
                 top: effectiveMaximized ? 0 : `${position.y}px`,
                 width: effectiveMaximized ? '100%' : `${Math.min(size.width, typeof window !== 'undefined' ? window.innerWidth - 20 : size.width)}px`,
