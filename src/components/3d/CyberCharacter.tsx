@@ -41,7 +41,7 @@ export default function CyberCharacter({
     const gamepadRef = useRef<THREE.Group>(null);
 
     // Precise spatial coordinates for locations in the room
-    const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, -1.85), []);
+    const DESK_POS = useMemo(() => new THREE.Vector3(0, 0, -2.17), []); // Tucked closely into the desk & Aeron chair
     const COFFEE_POS = useMemo(() => new THREE.Vector3(2.75, 0, -0.28), []); // Espresso counter
     const BED_STAND_POS = useMemo(() => new THREE.Vector3(-1.35, 0, 1.05), []); // Stand completely clear of futon on open floor
     const BED_LIE_POS = useMemo(() => new THREE.Vector3(-2.55, 0, 1.15), []); // Flat on futon mattress
@@ -89,15 +89,15 @@ export default function CyberCharacter({
         group.position.y = 0;
 
         // ============================================================
-        // STATE 1: CODING AT DESK (Sitting upright in ergonomic chair)
+        // STATE 1: CODING AT DESK (Sitting upright in ergonomic chair, actively typing & clicking)
         // ============================================================
         if (r === 'coding') {
             group.position.copy(DESK_POS);
             group.rotation.set(0, Math.PI, 0);
 
-            // Natural sitting height and posture on bodyRoot
+            // Natural sitting height and engaged forward focus
             bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.48, damp(8));
-            bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, 0.04, damp(8));
+            bodyRoot.rotation.x = THREE.MathUtils.lerp(bodyRoot.rotation.x, 0.08, damp(8));
             bodyRoot.rotation.y = 0;
             bodyRoot.rotation.z = 0;
 
@@ -128,20 +128,24 @@ export default function CyberCharacter({
                 torsoRef.current.position.set(0, 0.28, 0);
                 torsoRef.current.rotation.set(0.06 + Math.sin(time * 2.0) * 0.015, 0, 0);
             }
+            // Head glancing between main IDE display and side vertical monitor
             if (headRef.current) {
-                headRef.current.rotation.set(0.12 + Math.sin(time * 2.5) * 0.02, Math.sin(time * 1.0) * 0.03, 0);
+                const headSideGlance = Math.sin(time * 0.45) > 0.4 ? -0.18 : 0.02;
+                headRef.current.rotation.set(0.08 + Math.sin(time * 2.5) * 0.02, headSideGlance, 0);
             }
 
-            // Keystrokes on mechanical keyboard
+            // Forearms and hands actively typing over keyboard keys and moving/clicking mouse
             if (leftArmRef.current) {
-                leftArmRef.current.rotation.x = -Math.PI / 3.4 + Math.sin(time * 5.2) * 0.018;
-                leftArmRef.current.rotation.y = 0.22;
-                leftArmRef.current.rotation.z = -0.12;
+                // Left arm reaching forward onto keyboard keys with lively typing cadence
+                leftArmRef.current.rotation.x = -1.18 + Math.sin(time * 8.2) * 0.024;
+                leftArmRef.current.rotation.y = 0.16;
+                leftArmRef.current.rotation.z = -0.04;
             }
             if (rightArmRef.current) {
-                rightArmRef.current.rotation.x = -Math.PI / 3.4 + Math.cos(time * 5.6) * 0.018;
-                rightArmRef.current.rotation.y = -0.22;
-                rightArmRef.current.rotation.z = 0.12;
+                // Right arm resting forward on mousepad with natural micro mouse strokes and clicks
+                rightArmRef.current.rotation.x = -1.16 + Math.cos(time * 6.8) * 0.020;
+                rightArmRef.current.rotation.y = -0.15;
+                rightArmRef.current.rotation.z = 0.04;
             }
 
             if (coffeeCupRef.current) coffeeCupRef.current.visible = false;

@@ -396,6 +396,18 @@ export default function StoryController() {
 
     const handleRoutineChange = useCallback((routine: CharacterRoutine) => {
         setCurrentRoutine(routine);
+        // Automatically activate Dark Mode (Stealth blackout) only when character reaches the bed and lays down
+        if (routine === 'resting_bed') {
+            setRoomMood('stealth');
+        } else if (
+            routine === 'returning_to_desk' ||
+            routine === 'coding' ||
+            routine === 'walking_to_coffee' ||
+            routine === 'walking_to_tv'
+        ) {
+            // Restore warm ambient room lighting when character wakes up
+            setRoomMood('cyberpunk');
+        }
     }, []);
 
     // Title menu selection dispatcher

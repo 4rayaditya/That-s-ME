@@ -259,9 +259,14 @@ export default function CameraController({
         const dom = gl.domElement;
         dom.style.cursor = 'grab';
 
+        const activePointerIdRef = { current: null as number | null };
+
         const handlePointerDown = (e: PointerEvent) => {
-            // Do not capture if clicking on UI buttons or dialogs
-            if ((e.target as HTMLElement)?.closest('button, a, input, textarea')) return;
+            // Do not capture if clicking on UI buttons, dialogs, or mobile joystick controls
+            if ((e.target as HTMLElement)?.closest('button, a, input, textarea, [data-mobile-control], .mobile-controls')) return;
+            if (activePointerIdRef.current !== null) return;
+
+            activePointerIdRef.current = e.pointerId;
             isPointerDownRef.current = true;
             lastPointerPosRef.current = { x: e.clientX, y: e.clientY };
             dom.style.cursor = 'grabbing';
@@ -271,23 +276,17 @@ export default function CameraController({
         };
 
         const handlePointerMove = (e: PointerEvent) => {
-            if (!isPointerDownRef.current) return;
+            if (!isPointerDownRef.current || activePointerIdRef.current !== e.pointerId) return;
             const dx = e.clientX - lastPointerPosRef.current.x;
             const dy = e.clientY - lastPointerPosRef.current.y;
             lastPointerPosRef.current = { x: e.clientX, y: e.clientY };
 
+            // Prevent sudden touch leap or tap jitter from snapping camera pitch
+            if (Math.abs(dx) > 75 || Math.abs(dy) > 75) return;
+
             const isTouchInput = e.pointerType === 'touch';
-            const isJoystickToggling =
-                isJoystickTogglingRef.current ||
-                Math.abs(mobileWalkRef.current.fwd) > 0.05 ||
-                Math.abs(mobileWalkRef.current.right) > 0.05;
-
-            // When joystick is not toggling, significantly boost drag speed for effortless 360° looking.
-            // When joystick is actively toggled, provide smoother, controlled rotation for fine steering.
-            const yawSensitivity = isJoystickToggling
-                ? (isTouchInput ? 0.005 : 0.0036)
-                : (isTouchInput ? 0.0135 : 0.0072);
-
+            // Equalize movement and non-movement drag sensitivity as requested
+            const yawSensitivity = isTouchInput ? 0.005 : 0.0036;
             const pitchSensitivity = yawSensitivity * 0.82;
 
             targetYawRef.current -= dx * yawSensitivity;
@@ -297,8 +296,11 @@ export default function CameraController({
         };
 
         const handlePointerUp = (e: PointerEvent) => {
-            isPointerDownRef.current = false;
-            dom.style.cursor = 'grab';
+            if (activePointerIdRef.current === e.pointerId) {
+                activePointerIdRef.current = null;
+                isPointerDownRef.current = false;
+                dom.style.cursor = 'grab';
+            }
             try {
                 if (dom.hasPointerCapture(e.pointerId)) {
                     dom.releasePointerCapture(e.pointerId);
