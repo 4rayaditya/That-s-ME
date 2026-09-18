@@ -456,30 +456,7 @@ class AudioManager {
     }
 
     public playClick() {
-        if (this.isMuted) return;
-        const ctx = this.getContext();
-        if (!ctx) return;
-
-        try {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const now = ctx.currentTime;
-
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(360, now);
-            osc.frequency.exponentialRampToValueAtTime(120, now + 0.06);
-
-            gain.gain.setValueAtTime(0.04, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-
-            osc.connect(gain);
-            gain.connect(this.getDest(ctx));
-
-            osc.start(now);
-            osc.stop(now + 0.07);
-        } catch {
-            // Graceful fallback
-        }
+        // Clicking sounds disabled
     }
 
     public playFridgeDoor(open: boolean) {
