@@ -215,6 +215,7 @@ export default function StoryController() {
 
     // Room lighting mood preset (Cyberpunk Night, Warm Lofi Amber, Matrix Emerald)
     const [roomMood, setRoomMood] = useState<RoomMood>('cyberpunk');
+    const previousMoodRef = useRef<RoomMood>('cyberpunk');
 
     // Interactive window curtains state (closed = cozy sanctuary, open = rainy Tokyo skyline vista)
     const [isCurtainOpen, setIsCurtainOpen] = useState(false);
@@ -229,7 +230,13 @@ export default function StoryController() {
     // Toggle room lighting (Light vs Dark)
     const handleToggleRoomMood = useCallback(() => {
         audio.playClick();
-        setRoomMood((prev) => (prev === 'cyberpunk' ? 'stealth' : 'cyberpunk'));
+        setRoomMood((prev) => {
+            const next = prev === 'cyberpunk' ? 'stealth' : 'cyberpunk';
+            if (next !== 'stealth') {
+                previousMoodRef.current = next;
+            }
+            return next;
+        });
     }, []);
 
     // Toggle window curtains (open / close with fabric glide audio)
@@ -461,6 +468,29 @@ export default function StoryController() {
 
     const handleRoutineChange = useCallback((routine: CharacterRoutine) => {
         setCurrentRoutine(routine);
+        // Automatically activate Dark Mode (Stealth blackout) only when character reaches the bed and lays down
+        if (routine === 'resting_bed') {
+            setRoomMood((prev) => {
+                if (prev !== 'stealth') {
+                    previousMoodRef.current = prev;
+                }
+                return 'stealth';
+            });
+        } else if (
+            routine === 'returning_to_desk' ||
+            routine === 'coding' ||
+            routine === 'walking_to_coffee' ||
+            routine === 'walking_to_tv' ||
+            routine === 'walking_to_fridge'
+        ) {
+            // Restore warm ambient room lighting when character wakes up
+            setRoomMood((prev) => {
+                if (prev === 'stealth') {
+                    return previousMoodRef.current || 'cyberpunk';
+                }
+                return prev;
+            });
+        }
     }, []);
 
     // Explicit background music toggle

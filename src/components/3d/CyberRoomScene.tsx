@@ -3532,7 +3532,7 @@ const CoffeeStation = React.memo(function CoffeeStation({ moodConfig }: { moodCo
 const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone({ moodConfig }: { moodConfig?: RoomMoodConfig }) {
     const isStealth = moodConfig?.id === 'stealth';
     return (
-        <group position={[-2.65, 0, 1.15]} rotation={[0, Math.PI / 2, 0]}>
+        <group position={[-2.75, 0, 1.45]} rotation={[0, Math.PI / 2, 0]}>
             {/* ── 1. TAPERED ARCHITECTURAL LEGS (14cm clear air gap from floor/carpet) ── */}
             {/* 4 Corner Legs + 2 Mid-span Support Legs */}
             {[
@@ -3728,15 +3728,14 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone({ moodConf
         </group>
     );
 });
-
 // -------------------------------------------------------------
 // SUB-COMPONENT: Minimalist Floor Standing Lamp (Bed Suite)
-// Positioned clearly away from boundary walls at x = -2.60, z = 2.15
+// Positioned clearly away from boundary walls at x = -2.85, z = 2.50 (left of bed)
 // -------------------------------------------------------------
 const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp({ moodConfig }: { moodConfig?: RoomMoodConfig }) {
     const isStealth = moodConfig?.id === 'stealth';
     return (
-        <group position={[-2.60, 0, 2.15]}>
+        <group position={[-2.85, 0, 2.50]}>
             {/* Weighted Nero Marquina Marble Circular Base */}
             <mesh receiveShadow position={[0, 0.022, 0]}>
                 <cylinderGeometry args={[0.18, 0.20, 0.044, 28]} />

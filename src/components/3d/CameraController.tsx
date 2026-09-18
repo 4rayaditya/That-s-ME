@@ -547,20 +547,14 @@ export default function CameraController({
             let nextX = walkPosRef.current.x + velocityRef.current.x * dt;
             let nextZ = walkPosRef.current.z + velocityRef.current.z * dt;
 
-            // Outer room walls boundary:
-            // Desk wall (z = -3.5), Wardrobe right (x = 3.5), Window left (x = -3.5), Entry front wall (z = 2.85)
-            nextX = THREE.MathUtils.clamp(nextX, -2.60, 2.50);
-            nextZ = THREE.MathUtils.clamp(nextZ, -2.30, 2.10);
+            // Outer room boundaries (walls at ~3.5m, front entry at ~2.8m)
+            nextX = THREE.MathUtils.clamp(nextX, -3.10, 2.90);
+            nextZ = THREE.MathUtils.clamp(nextZ, -2.80, 2.50);
 
-            // Furniture collision buffer around bed (x: [-1.55, 0.40], z: [0.70, 2.35])
-            if (nextX > -1.55 && nextX < 0.40 && nextZ > 0.70 && nextZ < 2.35) {
-                const distLeft = Math.abs(nextX - (-1.55));
-                const distRight = Math.abs(nextX - 0.40);
-                const distFront = Math.abs(nextZ - 0.70);
-                const minPush = Math.min(distLeft, distRight, distFront);
-                if (minPush === distFront) nextZ = 0.70;
-                else if (minPush === distLeft) nextX = -1.55;
-                else nextX = 0.40;
+            // Bed mattress physical frame collision buffer (only prevents walking through the raised mattress platform)
+            // Bed sits at x: ~-2.75 with front foot at x = -1.62. Walkers can step right up to x = -1.58.
+            if (nextX < -1.58 && nextZ > 0.70 && nextZ < 2.20) {
+                nextX = -1.58;
             }
 
             walkPosRef.current.x = nextX;

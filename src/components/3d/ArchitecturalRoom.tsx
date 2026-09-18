@@ -151,7 +151,7 @@ function ArchitecturalRoom({ environmentPhase, roomMood }: ArchitecturalRoomProp
             </mesh>
 
             {/* COZY WOVEN TEXTURED CARPET EXTENDING UNDER FUTON BED */}
-            <mesh receiveShadow position={[-2.4, 0.003, 1.15]} rotation={[-Math.PI / 2, 0, 0]}>
+            <mesh receiveShadow position={[-2.4, 0.003, 1.45]} rotation={[-Math.PI / 2, 0, 0]}>
                 <planeGeometry args={[2.8, 3.2]} />
                 <meshStandardMaterial
                     color="#2d241d"
@@ -246,7 +246,7 @@ function ArchitecturalRoom({ environmentPhase, roomMood }: ArchitecturalRoomProp
                 {/* ============================================================ */}
                 {/* REALISTIC ARCHITECTURAL OVER-BED FLOATING SHELF & ART        */}
                 {/* ============================================================ */}
-                <group position={[1.15, 0.25, 0.15]}>
+                <group position={[1.45, 0.25, 0.15]}>
                     {/* Solid Live-Edge Smoked Walnut Shelf Plank */}
                     <mesh receiveShadow>
                         <boxGeometry args={[1.9, 0.04, 0.28]} />
@@ -405,7 +405,7 @@ function ArchitecturalRoom({ environmentPhase, roomMood }: ArchitecturalRoomProp
                 {/* ============================================================ */}
                 {/* LARGE MINIMALIST ARCHITECTURAL GALLERY ART ABOVE BED         */}
                 {/* ============================================================ */}
-                <group position={[1.15, 0.95, 0.04]}>
+                <group position={[1.45, 0.95, 0.04]}>
                     {/* Slim Dark Oak Gallery Frame */}
                     <mesh>
                         <boxGeometry args={[1.5, 0.95, 0.04]} />
