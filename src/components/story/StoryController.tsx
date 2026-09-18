@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Volume2,
     VolumeX,
+    Music,
     Monitor,
     Compass,
     Camera,
@@ -190,6 +191,13 @@ export default function StoryController() {
     // Master story & camera phases
     const [cameraMode, setCameraMode] = useState<CameraMode>('orbit');
     const [showHologram, setShowHologram] = useState(false);
+    const isEnteringPortfolioRef = useRef(false);
+    const showHologramRef = useRef(showHologram);
+    const userDisabledMusicRef = useRef(false);
+
+    useEffect(() => {
+        showHologramRef.current = showHologram;
+    }, [showHologram]);
 
     // Title Screen state (Full Modern Menu)
     const [showTitleMenu, setShowTitleMenu] = useState(true);
@@ -216,10 +224,11 @@ export default function StoryController() {
 
     // Sound state
     const [isMuted, setIsMuted] = useState(false);
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
-    // Toggle room lighting (Room Lights ON vs Dark RGB Blackout)
+    // Toggle room lighting (Light vs Dark)
     const handleToggleRoomMood = useCallback(() => {
-        audio.playSwitchClick();
+        audio.playClick();
         setRoomMood((prev) => (prev === 'cyberpunk' ? 'stealth' : 'cyberpunk'));
     }, []);
 
@@ -232,16 +241,65 @@ export default function StoryController() {
         });
     }, []);
 
+    // Audio initial autoplay & one-time user gesture unlock
+    useEffect(() => {
+        let isCleanedUp = false;
+
+        const cleanupListeners = () => {
+            if (isCleanedUp) return;
+            isCleanedUp = true;
+            window.removeEventListener('pointerdown', handleFirstInteraction);
+            window.removeEventListener('keydown', handleFirstInteraction);
+        };
+
+        const handleFirstInteraction = (e: Event) => {
+            if (userDisabledMusicRef.current) {
+                cleanupListeners();
+                return;
+            }
+            if (showHologramRef.current || isEnteringPortfolioRef.current) return;
+            const target = e.target as HTMLElement | null;
+            if (target && (target.closest('[data-enter-portfolio]') || target.closest('[data-music-toggle]'))) {
+                return;
+            }
+
+            cleanupListeners();
+            if (!userDisabledMusicRef.current) {
+                audio.startLofi();
+            }
+        };
+
+        if (!showHologramRef.current && !userDisabledMusicRef.current) {
+            audio.startLofi();
+        }
+
+        window.addEventListener('pointerdown', handleFirstInteraction, { passive: true });
+        window.addEventListener('keydown', handleFirstInteraction, { passive: true });
+
+        return () => {
+            cleanupListeners();
+        };
+    }, []);
+
     // Audio & Global Key Listeners
     useEffect(() => {
         setIsMuted(audio.getMuted());
-        audio.startLofi();
+        setIsMusicPlaying(audio.getLofiPlaying());
 
-        const handleUserGesture = () => {
-            audio.startLofi();
+        const handleMuteChange = (e: Event) => {
+            const customEvent = e as CustomEvent<{ isMuted: boolean }>;
+            if (customEvent.detail) {
+                setIsMuted(customEvent.detail.isMuted);
+            }
         };
-        window.addEventListener('pointerdown', handleUserGesture, { once: true });
-        window.addEventListener('keydown', handleUserGesture, { once: true });
+        const handleMusicChange = (e: Event) => {
+            const customEvent = e as CustomEvent<{ isPlaying: boolean }>;
+            if (customEvent.detail !== undefined) {
+                setIsMusicPlaying(customEvent.detail.isPlaying);
+            }
+        };
+        window.addEventListener('portfolio_mute_change', handleMuteChange);
+        window.addEventListener('portfolio_music_play', handleMusicChange);
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
@@ -256,13 +314,11 @@ export default function StoryController() {
                 }
                 if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
                     e.preventDefault();
-                    audio.playHover();
                     setSelectedMenuIndex((prev) => (prev + 1) % MENU_OPTIONS.length);
                     return;
                 }
                 if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
                     e.preventDefault();
-                    audio.playHover();
                     setSelectedMenuIndex((prev) => (prev - 1 + MENU_OPTIONS.length) % MENU_OPTIONS.length);
                     return;
                 }
@@ -361,7 +417,8 @@ export default function StoryController() {
         window.addEventListener('keydown', handleKeyDown);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('pointerdown', handleUserGesture);
+            window.removeEventListener('portfolio_mute_change', handleMuteChange);
+            window.removeEventListener('portfolio_music_play', handleMusicChange);
         };
     }, [cameraMode, showHologram, currentRoutine, showTitleMenu]);
 
@@ -384,15 +441,23 @@ export default function StoryController() {
     // Jack In (Subtle, smooth transition into battlestation computer)
     const handleJackIn = useCallback(() => {
         audio.playClick();
+        isEnteringPortfolioRef.current = true;
         setCameraMode('dolly_in');
     }, []);
 
     // Setup / Code button action:
-    // Enter portfolio directly without disturbing the character's routine
+    // If not sitting at desk coding, character wakes up and sits down at table to code.
+    // When already seated at desk coding, pressing Code again enters the battlestation setup!
     const handleSelectSetup = useCallback(() => {
         audio.playClick();
-        handleJackIn();
-    }, [handleJackIn]);
+        if (currentRoutine !== 'coding') {
+            setCurrentRoutine('returning_to_desk');
+            setDiscoveryHint('Heading to battlestation to code... Click Code again to Enter Setup.');
+            setTimeout(() => setDiscoveryHint(null), 3500);
+        } else {
+            handleJackIn();
+        }
+    }, [currentRoutine, handleJackIn]);
 
     const handleRoutineChange = useCallback((routine: CharacterRoutine) => {
         setCurrentRoutine(routine);
@@ -410,25 +475,40 @@ export default function StoryController() {
         }
     }, []);
 
+    // Explicit background music toggle
+    const handleToggleMusic = () => {
+        audio.playClick();
+        const playing = audio.toggleLofi();
+        userDisabledMusicRef.current = !playing;
+        setIsMusicPlaying(playing);
+    };
+
     // Title menu selection dispatcher
     const handleTitleSelect = (option: 'portfolio' | 'explore' | 'walk' | 'tour') => {
         audio.playClick();
         setShowTitleMenu(false);
 
         if (option === 'portfolio') {
+            isEnteringPortfolioRef.current = true;
             setCameraMode('dolly_in');
-        } else if (option === 'tour') {
-            setForcedTourIndex(0);
-            setCameraMode('tour');
-        } else if (option === 'walk') {
-            setCameraMode('walk');
-            setDiscoveryHint('First-Person Roam: WASD to walk & strafe, drag mouse to look 360°, Shift to sprint, Space to enter portfolio.');
-            setTimeout(() => setDiscoveryHint(null), 5500);
         } else {
-            // 'explore'
-            setCameraMode('orbit');
-            setDiscoveryHint('Click the battlestation monitors or press [Space] anytime to open portfolio.');
-            setTimeout(() => setDiscoveryHint(null), 6000);
+            isEnteringPortfolioRef.current = false;
+            if (!userDisabledMusicRef.current) {
+                audio.startLofi();
+            }
+            if (option === 'tour') {
+                setForcedTourIndex(0);
+                setCameraMode('tour');
+            } else if (option === 'walk') {
+                setCameraMode('walk');
+                setDiscoveryHint('First-Person Roam: WASD to walk & strafe, drag mouse to look 360°, Shift to sprint, Space to enter portfolio.');
+                setTimeout(() => setDiscoveryHint(null), 5500);
+            } else {
+                // 'explore'
+                setCameraMode('orbit');
+                setDiscoveryHint('Click the battlestation monitors or press [Space] anytime to open portfolio.');
+                setTimeout(() => setDiscoveryHint(null), 6000);
+            }
         }
     };
 
@@ -439,13 +519,20 @@ export default function StoryController() {
 
     const handleReturnToRoom = () => {
         audio.playClick();
+        isEnteringPortfolioRef.current = false;
         setShowHologram(false);
         setCameraMode('dolly_out');
+        if (!userDisabledMusicRef.current) {
+            audio.startLofi();
+        }
     };
 
     const handleReturnComplete = () => {
         setCameraMode('orbit');
         setShowTitleMenu(true);
+        if (!userDisabledMusicRef.current) {
+            audio.startLofi();
+        }
     };
 
     const handleTourPoiChange = useCallback((name: string, index: number) => {
@@ -533,7 +620,6 @@ export default function StoryController() {
                         {/* Room Mood Switcher Button */}
                         <button
                             onClick={handleToggleRoomMood}
-                            onMouseEnter={() => audio.playHover()}
                             className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-[11px] sm:text-xs font-mono tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
                             title="Toggle Room Lighting (Press M)"
                         >
@@ -546,7 +632,6 @@ export default function StoryController() {
                         {/* Camera View Cycle Button */}
                         <button
                             onClick={handleCycleCameraView}
-                            onMouseEnter={() => audio.playHover()}
                             className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-[11px] sm:text-xs font-mono tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
                             title="Cycle Camera View (Press V)"
                         >
@@ -563,7 +648,6 @@ export default function StoryController() {
                                 audio.playClick();
                                 setShowTitleMenu(true);
                             }}
-                            onMouseEnter={() => audio.playHover()}
                             className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-[11px] sm:text-xs font-mono tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
                             title="Open Experience Selection Menu"
                         >
@@ -573,18 +657,22 @@ export default function StoryController() {
                     </>
                 )}
 
-                {/* Audio Toggle */}
+                {/* Background Music Toggle (Volume icon only) */}
                 <button
-                    onClick={handleToggleSound}
-                    onMouseEnter={() => audio.playHover()}
-                    className="flex items-center justify-center p-2 sm:p-2.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-300 hover:text-white transition-all backdrop-blur-md cursor-pointer"
-                    title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
-                    aria-label="Toggle Audio"
+                    data-music-toggle="true"
+                    onClick={handleToggleMusic}
+                    className={`flex items-center justify-center p-2 sm:p-2.5 rounded-lg bg-black/40 border shadow-[0_0_25px_rgba(255,255,255,0.15)] transition-all backdrop-blur-md cursor-pointer ${
+                        isMusicPlaying
+                            ? 'border-cyan-400 text-cyan-300 bg-cyan-950/40 shadow-[0_0_20px_rgba(6,182,212,0.4)]'
+                            : 'border-zinc-100 hover:bg-white/10 text-zinc-400 hover:text-white'
+                    }`}
+                    title={isMusicPlaying ? 'Mute Music' : 'Play Music'}
+                    aria-label={isMusicPlaying ? 'Mute Music' : 'Play Music'}
                 >
-                    {isMuted ? (
-                        <VolumeX className="w-4 h-4 text-zinc-400" />
+                    {isMusicPlaying ? (
+                        <Volume2 className="w-4 h-4 text-cyan-300" />
                     ) : (
-                        <Volume2 className="w-4 h-4 text-zinc-100" />
+                        <VolumeX className="w-4 h-4 text-zinc-400" />
                     )}
                 </button>
             </header>
@@ -772,10 +860,10 @@ export default function StoryController() {
                                 return (
                                     <button
                                         key={opt.id}
+                                        data-enter-portfolio={opt.id === 'portfolio' ? 'true' : undefined}
                                         onClick={() => handleTitleSelect(opt.id)}
                                         onMouseEnter={() => {
                                             if (selectedMenuIndex !== idx) {
-                                                audio.playHover();
                                                 setSelectedMenuIndex(idx);
                                             }
                                         }}

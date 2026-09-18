@@ -35,9 +35,9 @@ export interface RoomMoodConfig {
 export const ROOM_MOOD_CONFIGS: Record<RoomMood, RoomMoodConfig> = {
     cyberpunk: {
         id: 'cyberpunk',
-        name: 'Cyberpunk Room (Original)',
-        shortName: 'Room Lights',
-        description: 'Original warm ambient lighting with Battlestation RGB & cozy natural bouclé sofa',
+        name: 'Light',
+        shortName: 'Light',
+        description: 'Warm ambient lighting with Battlestation RGB & cozy natural bouclé sofa',
         icon: '',
         ambientColor: '#1a1410',
         ambientIntensity: 0.58,
@@ -51,8 +51,8 @@ export const ROOM_MOOD_CONFIGS: Record<RoomMood, RoomMoodConfig> = {
     },
     stealth: {
         id: 'stealth',
-        name: 'Dark RGB Blackout',
-        shortName: 'Dark RGB',
+        name: 'Dark',
+        shortName: 'Dark',
         description: 'Pitch-dark room blackout — all room lights off except the glowing Battlestation PC RGB',
         icon: '',
         ambientColor: '#010204',

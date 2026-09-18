@@ -106,19 +106,25 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     ]);
 
     useEffect(() => {
-        // Authentic Windows 7 Startup Chime when entering workstation
-        audio.playWin7Startup();
+        // Room music stops precisely as the Windows entry startup sound begins
+        const timer = setTimeout(() => {
+            audio.stopLofi();
+            audio.playWin7Startup();
+        }, 80);
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') { audio.playArcadeShutdown(); onReturnToRoom(); }
+            if (e.key === 'Escape') { onReturnToRoom(); }
         };
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
     }, [onReturnToRoom]);
 
     const openApp = (rawAppId: string) => {
         const appId = rawAppId === 'about' ? 'notepad' : rawAppId === 'files' ? 'resume' : rawAppId;
-        if (appId === 'return') { audio.playArcadeShutdown(); onReturnToRoom(); return; }
+        if (appId === 'return') { onReturnToRoom(); return; }
         const nextZ = topZIndex + 1;
         setTopZIndex(nextZ);
         setActiveWindowId(appId);
@@ -381,7 +387,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                     </button>
                     <div style={{ height: 1, background: 'rgba(130,175,230,0.5)', margin: '4px 0' }} />
                     <button
-                        onClick={() => { audio.playArcadeShutdown(); onReturnToRoom(); }}
+                        onClick={() => { onReturnToRoom(); }}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                             padding: '5px 16px', cursor: 'pointer', background: 'transparent',
                             border: 'none', fontSize: 13, color: '#c0392b', textAlign: 'left',

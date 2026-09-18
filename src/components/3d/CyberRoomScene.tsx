@@ -4170,7 +4170,6 @@ const WallLightSwitch = React.memo(function WallLightSwitch({
                         onToggle();
                     }}
                     onMouseEnter={() => {
-                        audio.playHover();
                         setHovered(true);
                     }}
                     onMouseLeave={() => setHovered(false)}
@@ -4348,6 +4347,7 @@ export default function CyberRoomScene({
                 {/* 3D Floating Interactive POI Markers over Bed, Coffee Stand, Battlestation, Mini Fridge, Lounge & Curtains */}
                 <FloatingPoiMarkers
                     visible={cameraMode === 'orbit' && !isMenuOpen}
+                    currentRoutine={currentRoutine}
                     onSelectSetup={() => {
                         if (onSelectSetup) {
                             onSelectSetup();

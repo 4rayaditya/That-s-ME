@@ -16,6 +16,7 @@ interface FloatingPoiMarkersProps {
     onToggleCurtain?: () => void;
     isCurtainOpen?: boolean;
     visible: boolean;
+    currentRoutine?: string;
 }
 
 export default function FloatingPoiMarkers({
@@ -27,6 +28,7 @@ export default function FloatingPoiMarkers({
     onToggleCurtain,
     isCurtainOpen,
     visible,
+    currentRoutine,
 }: FloatingPoiMarkersProps) {
     const setupRef = useRef<THREE.Group>(null);
     const coffeeRef = useRef<THREE.Group>(null);
@@ -65,16 +67,15 @@ export default function FloatingPoiMarkers({
                             audio.playClick();
                             onSelectSetup();
                         }}
-                        onMouseEnter={() => audio.playHover()}
                         className="group relative flex items-center justify-center p-2.5 rounded-full bg-zinc-950/85 border border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(0,245,212,0.6)] hover:shadow-[0_0_25px_rgba(0,245,212,1.0)] hover:scale-115 transition-all duration-200 cursor-pointer backdrop-blur-md"
-                        title="Code"
+                        title={currentRoutine === 'coding' ? 'Enter Battlestation' : 'Code on Setup'}
                     >
                         <span className="absolute -inset-1 rounded-full border border-cyan-400/40 animate-ping pointer-events-none" />
                         <Laptop className="w-4 h-4 text-cyan-300 group-hover:text-white transition-colors" />
 
                         {/* Tooltip on hover */}
                         <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md bg-zinc-950/90 border border-cyan-500/50 text-[10px] font-mono text-cyan-200 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
-                            Code
+                            {currentRoutine === 'coding' ? 'Enter Setup' : 'Code'}
                         </div>
                     </button>
                 </Html>
@@ -89,7 +90,6 @@ export default function FloatingPoiMarkers({
                             audio.playClick();
                             onSelectCoffee();
                         }}
-                        onMouseEnter={() => audio.playHover()}
                         className="group relative flex items-center justify-center p-2.5 rounded-full bg-zinc-950/85 border border-amber-400 text-amber-300 shadow-[0_0_15px_rgba(255,183,3,0.6)] hover:shadow-[0_0_25px_rgba(255,183,3,1.0)] hover:scale-115 transition-all duration-200 cursor-pointer backdrop-blur-md"
                         title="Brew"
                     >
@@ -113,7 +113,6 @@ export default function FloatingPoiMarkers({
                             audio.playClick();
                             onSelectBed();
                         }}
-                        onMouseEnter={() => audio.playHover()}
                         className="group relative flex items-center justify-center p-2.5 rounded-full bg-zinc-950/85 border border-rose-400 text-rose-300 shadow-[0_0_15px_rgba(247,37,133,0.6)] hover:shadow-[0_0_25px_rgba(247,37,133,1.0)] hover:scale-115 transition-all duration-200 cursor-pointer backdrop-blur-md"
                         title="Sleep"
                     >
@@ -138,8 +137,7 @@ export default function FloatingPoiMarkers({
                                 audio.playClick();
                                 onSelectFridge();
                             }}
-                            onMouseEnter={() => audio.playHover()}
-                            className="group relative flex items-center justify-center p-2.5 rounded-full bg-zinc-950/85 border border-emerald-400 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.6)] hover:shadow-[0_0_25px_rgba(16,185,129,1.0)] hover:scale-115 transition-all duration-200 cursor-pointer backdrop-blur-md"
+                            className="group relative flex items-center justify-center p-2.5 rounded-full bg-zinc-950/85 border border-emerald-400 text-emerald-300 shadow-[0_0_15px_rgba(160,185,129,0.6)] hover:shadow-[0_0_25px_rgba(16,185,129,1.0)] hover:scale-115 transition-all duration-200 cursor-pointer backdrop-blur-md"
                             title="Snacks"
                         >
                             <span className="absolute -inset-1 rounded-full border border-emerald-400/40 animate-ping pointer-events-none" />
@@ -164,7 +162,6 @@ export default function FloatingPoiMarkers({
                                 audio.playClick();
                                 onSelectTv();
                             }}
-                            onMouseEnter={() => audio.playHover()}
                             className="group relative flex items-center justify-center p-2.5 rounded-full bg-zinc-950/85 border border-purple-400 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.6)] hover:shadow-[0_0_25px_rgba(168,85,247,1.0)] hover:scale-115 transition-all duration-200 cursor-pointer backdrop-blur-md"
                             title="Chill"
                         >
@@ -190,7 +187,6 @@ export default function FloatingPoiMarkers({
                                 audio.playClick();
                                 onToggleCurtain();
                             }}
-                            onMouseEnter={() => audio.playHover()}
                             className="group relative flex items-center justify-center p-2.5 rounded-full bg-zinc-950/85 border border-sky-400 text-sky-300 shadow-[0_0_15px_rgba(56,189,248,0.6)] hover:shadow-[0_0_25px_rgba(56,189,248,1.0)] hover:scale-115 transition-all duration-200 cursor-pointer backdrop-blur-md"
                             title="Curtain"
                         >

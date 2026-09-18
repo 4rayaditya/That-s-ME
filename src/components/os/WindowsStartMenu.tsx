@@ -96,7 +96,7 @@ export default function WindowsStartMenu({
         if (e) {
             e.stopPropagation();
         }
-        audio.playArcadeShutdown();
+        audio.playClick();
         onClose();
         onReturnToRoom();
     };

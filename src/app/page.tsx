@@ -1,4 +1,8 @@
-import StoryController from '@/components/story/StoryController';
+import dynamic from 'next/dynamic';
+
+const StoryController = dynamic(() => import('@/components/story/StoryController'), {
+    ssr: false,
+});
 
 export default function Home() {
     return (

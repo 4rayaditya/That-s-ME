@@ -14,14 +14,15 @@ class AudioManager {
 
     constructor() {
         if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('portfolio_audio_muted');
-            this.isMuted = saved !== null ? saved === 'true' : false;
+            // Default sound effects unmuted so clicks and UI sounds play immediately
+            this.isMuted = false;
 
             const savedVol = localStorage.getItem('portfolio_audio_volume');
-            this.volume = savedVol !== null ? parseFloat(savedVol) : 0.75;
+            const parsedVol = savedVol !== null ? parseFloat(savedVol) : 0.75;
+            this.volume = isNaN(parsedVol) || parsedVol < 0.15 ? 0.75 : parsedVol;
 
-            // Automatically start Lofi on first user interaction if blocked by browser autoplay policy
-            this.setupAutoPlayTrigger();
+            // Unlock Web Audio context on first user interaction for UI sound effects (zero auto-play music)
+            this.setupAudioUnlock();
         }
     }
 
@@ -44,9 +45,9 @@ class AudioManager {
     public getDest(ctx: AudioContext): AudioNode {
         if (!this.masterGain || this.masterGain.context !== ctx) {
             this.masterGain = ctx.createGain();
-            this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, ctx.currentTime);
             this.masterGain.connect(ctx.destination);
         }
+        this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, ctx.currentTime);
         return this.masterGain;
     }
 
@@ -70,40 +71,25 @@ class AudioManager {
         return this.volume;
     }
 
-    private setupAutoPlayTrigger() {
+    private setupAudioUnlock() {
         if (this.autoStartInitialized) return;
         this.autoStartInitialized = true;
 
-        const startOnGesture = () => {
+        const unlockOnGesture = () => {
             const ctx = this.getContext();
             if (ctx && ctx.state === 'suspended') {
-                ctx.resume().then(() => {
-                    if (!this.isMuted && !this.isLofiPlaying) {
-                        this.startLofi();
-                    }
-                });
-            } else if (!this.isMuted && !this.isLofiPlaying) {
-                this.startLofi();
+                ctx.resume().catch(() => {});
             }
 
-            // Remove listeners once unlocked
-            window.removeEventListener('click', startOnGesture);
-            window.removeEventListener('pointerdown', startOnGesture);
-            window.removeEventListener('keydown', startOnGesture);
-            window.removeEventListener('scroll', startOnGesture);
+            // Remove unlock listeners once user has interacted
+            window.removeEventListener('click', unlockOnGesture);
+            window.removeEventListener('pointerdown', unlockOnGesture);
+            window.removeEventListener('keydown', unlockOnGesture);
         };
 
-        window.addEventListener('click', startOnGesture, { once: true });
-        window.addEventListener('pointerdown', startOnGesture, { once: true });
-        window.addEventListener('keydown', startOnGesture, { once: true });
-        window.addEventListener('scroll', startOnGesture, { once: true });
-
-        // Also attempt direct startup immediately
-        setTimeout(() => {
-            if (!this.isMuted && !this.isLofiPlaying) {
-                this.startLofi();
-            }
-        }, 300);
+        window.addEventListener('click', unlockOnGesture, { once: true });
+        window.addEventListener('pointerdown', unlockOnGesture, { once: true });
+        window.addEventListener('keydown', unlockOnGesture, { once: true });
     }
 
     public toggleMute(): boolean {
@@ -121,10 +107,7 @@ class AudioManager {
             window.dispatchEvent(new CustomEvent('portfolio_mute_change', { detail: { isMuted: this.isMuted } }));
         }
         if (!this.isMuted) {
-            this.startLofi();
             this.playSuccess();
-        } else {
-            this.stopLofi();
         }
         return this.isMuted;
     }
@@ -146,11 +129,6 @@ class AudioManager {
         }
         if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('portfolio_mute_change', { detail: { isMuted: this.isMuted } }));
-        }
-        if (muted) {
-            this.stopLofi();
-        } else {
-            this.startLofi();
         }
     }
 
@@ -183,27 +161,20 @@ class AudioManager {
     // REAL BACKGROUND MUSIC PLAYER (GOOD MUSIC)
     // -------------------------------------------------------------
     public startLofi(forceUnmute = false) {
-        if (forceUnmute) {
-            this.isMuted = false;
-            this.setMuted(false);
-            if (this.volume < 0.15) {
-                this.setVolume(0.75);
-            }
+        this.isMuted = false;
+        if (this.volume < 0.15) {
+            this.setVolume(0.75);
         }
-        if (this.isMuted) return;
         const audioEl = this.getBgAudio();
         if (audioEl) {
-            if (this.volume < 0.15) {
-                this.volume = 0.75;
-            }
-            audioEl.volume = this.isMuted ? 0 : this.volume;
+            audioEl.volume = Math.max(0.25, this.volume);
             audioEl.play().then(() => {
                 this.isLofiPlaying = true;
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('portfolio_music_play', { detail: { isPlaying: true } }));
                 }
-            }).catch(() => {
-                // Browser autoplay waiting for user interaction
+            }).catch((err) => {
+                console.warn('Audio play request failed:', err);
             });
         }
     }
@@ -429,30 +400,7 @@ class AudioManager {
     // UI SOUND EFFECTS (HOVER, CLICK, WARP, SUCCESS)
     // -------------------------------------------------------------
     public playHover() {
-        if (this.isMuted) return;
-        const ctx = this.getContext();
-        if (!ctx) return;
-
-        try {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const now = ctx.currentTime;
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(580, now);
-            osc.frequency.exponentialRampToValueAtTime(880, now + 0.04);
-
-            gain.gain.setValueAtTime(0.015, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-
-            osc.connect(gain);
-            gain.connect(this.getDest(ctx));
-
-            osc.start(now);
-            osc.stop(now + 0.05);
-        } catch {
-            // Graceful fallback
-        }
+        // Hover sound effect removed
     }
 
     // -------------------------------------------------------------
@@ -514,71 +462,81 @@ class AudioManager {
         const ctx = this.getContext();
         if (!ctx) return;
 
-        try {
-            const now = ctx.currentTime;
+        const executeStartup = () => {
+            try {
+                const now = ctx.currentTime + 0.05;
 
-            // 1. Warm ambient synth bed / riser
-            const padOsc1 = ctx.createOscillator();
-            const padOsc2 = ctx.createOscillator();
-            const padGain = ctx.createGain();
-            const padFilter = ctx.createBiquadFilter();
+                // 1. Warm ambient synth bed / riser
+                const padOsc1 = ctx.createOscillator();
+                const padOsc2 = ctx.createOscillator();
+                const padGain = ctx.createGain();
+                const padFilter = ctx.createBiquadFilter();
 
-            padOsc1.type = 'sine';
-            padOsc2.type = 'triangle';
-            padOsc1.frequency.setValueAtTime(138.59, now); // Db3
-            padOsc2.frequency.setValueAtTime(207.65, now); // Ab3
+                padOsc1.type = 'sine';
+                padOsc2.type = 'triangle';
+                padOsc1.frequency.setValueAtTime(138.59, now); // Db3
+                padOsc2.frequency.setValueAtTime(207.65, now); // Ab3
 
-            padFilter.type = 'lowpass';
-            padFilter.frequency.setValueAtTime(320, now);
-            padFilter.frequency.exponentialRampToValueAtTime(1400, now + 1.2);
-            padFilter.frequency.exponentialRampToValueAtTime(400, now + 3.4);
+                padFilter.type = 'lowpass';
+                padFilter.frequency.setValueAtTime(320, now);
+                padFilter.frequency.exponentialRampToValueAtTime(1400, now + 1.2);
+                padFilter.frequency.exponentialRampToValueAtTime(400, now + 3.4);
 
-            padGain.gain.setValueAtTime(0.001, now);
-            padGain.gain.linearRampToValueAtTime(0.035, now + 0.9);
-            padGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
+                padGain.gain.setValueAtTime(0.001, now);
+                padGain.gain.linearRampToValueAtTime(0.08, now + 0.9);
+                padGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
 
-            padOsc1.connect(padFilter);
-            padOsc2.connect(padFilter);
-            padFilter.connect(padGain);
-            padGain.connect(this.getDest(ctx));
+                padOsc1.connect(padFilter);
+                padOsc2.connect(padFilter);
+                padFilter.connect(padGain);
+                padGain.connect(this.getDest(ctx));
 
-            padOsc1.start(now);
-            padOsc2.start(now);
-            padOsc1.stop(now + 3.4);
-            padOsc2.stop(now + 3.4);
+                padOsc1.start(now);
+                padOsc2.start(now);
+                padOsc1.stop(now + 3.4);
+                padOsc2.stop(now + 3.4);
 
-            // 2. The iconic 4-note sequence: Db5 -> Ab4 -> Eb5 -> F5
-            const notes = [
-                { freq: 554.37, time: now + 0.10, dur: 1.8, vel: 0.05 }, // Db5
-                { freq: 415.30, time: now + 0.42, dur: 1.8, vel: 0.045 }, // Ab4
-                { freq: 622.25, time: now + 0.74, dur: 2.1, vel: 0.055 }, // Eb5
-                { freq: 698.46, time: now + 1.06, dur: 2.6, vel: 0.065 }, // F5 (resolving long chime)
-            ];
+                // 2. The iconic 4-note sequence: Db5 -> Ab4 -> Eb5 -> F5
+                const notes = [
+                    { freq: 554.37, time: now + 0.10, dur: 2.2, vel: 0.12 }, // Db5
+                    { freq: 415.30, time: now + 0.44, dur: 2.2, vel: 0.11 }, // Ab4
+                    { freq: 622.25, time: now + 0.78, dur: 2.5, vel: 0.13 }, // Eb5
+                    { freq: 698.46, time: now + 1.12, dur: 3.0, vel: 0.15 }, // F5 (resolving long chime)
+                ];
 
-            notes.forEach(({ freq, time, dur, vel }) => {
-                // Dual harmonics for authentic glass/bell chime timbre
-                [1, 2.76, 5.4].forEach((harmonic, hIdx) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    const hFreq = freq * harmonic;
+                notes.forEach(({ freq, time, dur, vel }) => {
+                    // Dual harmonics for authentic glass/bell chime timbre
+                    [1, 2.76, 5.4].forEach((harmonic, hIdx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        const hFreq = freq * harmonic;
 
-                    osc.type = hIdx === 0 ? 'sine' : 'triangle';
-                    osc.frequency.setValueAtTime(hFreq, time);
+                        osc.type = hIdx === 0 ? 'sine' : 'triangle';
+                        osc.frequency.setValueAtTime(hFreq, time);
 
-                    const hVel = vel / (hIdx + 1);
-                    gain.gain.setValueAtTime(0.0001, time);
-                    gain.gain.linearRampToValueAtTime(hVel, time + 0.015);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, time + dur / (hIdx === 0 ? 1 : 1.8));
+                        const hVel = vel / (hIdx + 1);
+                        gain.gain.setValueAtTime(0.0001, time);
+                        gain.gain.linearRampToValueAtTime(hVel, time + 0.015);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, time + dur / (hIdx === 0 ? 1 : 1.8));
 
-                    osc.connect(gain);
-                    gain.connect(this.getDest(ctx));
+                        osc.connect(gain);
+                        gain.connect(this.getDest(ctx));
 
-                    osc.start(time);
-                    osc.stop(time + dur);
+                        osc.start(time);
+                        osc.stop(time + dur);
+                    });
                 });
-            });
-        } catch {
-            // Graceful fallback
+            } catch {
+                // Graceful fallback
+            }
+        };
+
+        if (ctx.state === 'suspended') {
+            ctx.resume().then(() => {
+                executeStartup();
+            }).catch(() => {});
+        } else {
+            executeStartup();
         }
     }
 
