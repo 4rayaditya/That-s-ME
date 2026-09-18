@@ -106,10 +106,6 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     ]);
 
     useEffect(() => {
-        audio.startLofi(true);
-    }, []);
-
-    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') { audio.playWarpOut(); onReturnToRoom(); }
         };

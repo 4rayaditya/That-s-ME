@@ -616,11 +616,11 @@ export default function StoryController() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="absolute bottom-6 left-4 right-4 z-20 pointer-events-auto select-none"
+                        className="absolute bottom-4 sm:bottom-6 inset-x-0 z-20 pointer-events-none flex justify-center px-3 sm:px-4 select-none"
                     >
-                        <div className="w-full p-3 sm:p-3.5 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] backdrop-blur-md flex flex-col gap-2 sm:gap-2.5 font-mono text-zinc-100">
+                        <div className="pointer-events-auto w-full max-w-[360px] p-2.5 sm:p-3 rounded-xl bg-black/75 border border-zinc-100/50 shadow-[0_8px_32px_rgba(0,0,0,0.6)] backdrop-blur-lg flex flex-col gap-2 font-mono text-zinc-100">
                             <div className="flex items-center justify-between text-xs tracking-wider">
-                                <span className="font-bold tracking-[0.15em] sm:tracking-[0.2em] text-white uppercase text-[10px] sm:text-xs truncate pr-2">
+                                <span className="font-bold tracking-[0.12em] sm:tracking-[0.18em] text-white uppercase text-[10px] sm:text-xs truncate pr-2">
                                     {currentTourName}
                                 </span>
                                 <span className="text-zinc-300 font-bold text-[10px] sm:text-[11px] flex-shrink-0">
@@ -638,18 +638,20 @@ export default function StoryController() {
 
                             {/* Tour Controls */}
                             <div className="flex items-center justify-between pt-0.5 text-[11px] text-zinc-400">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1.5 sm:gap-2">
                                     <button
                                         onClick={handlePrevTourAngle}
-                                        className="px-2 py-0.5 rounded border border-zinc-600 hover:border-zinc-200 bg-white/5 hover:bg-white/15 text-zinc-200 hover:text-white transition-all cursor-pointer"
+                                        className="p-1 sm:px-2 sm:py-0.5 rounded border border-zinc-600 hover:border-zinc-200 bg-white/5 hover:bg-white/15 text-zinc-200 hover:text-white transition-all cursor-pointer flex items-center justify-center"
                                         title="Previous Angle"
+                                        aria-label="Previous Stop"
                                     >
                                         <ChevronLeft className="w-3.5 h-3.5" />
                                     </button>
                                     <button
                                         onClick={handleNextTourAngle}
-                                        className="px-2 py-0.5 rounded border border-zinc-600 hover:border-zinc-200 bg-white/5 hover:bg-white/15 text-zinc-200 hover:text-white transition-all cursor-pointer"
+                                        className="p-1 sm:px-2 sm:py-0.5 rounded border border-zinc-600 hover:border-zinc-200 bg-white/5 hover:bg-white/15 text-zinc-200 hover:text-white transition-all cursor-pointer flex items-center justify-center"
                                         title="Next Angle"
+                                        aria-label="Next Stop"
                                     >
                                         <ChevronRight className="w-3.5 h-3.5" />
                                     </button>
@@ -658,12 +660,12 @@ export default function StoryController() {
 
                                 <button
                                     onClick={() => {
-                                        audio.playClick();
                                         setCameraMode('dolly_out');
                                     }}
-                                    className="px-2.5 py-0.5 rounded border border-zinc-600 hover:border-zinc-200 bg-white/5 hover:bg-white/15 text-zinc-200 hover:text-white transition-all text-[10px] tracking-wider uppercase cursor-pointer"
+                                    className="px-2.5 py-1 sm:py-0.5 rounded border border-zinc-600 hover:border-zinc-200 bg-white/5 hover:bg-white/15 text-zinc-200 hover:text-white transition-all text-[10px] tracking-wider uppercase cursor-pointer flex items-center gap-1"
                                 >
-                                    [ESC] Exit
+                                    <span className="hidden sm:inline">[ESC]</span>
+                                    <span>Exit</span>
                                 </button>
                             </div>
                         </div>
