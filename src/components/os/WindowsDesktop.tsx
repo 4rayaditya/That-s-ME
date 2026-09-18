@@ -90,7 +90,20 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         { id: 'return',     name: 'Return to Room', ext: '', icon: <Win7ExitIcon className="w-11 h-11 drop-shadow-md" /> },
     ];
 
-    const [openWindows, setOpenWindows] = useState<WindowState[]>([]);
+    const [openWindows, setOpenWindows] = useState<WindowState[]>([
+        {
+            id: 'media',
+            title: 'Music Player — Windows Media Player',
+            icon: <Win7MediaPlayerIcon className="w-4 h-4" />,
+            subtitle: 'Windows Media Player',
+            component: <WindowsMediaApp />,
+            isMinimized: true,
+            isMaximized: false,
+            zIndex: 1,
+            initialPosition: { x: 300, y: 100 },
+            initialSize: { width: 520, height: 420 },
+        },
+    ]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -124,7 +137,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
             case 'terminal':   newWindow = { id:'terminal', title:'Command Prompt — cmd.exe', icon:<Terminal className="w-4 h-4 text-emerald-500"/>, subtitle:'C:\\Users\\Aditya', component:<WindowsTerminalApp onReturnToRoom={onReturnToRoom}/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:280,y:100}, initialSize:{width:740,height:480} }; break;
             case 'code':       newWindow = { id:'code', title:'VS Code — /home/aditya/portfolio', icon:<Code2 className="w-4 h-4 text-violet-500"/>, subtitle:'Active Workspace', component:<CodeEditorApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:240,y:60}, initialSize:{width:880,height:580} }; break;
             case 'mail':       newWindow = { id:'mail', title:'Contact Me — Direct Links', icon:<Mail className="w-4 h-4 text-rose-500"/>, subtitle:'GitHub, LinkedIn & Gmail', component:<WindowsMailApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:260,y:80}, initialSize:{width:580,height:440} }; break;
-            case 'media':      newWindow = { id:'media', title:'Groove Music — Lo-Fi Synthesizer', icon:<Music className="w-4 h-4 text-yellow-500"/>, subtitle:'Procedural Audio Stream', component:<WindowsMediaApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:320,y:120}, initialSize:{width:500,height:380} }; break;
+            case 'media':      newWindow = { id:'media', title:'Music Player — Windows Media Player', icon:<Win7MediaPlayerIcon className="w-4 h-4"/>, subtitle:'Windows Media Player', component:<WindowsMediaApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:300,y:100}, initialSize:{width:520,height:420} }; break;
             default: return;
         }
         setOpenWindows((prev) => [...prev, newWindow]);

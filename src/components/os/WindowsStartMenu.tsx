@@ -48,7 +48,7 @@ export default function WindowsStartMenu({
         { id: 'mail', label: 'Contact Me', icon: <Mail className="w-6 h-6 text-[#e11d48]" />, desc: 'GitHub, LinkedIn & Gmail' },
         { id: 'code', label: 'VS Code Editor', icon: <Code2 className="w-6 h-6 text-[#6366f1]" />, desc: 'Interactive Workspace' },
         { id: 'terminal', label: 'Command Prompt', icon: <Terminal className="w-6 h-6 text-[#16a34a]" />, desc: 'cmd.exe Console' },
-        { id: 'media', label: 'Music Player', icon: <Music className="w-6 h-6 text-[#ca8a04]" />, desc: 'Lo-Fi Synthesizer' },
+        { id: 'media', label: 'Music Player', icon: <Music className="w-6 h-6 text-[#ca8a04]" />, desc: 'Windows Media Player' },
     ];
 
     const allProgramsCategories = [
@@ -73,7 +73,7 @@ export default function WindowsStartMenu({
             category: 'Communications & Media',
             apps: [
                 { id: 'mail', label: 'Contact Me (Direct Uplinks)', icon: <Mail className="w-4 h-4 text-[#e11d48]" /> },
-                { id: 'media', label: 'Groove Music Synthesizer', icon: <Music className="w-4 h-4 text-[#ca8a04]" /> },
+                { id: 'media', label: 'Music Player', icon: <Music className="w-4 h-4 text-[#ca8a04]" /> },
             ]
         }
     ];
