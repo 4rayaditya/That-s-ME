@@ -8,9 +8,9 @@ class AudioManager {
     private isMuted: boolean = false;
     private isLofiPlaying: boolean = false;
     private lofiIntervalId: number | null = null;
-    private vinylNode: AudioNode | null = null;
     private stepIndex: number = 0;
     private autoStartInitialized: boolean = false;
+    private bgAudio: HTMLAudioElement | null = null;
 
     constructor() {
         if (typeof window !== 'undefined') {
@@ -54,6 +54,9 @@ class AudioManager {
         this.volume = Math.max(0, Math.min(1, val));
         if (typeof window !== 'undefined') {
             localStorage.setItem('portfolio_audio_volume', String(this.volume));
+        }
+        if (this.bgAudio) {
+            this.bgAudio.volume = this.isMuted ? 0 : this.volume;
         }
         if (this.masterGain && this.ctx) {
             this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
@@ -108,6 +111,9 @@ class AudioManager {
         if (typeof window !== 'undefined') {
             localStorage.setItem('portfolio_audio_muted', String(this.isMuted));
         }
+        if (this.bgAudio) {
+            this.bgAudio.volume = this.isMuted ? 0 : this.volume;
+        }
         if (this.masterGain && this.ctx) {
             this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
         }
@@ -132,6 +138,9 @@ class AudioManager {
         if (typeof window !== 'undefined') {
             localStorage.setItem('portfolio_audio_muted', String(muted));
         }
+        if (this.bgAudio) {
+            this.bgAudio.volume = this.isMuted ? 0 : this.volume;
+        }
         if (this.masterGain && this.ctx) {
             this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
         }
@@ -145,131 +154,48 @@ class AudioManager {
         }
     }
 
-    // -------------------------------------------------------------
-    // PROCEDURAL VINYL / RAIN CRACKLE TEXTURE
-    // -------------------------------------------------------------
-    private startVinylCrackle() {
-        const ctx = this.getContext();
-        if (!ctx || this.vinylNode) return;
 
-        try {
-            const bufferSize = ctx.sampleRate * 2;
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
 
-            // Generate soft warm noise with random dust pops
-            for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                const pop = Math.random() > 0.9992 ? (Math.random() - 0.5) * 0.4 : 0;
-                data[i] = white * 0.015 + pop;
-            }
-
-            const noise = ctx.createBufferSource();
-            noise.buffer = buffer;
-            noise.loop = true;
-
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.value = 1400;
-            filter.Q.value = 1.0;
-
-            const gain = ctx.createGain();
-            gain.gain.value = 0.012; // Subtle ambient warmth
-
-            noise.connect(filter);
-            filter.connect(gain);
-            gain.connect(this.getDest(ctx));
-
-            noise.start();
-            this.vinylNode = gain;
-        } catch {
-            // Audio context restriction handled gracefully
+    private getBgAudio(): HTMLAudioElement | null {
+        if (typeof window === 'undefined') return null;
+        if (!this.bgAudio) {
+            this.bgAudio = new Audio('/music.mp3');
+            this.bgAudio.loop = true;
+            this.bgAudio.preload = 'auto';
+            this.bgAudio.volume = this.isMuted ? 0 : this.volume;
+            this.bgAudio.addEventListener('play', () => {
+                this.isLofiPlaying = true;
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('portfolio_music_play', { detail: { isPlaying: true } }));
+                }
+            });
+            this.bgAudio.addEventListener('pause', () => {
+                this.isLofiPlaying = false;
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('portfolio_music_play', { detail: { isPlaying: false } }));
+                }
+            });
         }
+        return this.bgAudio;
     }
 
     // -------------------------------------------------------------
-    // SOPHISTICATED CYBER LOFI CHILLHOP GENERATOR
+    // REAL BACKGROUND MUSIC PLAYER (GOOD MUSIC)
     // -------------------------------------------------------------
-    public startLofi() {
-        if (this.isLofiPlaying || this.isMuted) return;
-        const ctx = this.getContext();
-        if (!ctx) return;
-
-        this.isLofiPlaying = true;
-        this.startVinylCrackle();
-
-        // 76 BPM Lofi Chillhop groove (1 beat = 0.789s, 1 sixteenth = 0.197s)
-        const stepDurationMs = 197;
-
-        // Jazzy Cyberpunk Neo-Soul Chord Progression:
-        // Chord 1: Dm9
-        // Chord 2: G13
-        // Chord 3: Cmaj9
-        // Chord 4: Am9
-        const chords = [
-            {
-                bass: 73.42, // D2
-                notes: [146.83, 220.00, 261.63, 293.66, 349.23], // D3, A3, C4, E4, F4 (Dm9)
-            },
-            {
-                bass: 98.00, // G2
-                notes: [196.00, 246.94, 293.66, 329.63, 392.00], // G3, B3, E4, G4, A4 (G13)
-            },
-            {
-                bass: 65.41, // C2
-                notes: [130.81, 196.00, 246.94, 293.66, 329.63], // C3, G3, B3, D4, E4 (Cmaj9)
-            },
-            {
-                bass: 110.00, // A2
-                notes: [164.81, 220.00, 261.63, 293.66, 329.63], // E3, A3, C4, E4, G4 (Am9)
-            },
-        ];
-
-        const tick = () => {
-            if (!this.isLofiPlaying || this.isMuted) return;
-            const currentCtx = this.getContext();
-            if (!currentCtx) return;
-
-            const now = currentCtx.currentTime;
-            const stepInBar = this.stepIndex % 16; // 16 steps per bar (4 beats of 4 sixteenths)
-            const barIndex = Math.floor((this.stepIndex / 16) % 4);
-            const currentChord = chords[barIndex];
-
-            // 1. PLAY RHODES ELECTRIC PIANO CHORD (On beat 1, beat 2.5 anticipation, beat 4)
-            if (stepInBar === 0 || stepInBar === 6) {
-                const chordDuration = stepInBar === 0 ? 1.6 : 1.2;
-                this.playRhodesChord(currentCtx, currentChord.notes, now, chordDuration);
-            }
-
-            // 2. PLAY WARM SUB BASSLINE
-            if (stepInBar === 0 || stepInBar === 10) {
-                this.playSubBass(currentCtx, currentChord.bass, now, 1.2);
-            }
-
-            // 3. PLAY SOFT LOFI DRUMS
-            // Kick on beat 1 (step 0) and syncopated beat 2.5 (step 6) and beat 3.5 (step 11)
-            if (stepInBar === 0 || stepInBar === 6 || stepInBar === 11) {
-                this.playLofiKick(currentCtx, now);
-            }
-
-            // Soft Rim / Snare on beat 2 (step 4) and beat 4 (step 12)
-            if (stepInBar === 4 || stepInBar === 12) {
-                this.playLofiSnare(currentCtx, now);
-            }
-
-            // Swing Hi-hat on every eighth note (step 0, 2, 4, 6, 8, 10, 12, 14)
-            if (stepInBar % 2 === 0) {
-                const isOffbeat = stepInBar % 4 !== 0;
-                this.playLofiHat(currentCtx, now, isOffbeat ? 0.015 : 0.025);
-            }
-
-            this.stepIndex++;
-        };
-
-        // Start step sequencer
-        this.stepIndex = 0;
-        tick();
-        this.lofiIntervalId = window.setInterval(tick, stepDurationMs);
+    public startLofi(forceUnmute = false) {
+        if (forceUnmute && this.isMuted) {
+            this.setMuted(false);
+        }
+        if (this.isMuted) return;
+        const audioEl = this.getBgAudio();
+        if (audioEl) {
+            audioEl.volume = this.isMuted ? 0 : this.volume;
+            audioEl.play().then(() => {
+                this.isLofiPlaying = true;
+            }).catch(() => {
+                // Browser autoplay waiting for user interaction
+            });
+        }
     }
 
     // Warm Rhodes / Electric Piano Synth
@@ -444,24 +370,49 @@ class AudioManager {
 
     public stopLofi() {
         this.isLofiPlaying = false;
-        if (this.lofiIntervalId) {
-            clearInterval(this.lofiIntervalId);
-            this.lofiIntervalId = null;
+        if (this.bgAudio) {
+            this.bgAudio.pause();
         }
     }
 
     public toggleLofi(): boolean {
-        if (this.isLofiPlaying) {
+        const audioEl = this.getBgAudio();
+        if (this.isLofiPlaying && audioEl && !audioEl.paused) {
             this.stopLofi();
             return false;
         } else {
-            this.startLofi();
+            this.startLofi(true);
             return true;
         }
     }
 
     public getLofiPlaying(): boolean {
-        return this.isLofiPlaying;
+        const audioEl = this.getBgAudio();
+        return audioEl ? !audioEl.paused : this.isLofiPlaying;
+    }
+
+    public getMusicCurrentTime(): number {
+        return this.bgAudio ? this.bgAudio.currentTime : 0;
+    }
+
+    public getMusicDuration(): number {
+        return this.bgAudio && !isNaN(this.bgAudio.duration) ? this.bgAudio.duration : 0;
+    }
+
+    public seekMusic(seconds: number): void {
+        if (this.bgAudio) {
+            this.bgAudio.currentTime = Math.max(0, Math.min(this.bgAudio.duration || 0, seconds));
+        }
+    }
+
+    public seekMusicPercent(percent: number): void {
+        if (this.bgAudio && this.bgAudio.duration) {
+            this.bgAudio.currentTime = (percent / 100) * this.bgAudio.duration;
+        }
+    }
+
+    public getAudioElement(): HTMLAudioElement | null {
+        return this.getBgAudio();
     }
 
     // -------------------------------------------------------------

@@ -101,7 +101,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     }, [onReturnToRoom]);
 
     const openApp = (rawAppId: string) => {
-        const appId = rawAppId;
+        const appId = rawAppId === 'about' ? 'notepad' : rawAppId === 'files' ? 'resume' : rawAppId;
         if (appId === 'return') { audio.playWarpOut(); onReturnToRoom(); return; }
         audio.playClick();
         const nextZ = topZIndex + 1;
@@ -123,7 +123,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
             case 'notepad':    newWindow = { id:'notepad', title:'About_Aditya.txt — Notepad', icon:<FileText className="w-4 h-4 text-sky-500"/>, subtitle:'Aditya Narayan Ray Bio & Principles', component:<WindowsNotepadApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:250,y:80}, initialSize:{width:720,height:500} }; break;
             case 'terminal':   newWindow = { id:'terminal', title:'Command Prompt — cmd.exe', icon:<Terminal className="w-4 h-4 text-emerald-500"/>, subtitle:'C:\\Users\\Aditya', component:<WindowsTerminalApp onReturnToRoom={onReturnToRoom}/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:280,y:100}, initialSize:{width:740,height:480} }; break;
             case 'code':       newWindow = { id:'code', title:'VS Code — /home/aditya/portfolio', icon:<Code2 className="w-4 h-4 text-violet-500"/>, subtitle:'Active Workspace', component:<CodeEditorApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:240,y:60}, initialSize:{width:880,height:580} }; break;
-            case 'mail':       newWindow = { id:'mail', title:'Windows Mail — Contact Uplink', icon:<Mail className="w-4 h-4 text-rose-500"/>, subtitle:'Encrypted Transmission', component:<WindowsMailApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:260,y:80}, initialSize:{width:760,height:520} }; break;
+            case 'mail':       newWindow = { id:'mail', title:'Contact Me — Direct Links', icon:<Mail className="w-4 h-4 text-rose-500"/>, subtitle:'GitHub, LinkedIn & Gmail', component:<WindowsMailApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:260,y:80}, initialSize:{width:580,height:440} }; break;
             case 'media':      newWindow = { id:'media', title:'Groove Music — Lo-Fi Synthesizer', icon:<Music className="w-4 h-4 text-yellow-500"/>, subtitle:'Procedural Audio Stream', component:<WindowsMediaApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:320,y:120}, initialSize:{width:500,height:380} }; break;
             default: return;
         }
@@ -162,7 +162,9 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         if (
             (e.target as HTMLElement).closest('.desktop-icon') ||
             (e.target as HTMLElement).closest('.window-frame') ||
-            (e.target as HTMLElement).closest('.desktop-context-menu')
+            (e.target as HTMLElement).closest('.desktop-context-menu') ||
+            (e.target as HTMLElement).closest('.win7-start-menu') ||
+            (e.target as HTMLElement).closest('.win7-taskbar')
         ) return;
         setIsStartMenuOpen(false);
         setSelectedIconId(null);

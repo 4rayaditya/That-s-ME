@@ -314,15 +314,17 @@ export default function WindowsTaskbar({
     const taskbarBorder = '1px solid rgba(100,155,230,0.45)';
 
     return (
-        <div style={{
-            position: 'relative',
-            height: 40, display: 'flex', alignItems: 'center',
-            background: taskbarBg,
-            backdropFilter: 'blur(18px) saturate(1.6)',
-            WebkitBackdropFilter: 'blur(18px) saturate(1.6)',
-            borderTop: taskbarBorder,
-            boxShadow: '0 -2px 12px rgba(0,0,0,0.38), inset 0 1px 0 rgba(140,190,255,0.22)',
-            zIndex: 40, flexShrink: 0,
+        <div
+            className="win7-taskbar"
+            style={{
+                position: 'relative',
+                height: 40, display: 'flex', alignItems: 'center',
+                background: taskbarBg,
+                backdropFilter: 'blur(18px) saturate(1.6)',
+                WebkitBackdropFilter: 'blur(18px) saturate(1.6)',
+                borderTop: taskbarBorder,
+                boxShadow: '0 -2px 12px rgba(0,0,0,0.38), inset 0 1px 0 rgba(140,190,255,0.22)',
+                zIndex: 40, flexShrink: 0,
             fontFamily: '"Segoe UI", Tahoma, sans-serif',
         }}>
             {/* Top shine */}
