@@ -57,6 +57,14 @@ export const metadata: Metadata = {
         images: ['/images/projects/nexus-ai.jpg'],
         creator: '@4rayaditya',
     },
+    icons: {
+        icon: [
+            { url: '/favicon.ico', sizes: 'any' },
+            { url: '/icon.png', type: 'image/png' },
+        ],
+        shortcut: '/favicon.ico',
+        apple: '/apple-touch-icon.png',
+    },
 };
 
 export const viewport: Viewport = {
