@@ -162,7 +162,7 @@ export default function WindowsWindowFrame({
                 {/* Control Buttons */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
                     <Win7Btn variant="blue" title="Minimize" touch={isMobile}
-                        onClick={(e) => { e.stopPropagation(); audio.playClick(); onMinimize(); }}>
+                        onClick={(e) => { e.stopPropagation(); audio.playWin7Minimize(); onMinimize(); }}>
                         <svg width="10" height="2" viewBox="0 0 10 2">
                             <rect x="0" y="0" width="10" height="2" fill="#1e3a6a" rx="1"/>
                         </svg>
@@ -171,7 +171,7 @@ export default function WindowsWindowFrame({
                         already forced full-screen by mobile layout. */}
                     {!isMobile && (
                         <Win7Btn variant="blue" title={isMaximized ? 'Restore' : 'Maximize'}
-                            onClick={(e) => { e.stopPropagation(); audio.playClick(); onMaximizeToggle(); }}>
+                            onClick={(e) => { e.stopPropagation(); audio.playWin7Maximize(); onMaximizeToggle(); }}>
                             {isMaximized ? (
                                 <svg width="10" height="10" viewBox="0 0 10 10">
                                     <rect x="2" y="0" width="8" height="8" rx="1" fill="none" stroke="#1e3a6a" strokeWidth="1.5"/>
@@ -185,7 +185,7 @@ export default function WindowsWindowFrame({
                         </Win7Btn>
                     )}
                     <Win7Btn variant="red" title="Close" touch={isMobile}
-                        onClick={(e) => { e.stopPropagation(); audio.playClick(); onClose(); }}>
+                        onClick={(e) => { e.stopPropagation(); audio.playWin7Close(); onClose(); }}>
                         <svg width="9" height="9" viewBox="0 0 9 9">
                             <line x1="1" y1="1" x2="8" y2="8" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
                             <line x1="8" y1="1" x2="1" y2="8" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>

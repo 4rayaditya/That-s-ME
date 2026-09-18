@@ -455,8 +455,391 @@ class AudioManager {
         }
     }
 
+    // -------------------------------------------------------------
+    // AUTHENTIC WINDOWS 7 AERO SOUND SUITE (PROCEDURAL WEB AUDIO)
+    // -------------------------------------------------------------
+
+    /**
+     * Iconic soft, crisp Windows 7 Aero Navigation Click
+     */
+    public playWin7Click() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+
+            // Dual micro-impulse mimicking the physical Windows 7 navigation tap
+            [
+                { time: now, freq: 1750, dur: 0.018, gain: 0.045 },
+                { time: now + 0.012, freq: 1250, dur: 0.014, gain: 0.028 },
+            ].forEach(({ time, freq, dur, gain: vol }) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, time);
+                osc.frequency.exponentialRampToValueAtTime(freq * 0.4, time + dur);
+
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(freq, time);
+                filter.Q.value = 2.0;
+
+                gain.gain.setValueAtTime(vol, time);
+                gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.getDest(ctx));
+
+                osc.start(time);
+                osc.stop(time + dur);
+            });
+        } catch {
+            // Graceful fallback
+        }
+    }
+
     public playClick() {
-        // Clicking sounds disabled
+        this.playWin7Click();
+    }
+
+    /**
+     * Iconic 4-note Windows 7 Startup Chime with lush warm harmonic bells & ambient swell
+     */
+    public playWin7Startup() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+
+            // 1. Warm ambient synth bed / riser
+            const padOsc1 = ctx.createOscillator();
+            const padOsc2 = ctx.createOscillator();
+            const padGain = ctx.createGain();
+            const padFilter = ctx.createBiquadFilter();
+
+            padOsc1.type = 'sine';
+            padOsc2.type = 'triangle';
+            padOsc1.frequency.setValueAtTime(138.59, now); // Db3
+            padOsc2.frequency.setValueAtTime(207.65, now); // Ab3
+
+            padFilter.type = 'lowpass';
+            padFilter.frequency.setValueAtTime(320, now);
+            padFilter.frequency.exponentialRampToValueAtTime(1400, now + 1.2);
+            padFilter.frequency.exponentialRampToValueAtTime(400, now + 3.4);
+
+            padGain.gain.setValueAtTime(0.001, now);
+            padGain.gain.linearRampToValueAtTime(0.035, now + 0.9);
+            padGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
+
+            padOsc1.connect(padFilter);
+            padOsc2.connect(padFilter);
+            padFilter.connect(padGain);
+            padGain.connect(this.getDest(ctx));
+
+            padOsc1.start(now);
+            padOsc2.start(now);
+            padOsc1.stop(now + 3.4);
+            padOsc2.stop(now + 3.4);
+
+            // 2. The iconic 4-note sequence: Db5 -> Ab4 -> Eb5 -> F5
+            const notes = [
+                { freq: 554.37, time: now + 0.10, dur: 1.8, vel: 0.05 }, // Db5
+                { freq: 415.30, time: now + 0.42, dur: 1.8, vel: 0.045 }, // Ab4
+                { freq: 622.25, time: now + 0.74, dur: 2.1, vel: 0.055 }, // Eb5
+                { freq: 698.46, time: now + 1.06, dur: 2.6, vel: 0.065 }, // F5 (resolving long chime)
+            ];
+
+            notes.forEach(({ freq, time, dur, vel }) => {
+                // Dual harmonics for authentic glass/bell chime timbre
+                [1, 2.76, 5.4].forEach((harmonic, hIdx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    const hFreq = freq * harmonic;
+
+                    osc.type = hIdx === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(hFreq, time);
+
+                    const hVel = vel / (hIdx + 1);
+                    gain.gain.setValueAtTime(0.0001, time);
+                    gain.gain.linearRampToValueAtTime(hVel, time + 0.015);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, time + dur / (hIdx === 0 ? 1 : 1.8));
+
+                    osc.connect(gain);
+                    gain.connect(this.getDest(ctx));
+
+                    osc.start(time);
+                    osc.stop(time + dur);
+                });
+            });
+        } catch {
+            // Graceful fallback
+        }
+    }
+
+    /**
+     * Windows 7 Window Minimize Whoosh (gentle downward airy scoop)
+     */
+    public playWin7Minimize() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            const dur = 0.16;
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(580, now);
+            osc.frequency.exponentialRampToValueAtTime(160, now + dur);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1200, now);
+            filter.frequency.exponentialRampToValueAtTime(300, now + dur);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.035, now + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.getDest(ctx));
+
+            osc.start(now);
+            osc.stop(now + dur);
+        } catch {
+            // Graceful fallback
+        }
+    }
+
+    /**
+     * Windows 7 Window Maximize / Restore Whoosh (gentle upward airy scoop)
+     */
+    public playWin7Maximize() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            const dur = 0.16;
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.exponentialRampToValueAtTime(680, now + dur);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(400, now);
+            filter.frequency.exponentialRampToValueAtTime(1600, now + dur);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.035, now + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.getDest(ctx));
+
+            osc.start(now);
+            osc.stop(now + dur);
+        } catch {
+            // Graceful fallback
+        }
+    }
+
+    /**
+     * Interactive Curtain Slide / Fabric Whoosh with brass rod glide
+     */
+    public playCurtainSlide(open: boolean = true) {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            const dur = 0.48;
+
+            // 1. Filtered pink noise buffer for soft linen fabric swoosh
+            const bufferSize = Math.floor(ctx.sampleRate * dur);
+            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            let b0 = 0, b1 = 0, b2 = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                output[i] = (b0 + b1 + b2) * 0.32;
+            }
+
+            const noiseNode = ctx.createBufferSource();
+            noiseNode.buffer = noiseBuffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.Q.setValueAtTime(1.8, now);
+            if (open) {
+                filter.frequency.setValueAtTime(600, now);
+                filter.frequency.exponentialRampToValueAtTime(1500, now + dur);
+            } else {
+                filter.frequency.setValueAtTime(1300, now);
+                filter.frequency.exponentialRampToValueAtTime(450, now + dur);
+            }
+
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.001, now);
+            noiseGain.gain.linearRampToValueAtTime(0.05, now + 0.08);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+            noiseNode.connect(filter);
+            filter.connect(noiseGain);
+            noiseGain.connect(this.getDest(ctx));
+
+            // 2. Subtle metallic chime ring of brass grommets sliding along pole
+            const ringOsc = ctx.createOscillator();
+            const ringGain = ctx.createGain();
+            ringOsc.type = 'sine';
+            ringOsc.frequency.setValueAtTime(open ? 2200 : 1900, now);
+            ringGain.gain.setValueAtTime(0.001, now);
+            ringGain.gain.linearRampToValueAtTime(0.012, now + 0.04);
+            ringGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+
+            ringOsc.connect(ringGain);
+            ringGain.connect(this.getDest(ctx));
+
+            noiseNode.start(now);
+            ringOsc.start(now);
+            ringOsc.stop(now + 0.32);
+        } catch {
+            // Graceful fallback
+        }
+    }
+
+    /**
+     * Whoosh utility alias for window/curtain animation
+     */
+    public playWhoosh() {
+        this.playCurtainSlide(true);
+    }
+
+    /**
+     * Windows 7 Window Close (crisp glass dismiss tick)
+     */
+    public playWin7Close() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            const dur = 0.09;
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.exponentialRampToValueAtTime(180, now + dur);
+
+            gain.gain.setValueAtTime(0.04, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+            osc.connect(gain);
+            gain.connect(this.getDest(ctx));
+
+            osc.start(now);
+            osc.stop(now + dur);
+        } catch {
+            // Graceful fallback
+        }
+    }
+
+    /**
+     * Windows 7 App Launch / Open Sound (subtle uplifting harmonic chime)
+     */
+    public playWin7Open() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            [523.25, 783.99].forEach((freq, idx) => { // C5 -> G5
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const time = now + idx * 0.045;
+                const dur = 0.22;
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, time);
+
+                gain.gain.setValueAtTime(0.001, time);
+                gain.gain.linearRampToValueAtTime(0.03, time + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+
+                osc.connect(gain);
+                gain.connect(this.getDest(ctx));
+
+                osc.start(time);
+                osc.stop(time + dur);
+            });
+        } catch {
+            // Graceful fallback
+        }
+    }
+
+    /**
+     * Mechanical Wall Toggle Light Switch click sound
+     */
+    public playSwitchClick() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+
+            // Low thump
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(260, now);
+            osc.frequency.exponentialRampToValueAtTime(70, now + 0.04);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+            osc.connect(gain);
+            gain.connect(this.getDest(ctx));
+            osc.start(now);
+            osc.stop(now + 0.04);
+
+            // High metallic snap
+            const snap = ctx.createOscillator();
+            const snapGain = ctx.createGain();
+            snap.type = 'square';
+            snap.frequency.setValueAtTime(2400, now);
+            snap.frequency.exponentialRampToValueAtTime(600, now + 0.018);
+            snapGain.gain.setValueAtTime(0.03, now);
+            snapGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+            snap.connect(snapGain);
+            snapGain.connect(this.getDest(ctx));
+            snap.start(now);
+            snap.stop(now + 0.02);
+        } catch {
+            // Graceful fallback
+        }
     }
 
     public playFridgeDoor(open: boolean) {

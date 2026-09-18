@@ -1,14 +1,14 @@
 
 'use client';
 
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, AdaptiveDpr, AdaptiveEvents, Html } from '@react-three/drei';
 import CyberCharacter, { CharacterRoutine } from './CyberCharacter';
 import CameraController, { CameraMode } from './CameraController';
 import { MonitorTextures } from './MonitorTextures';
-import { EnvironmentPhase, ENVIRONMENT_CONFIGS } from '@/lib/environment';
+import { EnvironmentPhase, ENVIRONMENT_CONFIGS, RoomMood, ROOM_MOOD_CONFIGS, RoomMoodConfig } from '@/lib/environment';
 import FloatingPoiMarkers from './FloatingPoiMarkers';
 import ArchitecturalRoom from './ArchitecturalRoom';
 import { audio } from '@/lib/audio';
@@ -25,6 +25,10 @@ interface CyberRoomSceneProps {
     currentRoutine: CharacterRoutine;
     onRoutineChange: (routine: CharacterRoutine, label: string) => void;
     environmentPhase: EnvironmentPhase;
+    roomMood?: RoomMood;
+    onToggleRoomMood?: () => void;
+    isCurtainOpen?: boolean;
+    onToggleCurtain?: () => void;
     onJackIn: () => void;
     onSelectSetup?: () => void;
     isMenuOpen?: boolean;
@@ -33,7 +37,9 @@ interface CyberRoomSceneProps {
 // -------------------------------------------------------------
 // SUB-COMPONENT: Dual Monitor Setup (Compact Main + Vertical Curved)
 // -------------------------------------------------------------
-const BattlestationMonitors = React.memo(function BattlestationMonitors({ monitorTextures }: { monitorTextures: MonitorTextures }) {
+const BattlestationMonitors = React.memo(function BattlestationMonitors({ monitorTextures, moodConfig }: { monitorTextures: MonitorTextures; moodConfig?: RoomMoodConfig }) {
+    const isStealth = moodConfig?.id === 'stealth';
+    const biasColor = moodConfig ? moodConfig.biasLightColor : '#ff1744';
     return (
         <group position={[0, 1.45, -3.20]}>
             {/* ============================================================ */}
@@ -106,17 +112,17 @@ const BattlestationMonitors = React.memo(function BattlestationMonitors({ monito
                 </mesh>
             </group>
 
-            {/* "BEHIND SETUP" RED BIAS LIGHT: contrasting sharply against the black slat wall */}
-            <pointLight color="#ff1744" intensity={3.5} distance={2.5} decay={2} position={[0, 0.04, -0.12]} />
+            {/* "BEHIND SETUP" BIAS LIGHT: matching current room mood */}
+            <pointLight color={biasColor} intensity={isStealth ? 0 : 3.5} distance={2.5} decay={2} position={[0, 0.04, -0.12]} />
 
-            {/* Physical Red LED Backlight Strips on the rear of monitors */}
+            {/* Physical LED Backlight Strips on the rear of monitors */}
             <mesh position={[0.28, 0.02, -0.04]}>
                 <boxGeometry args={[0.95, 0.018, 0.01]} />
-                <meshBasicMaterial color="#ff1744" toneMapped={false} />
+                <meshBasicMaterial color={isStealth ? '#0a0f1d' : biasColor} toneMapped={false} />
             </mesh>
             <mesh position={[-0.56, 0.04, 0.0]} rotation={[0, 0.22, 0]}>
                 <boxGeometry args={[0.015, 0.65, 0.01]} />
-                <meshBasicMaterial color="#ff1744" toneMapped={false} />
+                <meshBasicMaterial color={isStealth ? '#0a0f1d' : biasColor} toneMapped={false} />
             </mesh>
 
             {/* 1. MAIN HORIZONTAL MONITOR (Positioned at x = 0.28, separated by clean black border) */}
@@ -409,12 +415,16 @@ const CpuCabinet = React.memo(function CpuCabinet() {
 // -------------------------------------------------------------
 // SUB-COMPONENT: Battlestation Desk, Mat, Keyboard, Cables, Lamp
 // -------------------------------------------------------------
-const BattlestationDesk = React.memo(function BattlestationDesk() {
+const BattlestationDesk = React.memo(function BattlestationDesk({ moodConfig }: { moodConfig?: RoomMoodConfig }) {
     const rgbUnderglowRef = useRef<THREE.PointLight>(null);
+    const isStealth = moodConfig?.id === 'stealth';
+
     useFrame((state) => {
         if (rgbUnderglowRef.current) {
-            const hue = (state.clock.elapsedTime * 0.08) % 1;
-            rgbUnderglowRef.current.color.setHSL(hue, 0.95, 0.52);
+            rgbUnderglowRef.current.intensity = isStealth ? 4.8 : 3.4;
+            rgbUnderglowRef.current.distance = isStealth ? 4.2 : 3.4;
+            const hue = (state.clock.elapsedTime * (isStealth ? 0.14 : 0.08)) % 1;
+            rgbUnderglowRef.current.color.setHSL(hue, 1.0, 0.52);
         }
     });
 
@@ -785,15 +795,477 @@ const ServerRackTower = React.memo(function ServerRackTower() {
 });
 
 // -------------------------------------------------------------
-// SUB-COMPONENT: Night Window (Curtained â€” exterior vista removed)
+// SUB-COMPONENT: Interactive Tokyo Night Window & Sliding Curtains
 // -------------------------------------------------------------
-// Dark mode is permanent now, and at night the window is drawn shut with a
-// curtain (see ArchitecturalRoom's closed curtain panels), so the courtyard
-// garden / sky vista / rain that used to be visible through the glass has
-// been removed entirely: it was never seen behind the curtain and was one
-// of the heavier parts of the scene (a generated sky texture, a dozen+
-// garden meshes, and a per-frame rain particle update).
-const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow() {
+interface DynamicAtmosphereWindowProps {
+    isCurtainOpen?: boolean;
+    onToggleCurtain?: () => void;
+}
+
+const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow({
+    isCurtainOpen: controlledOpen,
+    onToggleCurtain,
+}: DynamicAtmosphereWindowProps) {
+    const [internalOpen, setInternalOpen] = useState(false);
+    const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+    const [isHovered, setIsHovered] = useState(false);
+
+    // Load user's downloaded anime/cyberpunk city skyline vista from contents folder
+    const [downloadedTexture, setDownloadedTexture] = useState<THREE.Texture | null>(null);
+
+    useEffect(() => {
+        const loader = new THREE.TextureLoader();
+        loader.load(
+            '/images/window-skyline.jpg',
+            (tex) => {
+                tex.colorSpace = THREE.SRGBColorSpace;
+                tex.minFilter = THREE.LinearFilter;
+                tex.magFilter = THREE.LinearFilter;
+                setDownloadedTexture(tex);
+            },
+            undefined,
+            (err) => {
+                console.warn('Fallback to procedural skyline:', err);
+            }
+        );
+    }, []);
+
+    const toggle = useCallback(() => {
+        if (onToggleCurtain) {
+            onToggleCurtain();
+        } else {
+            setInternalOpen((prev) => {
+                const next = !prev;
+                audio.playCurtainSlide(next);
+                return next;
+            });
+        }
+    }, [onToggleCurtain]);
+
+    // 1. Procedural Linen Pleat Texture for realistic drapery depth folds
+    const pleatTexture = useMemo(() => {
+        if (typeof document === 'undefined') return null;
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 128, 128);
+        for (let x = 0; x < 128; x += 16) {
+            const grad = ctx.createLinearGradient(x, 0, x + 16, 0);
+            grad.addColorStop(0, 'rgba(0,0,0,0.32)');
+            grad.addColorStop(0.5, 'rgba(255,255,255,0.22)');
+            grad.addColorStop(1, 'rgba(0,0,0,0.32)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, 0, 16, 128);
+        }
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        texture.repeat.set(6, 1);
+        return texture;
+    }, []);
+
+    // 2. Procedural Rainy Tokyo Night Skyline with Mount Fuji (Fujisan)
+    const tokyoSkylineTexture = useMemo(() => {
+        if (typeof document === 'undefined') return null;
+        const canvas = document.createElement('canvas');
+        canvas.width = 1024;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+
+        // Sky gradient: Deep twilight night to warm hazy city horizon glow
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, 512);
+        skyGrad.addColorStop(0, '#04060e');
+        skyGrad.addColorStop(0.48, '#0b1022');
+        skyGrad.addColorStop(0.78, '#1b1424');
+        skyGrad.addColorStop(1, '#2c1928');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, 1024, 512);
+
+        // Distant stars / gentle rain haze
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+        for (let i = 0; i < 40; i++) {
+            const sx = (i * 97) % 1024;
+            const sy = (i * 37) % 180;
+            ctx.fillRect(sx, sy, 1.5, 1.5);
+        }
+
+        // Atmospheric rain cloud mist layer
+        const cloudGrad = ctx.createLinearGradient(0, 100, 0, 360);
+        cloudGrad.addColorStop(0, 'rgba(15, 23, 42, 0)');
+        cloudGrad.addColorStop(0.5, 'rgba(40, 25, 45, 0.28)');
+        cloudGrad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+        ctx.fillStyle = cloudGrad;
+        ctx.fillRect(0, 100, 1024, 260);
+
+        // ── MOUNT FUJI (Fujisan - 富士山) Majestic Volcanic Silhouette & Snow Cap ──
+        // Positioned on the center-left horizon behind the Tokyo high-rises
+        const fx = 360;
+        const fujiTopY = 196;
+        const fujiBaseY = 482;
+
+        // Subtle twilight back-glow halo behind Fuji's iconic peak
+        const fujiAura = ctx.createRadialGradient(fx, fujiTopY + 45, 20, fx, fujiTopY + 45, 260);
+        fujiAura.addColorStop(0, 'rgba(192, 132, 252, 0.26)');
+        fujiAura.addColorStop(0.45, 'rgba(96, 165, 250, 0.14)');
+        fujiAura.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = fujiAura;
+        ctx.fillRect(fx - 260, fujiTopY - 40, 520, 320);
+
+        // 1. Mount Fuji Dark Volcanic Cone (graceful symmetrical concave slopes)
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(110, fujiBaseY);
+        // Concave exponential sweep up the left ridge to caldera crest
+        ctx.bezierCurveTo(220, 440, 305, 265, 342, fujiTopY + 4);
+        // Caldera rim: realistic summit volcanic depression
+        ctx.lineTo(352, fujiTopY + 6);
+        ctx.lineTo(360, fujiTopY + 3); // central caldera notch
+        ctx.lineTo(368, fujiTopY + 6);
+        ctx.lineTo(378, fujiTopY + 4);
+        // Concave exponential sweep down the right ridge to foothill base
+        ctx.bezierCurveTo(415, 265, 500, 440, 610, fujiBaseY);
+        ctx.closePath();
+
+        // Volcanic rock gradient: twilight indigo to deep obsidian
+        const fujiBodyGrad = ctx.createLinearGradient(0, fujiTopY, 0, fujiBaseY);
+        fujiBodyGrad.addColorStop(0, '#1c1b3a');
+        fujiBodyGrad.addColorStop(0.45, '#121429');
+        fujiBodyGrad.addColorStop(1, '#090d18');
+        ctx.fillStyle = fujiBodyGrad;
+        ctx.fill();
+
+        // 2. Realistic Snow-Capped Peak with Cascading Glacial Gullies (yuki-kei)
+        ctx.beginPath();
+        // Upper crater edge
+        ctx.moveTo(342, fujiTopY + 4);
+        ctx.lineTo(352, fujiTopY + 6);
+        ctx.lineTo(360, fujiTopY + 3);
+        ctx.lineTo(368, fujiTopY + 6);
+        ctx.lineTo(378, fujiTopY + 4);
+        // Upper right slope down to mid-snow line
+        ctx.bezierCurveTo(392, 226, 408, 252, 426, 280);
+        // Cascading irregular glacial tongues and couloirs down the volcanic ridges
+        ctx.lineTo(418, 288);
+        ctx.lineTo(412, 316); // deep eastern couloir 1
+        ctx.lineTo(402, 292);
+        ctx.lineTo(396, 324); // deep eastern couloir 2
+        ctx.lineTo(386, 298);
+        ctx.lineTo(376, 332); // central descent tongue
+        ctx.lineTo(368, 302);
+        ctx.lineTo(358, 336); // central main snowy chute
+        ctx.lineTo(350, 300);
+        ctx.lineTo(340, 328); // western chute 3
+        ctx.lineTo(332, 294);
+        ctx.lineTo(324, 318); // western chute 4
+        ctx.lineTo(314, 286);
+        ctx.lineTo(294, 280);
+        // Upper left slope back to crest
+        ctx.bezierCurveTo(312, 252, 328, 226, 342, fujiTopY + 4);
+        ctx.closePath();
+
+        // Snow gradient: Pure glowing alpine white to soft twilight-blue shadow
+        const snowGrad = ctx.createLinearGradient(0, fujiTopY, 0, 336);
+        snowGrad.addColorStop(0, '#ffffff');
+        snowGrad.addColorStop(0.35, '#f1f5f9');
+        snowGrad.addColorStop(0.75, '#cbd5e1');
+        snowGrad.addColorStop(1, '#94a3b8');
+        ctx.fillStyle = snowGrad;
+        ctx.fill();
+
+        // Subtle shaded crevices / volcanic fissures inside the snow cap
+        ctx.strokeStyle = 'rgba(26, 28, 48, 0.38)';
+        ctx.lineWidth = 1.8;
+        const crevices = [
+            [350, fujiTopY + 8, 340, 320],
+            [360, fujiTopY + 5, 358, 328],
+            [370, fujiTopY + 8, 376, 324],
+            [388, fujiTopY + 18, 396, 315],
+            [332, fujiTopY + 18, 324, 310]
+        ];
+        crevices.forEach(([x1, y1, x2, y2]) => {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.quadraticCurveTo((x1 + x2) / 2 + 2, (y1 + y2) / 2, x2, y2);
+            ctx.stroke();
+        });
+
+        // Delicate western sunset/twilight rim highlight on the left flank of Fuji
+        ctx.strokeStyle = 'rgba(254, 215, 170, 0.38)';
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        ctx.moveTo(110, fujiBaseY);
+        ctx.bezierCurveTo(220, 440, 305, 265, 342, fujiTopY + 4);
+        ctx.stroke();
+
+        // 3. Low-lying Foothill Mist Layer (grounds Fuji behind the Tokyo skyscrapers)
+        const mistGrad = ctx.createLinearGradient(0, 405, 0, 485);
+        mistGrad.addColorStop(0, 'rgba(11, 16, 34, 0)');
+        mistGrad.addColorStop(0.5, 'rgba(30, 27, 75, 0.45)');
+        mistGrad.addColorStop(1, 'rgba(10, 13, 26, 0.85)');
+        ctx.fillStyle = mistGrad;
+        ctx.fillRect(80, 405, 560, 80);
+        ctx.restore();
+
+        // Layer 1: Distant dark silhouette high-rises
+        const farBuildings = [
+            [20, 190, 45], [70, 240, 55], [130, 210, 40], [175, 270, 60],
+            [240, 230, 45], [290, 310, 70], [365, 260, 50], [420, 220, 40],
+            [465, 290, 65], [535, 240, 45], [585, 330, 75], [720, 270, 50],
+            [775, 220, 40], [820, 300, 65], [890, 250, 55], [950, 210, 45]
+        ];
+
+        ctx.fillStyle = '#0a0d1a';
+        farBuildings.forEach(([bx, bh, bw]) => {
+            const by = 512 - bh;
+            ctx.fillRect(bx, by, bw, bh);
+            // Distant faint window specks
+            ctx.fillStyle = 'rgba(254, 240, 138, 0.35)';
+            for (let wy = by + 12; wy < 480; wy += 14) {
+                for (let wx = bx + 6; wx < bx + bw - 6; wx += 8) {
+                    if ((wx * 7 + wy * 13) % 4 === 0) {
+                        ctx.fillRect(wx, wy, 2, 3);
+                    }
+                }
+            }
+            ctx.fillStyle = '#0a0d1a';
+        });
+
+        // Tokyo Tower Silhouette (right of center: x = 665, warm lattice & beacon)
+        const tx = 665;
+        const baseY = 490;
+        const towerH = 310;
+        const tipY = baseY - towerH;
+
+        // Tower warm orange glow halo
+        const tGlow = ctx.createRadialGradient(tx, tipY + 120, 10, tx, tipY + 120, 120);
+        tGlow.addColorStop(0, 'rgba(249, 115, 22, 0.42)');
+        tGlow.addColorStop(0.6, 'rgba(234, 88, 12, 0.12)');
+        tGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = tGlow;
+        ctx.fillRect(tx - 120, tipY + 20, 240, 240);
+
+        // Tower tapered legs (warm red/orange)
+        ctx.strokeStyle = '#ea580c';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(tx - 38, baseY);
+        ctx.lineTo(tx - 14, tipY + 130);
+        ctx.lineTo(tx - 2, tipY + 30);
+        ctx.lineTo(tx, tipY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(tx + 38, baseY);
+        ctx.lineTo(tx + 14, tipY + 130);
+        ctx.lineTo(tx + 2, tipY + 30);
+        ctx.lineTo(tx, tipY);
+        ctx.stroke();
+
+        // Tower horizontal lattice cross beams
+        ctx.strokeStyle = 'rgba(251, 146, 60, 0.8)';
+        ctx.lineWidth = 1.5;
+        for (let y = tipY + 40; y < baseY; y += 18) {
+            const spread = ((y - tipY) / towerH) * 36;
+            ctx.beginPath();
+            ctx.moveTo(tx - spread, y);
+            ctx.lineTo(tx + spread, y);
+            ctx.stroke();
+        }
+
+        // Main Observation Deck (warm glowing orange)
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(tx - 18, tipY + 135, 36, 16);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(tx - 15, tipY + 140, 30, 6);
+
+        // Special Observation Deck (higher up)
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(tx - 9, tipY + 75, 18, 11);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(tx - 7, tipY + 78, 14, 5);
+
+        // Top Spire & Aircraft Warning Beacon
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(tx, tipY + 30);
+        ctx.lineTo(tx, tipY);
+        ctx.stroke();
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(tx, tipY, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Layer 2: Midground & Foreground Tokyo High-Rises
+        const midBuildings = [
+            [0, 260, 70], [60, 340, 80], [145, 290, 65], [215, 380, 95],
+            [315, 310, 85], [405, 360, 75], [485, 320, 80], [570, 280, 70],
+            [710, 350, 90], [805, 310, 75], [885, 370, 85], [975, 290, 50]
+        ];
+
+        midBuildings.forEach(([bx, bh, bw], idx) => {
+            const by = 512 - bh;
+            // Building body
+            ctx.fillStyle = idx % 2 === 0 ? '#111726' : '#0e1422';
+            ctx.fillRect(bx, by, bw, bh);
+
+            // Roof accent / Mechanical room
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(bx + bw * 0.2, by - 12, bw * 0.6, 12);
+
+            // Rooftop red safety beacon on taller towers
+            if (bh > 310) {
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(bx + bw * 0.5, by - 14, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Glowing warm Tokyo office & residential windows
+            for (let wy = by + 10; wy < 490; wy += 11) {
+                for (let wx = bx + 8; wx < bx + bw - 8; wx += 8) {
+                    const seed = (wx * 11 + wy * 17 + idx * 31);
+                    if (seed % 3 !== 0) {
+                        const tone = seed % 5 === 0 ? '#fef08a' : seed % 7 === 0 ? '#fed7aa' : '#ffffff';
+                        ctx.fillStyle = tone;
+                        ctx.globalAlpha = 0.55 + (seed % 4) * 0.12;
+                        ctx.fillRect(wx, wy, 4.5, 5.5);
+                    }
+                }
+            }
+            ctx.globalAlpha = 1.0;
+        });
+
+        // Elevated Shuto Expressway viaduct with light streaks
+        const roadY = 475;
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, roadY, 1024, 18);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, roadY, 1024, 3);
+        // Headlights (white)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.fillRect(0, roadY + 4, 1024, 2.5);
+        // Taillights (red)
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.85)';
+        ctx.fillRect(0, roadY + 8, 1024, 2.5);
+
+        // Distant Airship drifting in upper sky
+        const ax = 280;
+        const ay = 85;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.beginPath();
+        ctx.ellipse(ax, ay, 28, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(ax - 22, ay + 2, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(ax + 22, ay + 2, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = THREE.ClampToEdgeWrapping;
+        tex.wrapT = THREE.ClampToEdgeWrapping;
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        return tex;
+    }, []);
+
+    // 3. Procedural Rain Streaks & Condensation Beads Texture
+    const rainTexture = useMemo(() => {
+        if (typeof document === 'undefined') return null;
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+
+        ctx.clearRect(0, 0, 512, 512);
+
+        // Vertical sliding raindrop streaks
+        for (let i = 0; i < 180; i++) {
+            const rx = (i * 31) % 512;
+            const ry = (i * 67) % 512;
+            const len = 14 + (i % 6) * 10;
+            const alpha = 0.28 + (i % 4) * 0.18;
+
+            const streakGrad = ctx.createLinearGradient(rx, ry, rx + 1, ry + len);
+            streakGrad.addColorStop(0, `rgba(210, 235, 255, ${alpha * 0.25})`);
+            streakGrad.addColorStop(0.8, `rgba(255, 255, 255, ${alpha})`);
+            streakGrad.addColorStop(1, `rgba(255, 255, 255, ${alpha * 0.85})`);
+
+            ctx.fillStyle = streakGrad;
+            ctx.fillRect(rx, ry, 1.4, len);
+
+            ctx.beginPath();
+            ctx.arc(rx + 0.7, ry + len, 1.8, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
+            ctx.fill();
+        }
+
+        // Static micro-beads of condensation
+        for (let i = 0; i < 240; i++) {
+            const bx = Math.random() * 512;
+            const by = Math.random() * 512;
+            const r = 0.8 + Math.random() * 1.5;
+            ctx.beginPath();
+            ctx.arc(bx, by, r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(230, 245, 255, 0.35)';
+            ctx.fill();
+        }
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(1.5, 1);
+        return tex;
+    }, []);
+
+    // Animation references for 60fps physical curtain slide and sliding raindrops
+    const leftPanelRef = useRef<THREE.Mesh>(null);
+    const rightPanelRef = useRef<THREE.Mesh>(null);
+    const centerSeamRef = useRef<THREE.Mesh>(null);
+    const viewGroupRef = useRef<THREE.Group>(null);
+
+    // Current curtain open progress: 0 = fully closed, 1 = fully open
+    const openProgressRef = useRef(isOpen ? 1 : 0);
+
+    useFrame((_, delta) => {
+        const target = isOpen ? 1 : 0;
+        const current = openProgressRef.current;
+        const step = Math.min(1, delta * 4.5);
+        openProgressRef.current = THREE.MathUtils.lerp(current, target, step);
+        const p = openProgressRef.current;
+
+        // 1. Sliding rain UV scroll on the window glass (trickle downwards)
+        if (rainTexture && p > 0.01) {
+            rainTexture.offset.y += delta * 0.18;
+        }
+
+        // 2. Smooth physical curtain glide
+        if (leftPanelRef.current) {
+            leftPanelRef.current.position.x = THREE.MathUtils.lerp(-0.96, -2.15, p);
+            leftPanelRef.current.scale.x = THREE.MathUtils.lerp(1.0, 0.28, p);
+        }
+        if (rightPanelRef.current) {
+            rightPanelRef.current.position.x = THREE.MathUtils.lerp(0.96, 2.15, p);
+            rightPanelRef.current.scale.x = THREE.MathUtils.lerp(1.0, 0.28, p);
+        }
+        if (centerSeamRef.current) {
+            centerSeamRef.current.visible = p < 0.05;
+        }
+        // Zero-Lag: Completely disable GPU rendering of outside backdrop & rain when closed!
+        if (viewGroupRef.current) {
+            viewGroupRef.current.visible = p > 0.005;
+        }
+    });
+
     return (
         <group position={[0, 0, 0]}>
             {/* ARCHITECTURAL HOLLOW WINDOW CASING & SLIM BRONZE MULLIONS */}
@@ -827,6 +1299,97 @@ const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow() {
                 <boxGeometry args={[3.72, 0.035, 0.07]} />
                 <meshStandardMaterial color="#3d2b1c" roughness={0.4} metalness={0.3} />
             </mesh>
+
+            {/* Top Frame Lintel Trim (Ensures zero light or geometry leaks above top border) */}
+            <mesh position={[0, 2.97, -3.46]}>
+                <boxGeometry args={[3.84, 0.04, 0.12]} />
+                <meshStandardMaterial color="#241a12" roughness={0.6} />
+            </mesh>
+
+            {/* EXTERIOR TOKYO NIGHT SKYLINE & RAIN GLASS (CULL TO 0% DRAW-CALLS WHEN CLOSED) */}
+            <group ref={viewGroupRef} visible={false}>
+                {/* A. Distant Anime Skyline Panorama (strictly bounded within the window frame) */}
+                <mesh position={[0, 1.90, -3.50]}>
+                    <planeGeometry args={[3.72, 2.02]} />
+                    <meshBasicMaterial map={downloadedTexture || tokyoSkylineTexture || undefined} toneMapped={false} />
+                </mesh>
+
+                {/* B. Rainy Window Glass Pane with UV sliding trickling raindrops */}
+                <mesh position={[0, 1.90, -3.48]}>
+                    <planeGeometry args={[3.72, 2.02]} />
+                    <meshStandardMaterial
+                        map={rainTexture || undefined}
+                        transparent
+                        opacity={0.85}
+                        roughness={0.08}
+                        metalness={0.15}
+                        color="#94a3b8"
+                    />
+                </mesh>
+            </group>
+
+            {/* SLIDING LINEN CURTAINS & GATHERED BUNCHED FOLDS */}
+            <group>
+                {/* Left Curtain Panel (Click to toggle curtain) */}
+                <mesh
+                    ref={leftPanelRef}
+                    position={[-0.96, 1.92, -3.38]}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggle();
+                    }}
+                    onPointerOver={(e) => {
+                        e.stopPropagation();
+                        setIsHovered(true);
+                        if (typeof document !== 'undefined') document.body.style.cursor = 'pointer';
+                    }}
+                    onPointerOut={(e) => {
+                        e.stopPropagation();
+                        setIsHovered(false);
+                        if (typeof document !== 'undefined') document.body.style.cursor = 'default';
+                    }}
+                >
+                    <boxGeometry args={[1.96, 2.05, 0.08]} />
+                    <meshStandardMaterial
+                        map={pleatTexture || undefined}
+                        color={isHovered ? '#4a3f36' : '#3a322b'}
+                        roughness={0.92}
+                    />
+                </mesh>
+
+                {/* Right Curtain Panel (Click to toggle curtain) */}
+                <mesh
+                    ref={rightPanelRef}
+                    position={[0.96, 1.92, -3.38]}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggle();
+                    }}
+                    onPointerOver={(e) => {
+                        e.stopPropagation();
+                        setIsHovered(true);
+                        if (typeof document !== 'undefined') document.body.style.cursor = 'pointer';
+                    }}
+                    onPointerOut={(e) => {
+                        e.stopPropagation();
+                        setIsHovered(false);
+                        if (typeof document !== 'undefined') document.body.style.cursor = 'default';
+                    }}
+                >
+                    <boxGeometry args={[1.96, 2.05, 0.08]} />
+                    <meshStandardMaterial
+                        map={pleatTexture || undefined}
+                        color={isHovered ? '#4a3f36' : '#3a322b'}
+                        roughness={0.92}
+                    />
+                </mesh>
+
+                {/* Center Seam */}
+                <mesh ref={centerSeamRef} position={[0, 1.92, -3.33]}>
+                    <boxGeometry args={[0.03, 2.05, 0.02]} />
+                    <meshStandardMaterial color="#1a1510" roughness={0.9} />
+                </mesh>
+            </group>
         </group>
     );
 });
@@ -839,6 +1402,7 @@ const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow() {
 interface MiniFridgeAndSnacksCounterProps {
     currentRoutine?: CharacterRoutine;
     onRoutineChange?: (routine: CharacterRoutine, label: string) => void;
+    moodConfig?: RoomMoodConfig;
 }
 
 interface SnackDef {
@@ -853,7 +1417,9 @@ interface SnackDef {
 const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounter({
     currentRoutine,
     onRoutineChange,
+    moodConfig,
 }: MiniFridgeAndSnacksCounterProps) {
+    const isStealth = moodConfig?.id === 'stealth';
     const [isOpen, setIsOpen] = useState(false);
     const [isCabinetOpen, setIsCabinetOpen] = useState(false);
     const [snackMessage, setSnackMessage] = useState<{
@@ -1086,14 +1652,14 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
                 <pointLight
                     ref={interiorLightRef}
                     color="#00f5d4"
-                    intensity={2.2}
+                    intensity={isStealth ? (isOpen ? 1.8 : 0) : 2.2}
                     distance={1.4}
                     decay={2}
                     position={[0, 0.25, 0.12]}
                 />
                 <mesh position={[0, 0.34, 0.14]}>
                     <boxGeometry args={[0.42, 0.012, 0.02]} />
-                    <meshBasicMaterial color="#00f5d4" toneMapped={false} />
+                    <meshBasicMaterial color={isStealth ? (isOpen ? '#00f5d4' : '#04221d') : '#00f5d4'} toneMapped={false} />
                 </mesh>
 
                 {/* Frost / Cold Mist Plane inside fridge when open */}
@@ -1655,12 +2221,15 @@ const MiniFridgeAndSnacksCounter = React.memo(function MiniFridgeAndSnacksCounte
 interface LoungeAndMediaZoneProps {
     currentRoutine: CharacterRoutine;
     onRoutineChange: (routine: CharacterRoutine, statusText: string) => void;
+    moodConfig?: RoomMoodConfig;
 }
 
 const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
     currentRoutine,
     onRoutineChange,
+    moodConfig,
 }: LoungeAndMediaZoneProps) {
+    const isStealth = moodConfig?.id === 'stealth';
     const [isHovered, setIsHovered] = useState(false);
 
     // Procedural Tactile Bouclé Woven Fabric Texture for Realistic Luxury Sofa Upholstery
@@ -2109,23 +2678,23 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* Front linear LED diffuser strip */}
                 <mesh position={[-0.11, -0.121, 0]}>
                     <boxGeometry args={[0.015, 0.008, 1.80]} />
-                    <meshBasicMaterial color="#fff6d8" toneMapped={false} />
+                    <meshBasicMaterial color={isStealth ? '#14100c' : '#fff6d8'} toneMapped={false} />
                 </mesh>
                 {/* Rear linear LED diffuser strip */}
                 <mesh position={[0.11, -0.121, 0]}>
                     <boxGeometry args={[0.015, 0.008, 1.80]} />
-                    <meshBasicMaterial color="#fffaea" toneMapped={false} />
+                    <meshBasicMaterial color={isStealth ? '#14100c' : '#fffaea'} toneMapped={false} />
                 </mesh>
                 {/* Recessed underside wash diffuser plate */}
                 <mesh position={[0, -0.122, 0]}>
                     <boxGeometry args={[0.26, 0.004, 1.82]} />
-                    <meshBasicMaterial color="#fff4d4" toneMapped={false} />
+                    <meshBasicMaterial color={isStealth ? '#14100c' : '#fff4d4'} toneMapped={false} />
                 </mesh>
 
                 {/* Main yellowish-white under-table point light illuminating the floor & skirting */}
                 <pointLight
                     color="#fff3cc"
-                    intensity={3.5}
+                    intensity={isStealth ? 0 : 3.5}
                     distance={3.4}
                     decay={2}
                     position={[-0.05, -0.22, 0]}
@@ -2133,14 +2702,14 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* Side wing fill lights along console length for seamless linear underglow */}
                 <pointLight
                     color="#fffae8"
-                    intensity={1.8}
+                    intensity={isStealth ? 0 : 1.8}
                     distance={2.4}
                     decay={2}
                     position={[-0.05, -0.22, -0.58]}
                 />
                 <pointLight
                     color="#fffae8"
-                    intensity={1.8}
+                    intensity={isStealth ? 0 : 1.8}
                     distance={2.4}
                     decay={2}
                     position={[-0.05, -0.22, 0.58]}
@@ -2149,7 +2718,7 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                 {/* Soft warm floor glow pool directly under the floating console */}
                 <mesh position={[-0.08, -0.476, 0]} rotation={[-Math.PI / 2, 0, 0]}>
                     <planeGeometry args={[0.65, 2.10]} />
-                    <meshBasicMaterial color="#fff0be" transparent opacity={0.38} depthWrite={false} />
+                    <meshBasicMaterial color="#fff0be" transparent opacity={isStealth ? 0 : 0.38} depthWrite={false} />
                 </mesh>
 
                 {/* Sleek Soundbar on Console Surface */}
@@ -2758,12 +3327,12 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
                     {/* Warm Frosted Opal Glass Diffuser Bulb */}
                     <mesh position={[0, -0.04, 0]}>
                         <sphereGeometry args={[0.050, 18, 18]} />
-                        <meshBasicMaterial color="#fffbeb" toneMapped={false} />
+                        <meshBasicMaterial color={isStealth ? '#1e293b' : '#fffbeb'} toneMapped={false} />
                     </mesh>
                     {/* Soft local warm lamp glow (short distance, completely clear of the TV wall) */}
                     <pointLight
                         color="#fef3c7"
-                        intensity={0.45}
+                        intensity={isStealth ? 0 : 0.45}
                         distance={0.9}
                         decay={2}
                         position={[0, -0.15, 0]}
@@ -2777,7 +3346,8 @@ const LoungeAndMediaZone = React.memo(function LoungeAndMediaZone({
 // -------------------------------------------------------------
 // SUB-COMPONENT: High-Tech Coffee Station / Espresso Bar
 // -------------------------------------------------------------
-const CoffeeStation = React.memo(function CoffeeStation() {
+const CoffeeStation = React.memo(function CoffeeStation({ moodConfig }: { moodConfig?: RoomMoodConfig }) {
+    const isStealth = moodConfig?.id === 'stealth';
     const steamGeo = useMemo(() => {
         const count = 32;
         const geo = new THREE.BufferGeometry();
@@ -2999,9 +3569,9 @@ const CoffeeStation = React.memo(function CoffeeStation() {
                 </mesh>
                 <mesh position={[0, 1.79, 0]}>
                     <sphereGeometry args={[0.044, 14, 14]} />
-                    <meshBasicMaterial color="#fffbeb" toneMapped={false} />
+                    <meshBasicMaterial color={isStealth ? '#1e293b' : '#fffbeb'} toneMapped={false} />
                 </mesh>
-                <pointLight color="#fef3c7" intensity={4.5} distance={3.6} decay={1.8} position={[0, 1.72, 0.05]} />
+                <pointLight color="#fef3c7" intensity={isStealth ? 0 : 4.5} distance={3.6} decay={1.8} position={[0, 1.72, 0.05]} />
             </group>
         </group>
     );
@@ -3011,7 +3581,8 @@ const CoffeeStation = React.memo(function CoffeeStation() {
 // -------------------------------------------------------------
 // SUB-COMPONENT: Designer Elevated Platform Bed & Slatted Headboard
 // -------------------------------------------------------------
-const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
+const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone({ moodConfig }: { moodConfig?: RoomMoodConfig }) {
+    const isStealth = moodConfig?.id === 'stealth';
     return (
         <group position={[-2.65, 0, 1.15]} rotation={[0, Math.PI / 2, 0]}>
             {/* ── 1. TAPERED ARCHITECTURAL LEGS (14cm clear air gap from floor/carpet) ── */}
@@ -3042,9 +3613,9 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
             {/* Creates unmistakable visual separation and floating depth above floor */}
             <mesh position={[0, 0.138, 0]}>
                 <boxGeometry args={[1.36, 0.012, 2.18]} />
-                <meshBasicMaterial color="#f59e0b" toneMapped={false} transparent opacity={0.35} />
+                <meshBasicMaterial color="#f59e0b" toneMapped={false} transparent opacity={isStealth ? 0 : 0.35} />
             </mesh>
-            <pointLight color="#fed7aa" intensity={0.8} distance={1.8} decay={2} position={[0, 0.07, 0]} />
+            <pointLight color="#fed7aa" intensity={isStealth ? 0 : 0.8} distance={1.8} decay={2} position={[0, 0.07, 0]} />
 
             {/* ── 3. ELEVATED SOLID OAK PLATFORM BED FRAME (y = 0.14 to 0.26) ── */}
             <mesh receiveShadow position={[0, 0.20, 0]}>
@@ -3223,9 +3794,9 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
                 </mesh>
                 <mesh position={[0, -0.64, 0]}>
                     <sphereGeometry args={[0.038, 14, 14]} />
-                    <meshBasicMaterial color="#fff7ed" toneMapped={false} />
+                    <meshBasicMaterial color={isStealth ? '#1e293b' : '#fff7ed'} toneMapped={false} />
                 </mesh>
-                <pointLight color="#fed7aa" intensity={3.2} distance={3.0} decay={2} position={[0, -0.66, 0]} />
+                <pointLight color="#fed7aa" intensity={isStealth ? 0 : 3.2} distance={3.0} decay={2} position={[0, -0.66, 0]} />
             </group>
         </group>
     );
@@ -3235,7 +3806,8 @@ const CyberBedAndChillZone = React.memo(function CyberBedAndChillZone() {
 // SUB-COMPONENT: Minimalist Floor Standing Lamp (Single Light in Corner)
 // Tucked into the front-left corner beside the bed near the screen
 // -------------------------------------------------------------
-const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp() {
+const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp({ moodConfig }: { moodConfig?: RoomMoodConfig }) {
+    const isStealth = moodConfig?.id === 'stealth';
     return (
         <group position={[-2.95, 0, 2.70]}>
             {/* Weighted Nero Marquina Marble Circular Base */}
@@ -3285,12 +3857,12 @@ const ArchitecturalStandingLamp = React.memo(function ArchitecturalStandingLamp(
                 {/* Warm Frosted Opal Glass Diffuser Bulb */}
                 <mesh position={[0, -0.04, 0]}>
                     <sphereGeometry args={[0.055, 18, 18]} />
-                    <meshBasicMaterial color="#fffbeb" toneMapped={false} />
+                    <meshBasicMaterial color={isStealth ? '#1e293b' : '#fffbeb'} toneMapped={false} />
                 </mesh>
                 {/* Single Cozy Warm Downward Ambient Light */}
                 <pointLight
                     color="#fef3c7"
-                    intensity={2.6}
+                    intensity={isStealth ? 0 : 2.6}
                     distance={3.4}
                     decay={2}
                     position={[0, -0.06, 0]}
@@ -3441,7 +4013,8 @@ function AnimeFigurine({
 // -------------------------------------------------------------
 // SUB-COMPONENT: Two-Tier Collector's Figurine Display Pedestal
 // -------------------------------------------------------------
-const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
+const SideTableWithFigurines = React.memo(function SideTableWithFigurines({ moodConfig }: { moodConfig?: RoomMoodConfig }) {
+    const isStealth = moodConfig?.id === 'stealth';
     return (
         // Positioned beside the battlestation desk under the warm wall light panel, fully visible
         <group position={[2.15, 0, -2.70]}>
@@ -3528,7 +4101,7 @@ const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
                     />
                 </mesh>
                 {/* Under-Tier Warm Showcase Ambient Glow washing over Lower Shelf */}
-                <pointLight color="#fde68a" intensity={1.8} distance={1.2} decay={2} position={[0, -0.05, 0]} />
+                <pointLight color="#fde68a" intensity={isStealth ? 0 : 1.8} distance={1.2} decay={2} position={[0, -0.05, 0]} />
 
                 {/* FIGURINE 1 (Center Hero): Golden Samurai / Ronin */}
                 <AnimeFigurine position={[0, 0.016, 0.08]} primary="#dc2626" accent="#facc15" cape="#7f1d1d" />
@@ -3552,39 +4125,161 @@ const SideTableWithFigurines = React.memo(function SideTableWithFigurines() {
 // -------------------------------------------------------------
 // SUB-COMPONENT: Shelves, Collectibles & Neon "THAT'S ME" Sign
 // -------------------------------------------------------------
-const CyberRoomDecor = React.memo(function CyberRoomDecor() {
+const CyberRoomDecor = React.memo(function CyberRoomDecor({ moodConfig }: { moodConfig?: RoomMoodConfig }) {
+    const isStealth = moodConfig?.id === 'stealth';
+    const lightIntensity = isStealth ? 0 : 2.2;
+    const signOpacity = isStealth ? 0.04 : 0.85;
+
     return (
         <group>
-            {/* WALL SIGN: "THAT'S ME // RAY OS" (BACK WALL, next to the window) — steady warm glow */}
-            <group position={[-2.0, 2.7, -3.45]}>
+            {/* WALL SIGN: "THAT'S ME // RAY OS" (BACK WALL, left of window — stays outside window border) */}
+            <group position={[-2.50, 2.7, -3.45]}>
                 <mesh>
-                    <boxGeometry args={[1.6, 0.45, 0.02]} />
+                    <boxGeometry args={[1.05, 0.42, 0.02]} />
                     <meshStandardMaterial color="#050810" roughness={0.9} />
                 </mesh>
                 <mesh position={[0, 0, 0.015]}>
-                    <planeGeometry args={[1.54, 0.4]} />
-                    <meshBasicMaterial color="#fde68a" transparent opacity={0.85} toneMapped={false} />
+                    <planeGeometry args={[0.99, 0.36]} />
+                    <meshBasicMaterial color="#fde68a" transparent opacity={signOpacity} toneMapped={false} />
                 </mesh>
-                {/* One extra accent light, added on request to warmly light this window-side
-                    corner where the flickering sign used to be. */}
-                <pointLight color="#fde68a" intensity={2.2} distance={2.6} decay={2} position={[0, -0.1, 0.4]} />
+                <pointLight color="#fde68a" intensity={lightIntensity} distance={2.4} decay={2} position={[0, -0.1, 0.3]} />
             </group>
 
-            {/* MATCHING RECTANGULAR LIGHT PANEL on the opposite side of the window/curtain
-                (mirrored x, exact same box + glow-plane dimensions as the panel above) â€” gives
-                the curtained window a symmetric pair of warm light panels flanking it. */}
-            <group position={[2.0, 2.7, -3.45]}>
+            {/* MATCHING RECTANGULAR LIGHT PANEL (BACK WALL, right of window — stays outside window border) */}
+            <group position={[2.50, 2.7, -3.45]}>
                 <mesh>
-                    <boxGeometry args={[1.6, 0.45, 0.02]} />
+                    <boxGeometry args={[1.05, 0.42, 0.02]} />
                     <meshStandardMaterial color="#050810" roughness={0.9} />
                 </mesh>
                 <mesh position={[0, 0, 0.015]}>
-                    <planeGeometry args={[1.54, 0.4]} />
-                    <meshBasicMaterial color="#fde68a" transparent opacity={0.85} toneMapped={false} />
+                    <planeGeometry args={[0.99, 0.36]} />
+                    <meshBasicMaterial color="#fde68a" transparent opacity={signOpacity} toneMapped={false} />
                 </mesh>
-                <pointLight color="#fde68a" intensity={2.2} distance={2.6} decay={2} position={[0, -0.1, 0.4]} />
+                <pointLight color="#fde68a" intensity={lightIntensity} distance={2.4} decay={2} position={[0, -0.1, 0.3]} />
             </group>
 
+        </group>
+    );
+});
+
+// -------------------------------------------------------------
+// SUB-COMPONENT: Interactive 3D Wall Light Switch
+// -------------------------------------------------------------
+const WallLightSwitch = React.memo(function WallLightSwitch({
+    moodConfig,
+    onToggle,
+    visible = true,
+}: {
+    moodConfig: RoomMoodConfig;
+    onToggle: () => void;
+    visible?: boolean;
+}) {
+    const [hovered, setHovered] = useState(false);
+
+    if (!visible) return null;
+
+    return (
+        <group position={[-3.52, 1.40, 2.2]} rotation={[0, Math.PI / 2, 0]}>
+            {/* Gang Box / Metallic Switch Plate */}
+            <mesh
+                receiveShadow
+                castShadow
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onToggle();
+                }}
+                onPointerOver={(e) => {
+                    e.stopPropagation();
+                    setHovered(true);
+                    if (typeof document !== 'undefined') document.body.style.cursor = 'pointer';
+                }}
+                onPointerOut={(e) => {
+                    e.stopPropagation();
+                    setHovered(false);
+                    if (typeof document !== 'undefined') document.body.style.cursor = 'default';
+                }}
+            >
+                <boxGeometry args={[0.24, 0.36, 0.024]} />
+                <meshStandardMaterial
+                    color={hovered ? '#e2e8f0' : '#94a3b8'}
+                    metalness={0.92}
+                    roughness={0.22}
+                />
+            </mesh>
+
+            {/* Beveled Trim Inset */}
+            <mesh position={[0, 0, 0.013]}>
+                <boxGeometry args={[0.20, 0.32, 0.005]} />
+                <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.3} />
+            </mesh>
+
+            {/* Top & Bottom Mounting Screws */}
+            <mesh position={[0, 0.13, 0.015]}>
+                <cylinderGeometry args={[0.012, 0.012, 0.006, 8]} />
+                <meshStandardMaterial color="#64748b" metalness={0.95} roughness={0.1} />
+            </mesh>
+            <mesh position={[0, -0.13, 0.015]}>
+                <cylinderGeometry args={[0.012, 0.012, 0.006, 8]} />
+                <meshStandardMaterial color="#64748b" metalness={0.95} roughness={0.1} />
+            </mesh>
+
+            {/* Center Rocker / Toggle Switch Lever with tactile physical tilt */}
+            <group
+                position={[0, -0.02, 0.024]}
+                rotation={[moodConfig.id === 'stealth' ? 0.28 : -0.28, 0, 0]}
+            >
+                <mesh>
+                    <boxGeometry args={[0.075, 0.12, 0.026]} />
+                    <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.6} />
+                </mesh>
+                <mesh position={[0, 0, 0.014]}>
+                    <boxGeometry args={[0.055, 0.02, 0.004]} />
+                    <meshStandardMaterial color="#475569" roughness={0.5} />
+                </mesh>
+            </group>
+
+            {/* Glowing Mood Status Indicator Ring / LED */}
+            <mesh position={[0, 0.085, 0.016]}>
+                <sphereGeometry args={[0.018, 16, 16]} />
+                <meshBasicMaterial color={moodConfig.indicatorColor} toneMapped={false} />
+            </mesh>
+            <pointLight
+                color={moodConfig.indicatorColor}
+                intensity={0.75}
+                distance={0.9}
+                decay={2}
+                position={[0, 0.085, 0.04]}
+            />
+
+            {/* Floating interactive tooltip */}
+            <Html center position={[0, 0.28, 0.05]} distanceFactor={6} zIndexRange={[20, 0]}>
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onToggle();
+                    }}
+                    onMouseEnter={() => {
+                        audio.playHover();
+                        setHovered(true);
+                    }}
+                    onMouseLeave={() => setHovered(false)}
+                    className={`px-2.5 py-1.5 rounded-lg bg-zinc-950/90 border shadow-2xl backdrop-blur-md transition-all duration-200 cursor-pointer flex items-center gap-2 select-none ${
+                        hovered
+                            ? 'scale-110 border-white text-white shadow-[0_0_20px_rgba(255,255,255,0.4)]'
+                            : 'border-zinc-700/80 text-zinc-200 hover:border-zinc-400'
+                    }`}
+                    title="Toggle Lighting Mood"
+                >
+                    <div className="flex flex-col text-left">
+                        <span className="font-mono text-[10px] font-bold tracking-wider leading-tight text-white">
+                            Mood [M]: {moodConfig.shortName}
+                        </span>
+                        <span className="font-mono text-[8px] text-zinc-400 tracking-tight uppercase">
+                            Click to Switch
+                        </span>
+                    </div>
+                </button>
+            </Html>
         </group>
     );
 });
@@ -3603,13 +4298,17 @@ export default function CyberRoomScene({
     currentRoutine,
     onRoutineChange,
     environmentPhase,
+    roomMood = 'cyberpunk',
+    onToggleRoomMood,
+    isCurtainOpen,
+    onToggleCurtain,
     onJackIn,
     onSelectSetup,
     isMenuOpen = false,
 }: CyberRoomSceneProps) {
     const isMobile = useIsMobile();
     const monitorTextures = useMemo(() => new MonitorTextures(), []);
-    const envConfig = ENVIRONMENT_CONFIGS[environmentPhase];
+    const moodConfig = ROOM_MOOD_CONFIGS[roomMood];
 
     // Pause 3D frame rendering when browser tab is inactive to drop GPU consumption to 0%
     const [isTabVisible, setIsTabVisible] = useState(true);
@@ -3679,59 +4378,64 @@ export default function CyberRoomScene({
                     color="#000000"
                 />
 
-                {/* Dynamic Ambient & Sun Atmospheric Lighting */}
-                <ambientLight intensity={envConfig.ambientIntensity} color={envConfig.ambientColor} />
+                {/* Dynamic Ambient & Sun Atmospheric Lighting matching Room Mood */}
+                <ambientLight intensity={moodConfig.ambientIntensity} color={moodConfig.ambientColor} />
                 <directionalLight
-                    position={envConfig.sunPosition}
-                    intensity={envConfig.sunIntensity}
-                    color={envConfig.sunColor}
+                    position={moodConfig.sunPosition}
+                    intensity={moodConfig.sunIntensity}
+                    color={moodConfig.sunColor}
                 />
 
                 {/* Real Architectural Room: Hardwood Parquet, Acoustic Slat Walls, Rafter Ceiling, Loft Window */}
-                <ArchitecturalRoom environmentPhase={environmentPhase} />
+                <ArchitecturalRoom environmentPhase={environmentPhase} roomMood={roomMood} />
                 <WallPipelinesAndConduits />
                 <IndustrialCeilingVent />
 
                 {/* Battlestation: Desk, Dual Monitors, Custom Liquid-Cooled PC Cabinet */}
-                <BattlestationDesk />
-                <BattlestationMonitors monitorTextures={monitorTextures} />
+                <BattlestationDesk moodConfig={moodConfig} />
+                <BattlestationMonitors monitorTextures={monitorTextures} moodConfig={moodConfig} />
                 <CpuCabinet />
 
                 {/* Mini Fridge & Snacks Counter beside the desk in the empty corner */}
                 <MiniFridgeAndSnacksCounter
                     currentRoutine={currentRoutine}
                     onRoutineChange={onRoutineChange}
+                    moodConfig={moodConfig}
                 />
 
                 {/* Autonomous Character Simulation (Aditya Ray) */}
                 <CyberCharacter currentRoutine={currentRoutine} onRoutineChange={onRoutineChange} />
 
 
-                {/* Night Window (curtained — see ArchitecturalRoom for the closed curtain + wall-wash light) */}
-                <DynamicAtmosphereWindow />
+                {/* Interactive Rainy Tokyo Night Window & Sliding Linen Curtains */}
+                <DynamicAtmosphereWindow
+                    isCurtainOpen={isCurtainOpen}
+                    onToggleCurtain={onToggleCurtain}
+                />
 
                 {/* Coffee Station / Espresso Bar */}
-                <CoffeeStation />
+                <CoffeeStation moodConfig={moodConfig} />
 
                 {/* Cyber Futon Bed & Chill Zone */}
-                <CyberBedAndChillZone />
+                <CyberBedAndChillZone moodConfig={moodConfig} />
 
                 {/* Designer Architectural Arc Floor Standing Lamp & Planter (covers foreground space beside bed) */}
-                <ArchitecturalStandingLamp />
+                <ArchitecturalStandingLamp moodConfig={moodConfig} />
 
                 {/* Shelves & Decor */}
-                <CyberRoomDecor />
+                <CyberRoomDecor moodConfig={moodConfig} />
 
                 {/* Side Table with Anime Figurine Collection (open floor nook in front of the window) */}
-                <SideTableWithFigurines />
+                <SideTableWithFigurines moodConfig={moodConfig} />
 
                 {/* Modern Lounge Chill Zone & Streetwear Decor (Options 1 & 4) */}
                 <LoungeAndMediaZone
                     currentRoutine={currentRoutine}
                     onRoutineChange={onRoutineChange}
+                    moodConfig={moodConfig}
                 />
 
-                {/* 3D Floating Interactive POI Markers over Bed, Coffee Stand, Battlestation, Mini Fridge & Lounge */}
+                {/* 3D Floating Interactive POI Markers over Bed, Coffee Stand, Battlestation, Mini Fridge, Lounge & Curtains */}
                 <FloatingPoiMarkers
                     visible={cameraMode === 'orbit' && !isMenuOpen}
                     onSelectSetup={() => {
@@ -3755,7 +4459,18 @@ export default function CyberRoomScene({
                             onRoutineChange('walking_to_tv', 'Heading to Sofa to Chill...');
                         }
                     }}
+                    onToggleCurtain={onToggleCurtain}
+                    isCurtainOpen={isCurtainOpen}
                 />
+
+                {/* 3D Interactive Wall Light Switch on the entry wall */}
+                {onToggleRoomMood && (
+                    <WallLightSwitch
+                        moodConfig={moodConfig}
+                        onToggle={onToggleRoomMood}
+                        visible={cameraMode === 'orbit' && !isMenuOpen}
+                    />
+                )}
             </Canvas>
         </div>
     );

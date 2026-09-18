@@ -21,7 +21,7 @@ import WindowsDesktop from '@/components/os/WindowsDesktop';
 import { CharacterRoutine } from '@/components/3d/CyberCharacter';
 import { CameraMode, TOUR_STOPS } from '@/components/3d/CameraController';
 import { audio } from '@/lib/audio';
-import { EnvironmentPhase } from '@/lib/environment';
+import { EnvironmentPhase, RoomMood, ROOM_MOOD_CONFIGS } from '@/lib/environment';
 
 const LoadingPlaceholder = () => (
     <div className="w-full h-full bg-[#020408]" />
@@ -205,11 +205,32 @@ export default function StoryController() {
     // Always dark mode (night)
     const [activePhase] = useState<EnvironmentPhase>('night');
 
+    // Room lighting mood preset (Cyberpunk Night, Warm Lofi Amber, Matrix Emerald)
+    const [roomMood, setRoomMood] = useState<RoomMood>('cyberpunk');
+
+    // Interactive window curtains state (closed = cozy sanctuary, open = rainy Tokyo skyline vista)
+    const [isCurtainOpen, setIsCurtainOpen] = useState(false);
+
     // Character life simulation status
     const [currentRoutine, setCurrentRoutine] = useState<CharacterRoutine>('coding');
 
     // Sound state
     const [isMuted, setIsMuted] = useState(false);
+
+    // Toggle room lighting (Room Lights ON vs Dark RGB Blackout)
+    const handleToggleRoomMood = useCallback(() => {
+        audio.playSwitchClick();
+        setRoomMood((prev) => (prev === 'cyberpunk' ? 'stealth' : 'cyberpunk'));
+    }, []);
+
+    // Toggle window curtains (open / close with fabric glide audio)
+    const handleToggleCurtain = useCallback(() => {
+        setIsCurtainOpen((prev) => {
+            const next = !prev;
+            audio.playCurtainSlide(next);
+            return next;
+        });
+    }, []);
 
     // Audio & Global Key Listeners
     useEffect(() => {
@@ -288,6 +309,22 @@ export default function StoryController() {
             if (e.key === 'v' || e.key === 'V') {
                 if (!showHologram) {
                     handleCycleCameraView();
+                    return;
+                }
+            }
+
+            // Press 'M' to cycle room lighting mood
+            if (e.key === 'm' || e.key === 'M') {
+                if (!showHologram && !showTitleMenu) {
+                    handleToggleRoomMood();
+                    return;
+                }
+            }
+
+            // Press 'C' to toggle window curtains (rainy Tokyo skyline vista)
+            if (e.key === 'c' || e.key === 'C') {
+                if (!showHologram && !showTitleMenu) {
+                    handleToggleCurtain();
                     return;
                 }
             }
@@ -466,17 +503,34 @@ export default function StoryController() {
                     currentRoutine={currentRoutine}
                     onRoutineChange={handleRoutineChange}
                     environmentPhase={activePhase}
+                    roomMood={roomMood}
+                    onToggleRoomMood={handleToggleRoomMood}
+                    isCurtainOpen={isCurtainOpen}
+                    onToggleCurtain={handleToggleCurtain}
                     onJackIn={handleJackIn}
                     onSelectSetup={handleSelectSetup}
                     isMenuOpen={showTitleMenu}
                 />
             </div>
 
-            {/* 2. HEADER CONTROLS: CAMERA VIEW SWITCHER, EXPERIENCE MENU & AUDIO */}
+            {/* 2. HEADER CONTROLS: CAMERA VIEW SWITCHER, ROOM MOOD, EXPERIENCE MENU & AUDIO */}
             {!showTitleMenu && (
             <header className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 pointer-events-auto flex items-center gap-1.5 sm:gap-2.5">
                 {!showHologram && (
                     <>
+                        {/* Room Mood Switcher Button */}
+                        <button
+                            onClick={handleToggleRoomMood}
+                            onMouseEnter={() => audio.playHover()}
+                            className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-black/40 border border-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-white/10 text-zinc-200 hover:text-white text-[11px] sm:text-xs font-mono tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-all backdrop-blur-md cursor-pointer"
+                            title="Toggle Room Lighting (Press M)"
+                        >
+                            <span className="text-zinc-400">Mood [M]:</span>
+                            <span className="text-white font-bold">
+                                {ROOM_MOOD_CONFIGS[roomMood].shortName}
+                            </span>
+                        </button>
+
                         {/* Camera View Cycle Button */}
                         <button
                             onClick={handleCycleCameraView}

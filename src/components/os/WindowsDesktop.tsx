@@ -106,8 +106,11 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     ]);
 
     useEffect(() => {
+        // Authentic Windows 7 Startup Chime when entering workstation
+        audio.playWin7Startup();
+
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') { audio.playWarpOut(); onReturnToRoom(); }
+            if (e.key === 'Escape') { audio.playArcadeShutdown(); onReturnToRoom(); }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
@@ -116,15 +119,16 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     const openApp = (rawAppId: string) => {
         const appId = rawAppId === 'about' ? 'notepad' : rawAppId === 'files' ? 'resume' : rawAppId;
         if (appId === 'return') { audio.playArcadeShutdown(); onReturnToRoom(); return; }
-        audio.playClick();
         const nextZ = topZIndex + 1;
         setTopZIndex(nextZ);
         setActiveWindowId(appId);
         const existingIndex = openWindows.findIndex((w) => w.id === appId);
         if (existingIndex !== -1) {
+            audio.playWin7Maximize();
             setOpenWindows((prev) => prev.map((win) => win.id === appId ? { ...win, isMinimized: false, zIndex: nextZ } : win));
             return;
         }
+        audio.playWin7Open();
         let newWindow: WindowState;
         switch (appId) {
             case 'experience': newWindow = { id:'experience', title:'Career Experience — Aditya Narayan Ray', icon:<Briefcase className="w-4 h-4 text-amber-500"/>, subtitle:'Verified Track Record', component:<WindowsExperienceApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:160,y:50}, initialSize:{width:840,height:580} }; break;
@@ -151,8 +155,12 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     };
 
     const handleShowDesktop = () => {
-        audio.playClick();
         const anyVisible = openWindows.some((w) => !w.isMinimized);
+        if (anyVisible) {
+            audio.playWin7Minimize();
+        } else {
+            audio.playWin7Maximize();
+        }
         setOpenWindows((prev) => prev.map((w) => ({ ...w, isMinimized: anyVisible })));
     };
 
@@ -237,7 +245,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                             <div
                                 key={item.id}
                                 className="desktop-icon"
-                                onClick={(e) => { e.stopPropagation(); audio.playHover(); setSelectedIconId(item.id); if (isMobile) openApp(item.id); }}
+                                onClick={(e) => { e.stopPropagation(); audio.playWin7Click(); setSelectedIconId(item.id); if (isMobile) openApp(item.id); }}
                                 onDoubleClick={(e) => { e.stopPropagation(); openApp(item.id); }}
                                 title={item.id === 'return' ? 'Return to 3D Room (Double-click)' : `Open ${item.name}${item.ext || ''} (Double-click)`}
                                 style={{
@@ -401,7 +409,10 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
             {/* ── Win7 Aero Glass Taskbar ── */}
             <WindowsTaskbar
                 isStartMenuOpen={isStartMenuOpen}
-                onToggleStartMenu={() => setIsStartMenuOpen(!isStartMenuOpen)}
+                onToggleStartMenu={() => {
+                    audio.playWin7Click();
+                    setIsStartMenuOpen(!isStartMenuOpen);
+                }}
                 openWindows={openWindows.map((w) => ({ id: w.id, title: w.title, isMinimized: w.isMinimized, isActive: activeWindowId === w.id }))}
                 brightness={brightness}
                 onBrightnessChange={handleBrightnessChange}
@@ -409,9 +420,11 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                     const win = openWindows.find((w) => w.id === appId);
                     if (!win) { openApp(appId); return; }
                     if (win.isMinimized) {
+                        audio.playWin7Maximize();
                         bringToFront(appId);
                         setOpenWindows((prev) => prev.map((w) => w.id === appId ? { ...w, isMinimized: false } : w));
                     } else if (activeWindowId === appId) {
+                        audio.playWin7Minimize();
                         setOpenWindows((prev) => prev.map((w) => w.id === appId ? { ...w, isMinimized: true } : w));
                         const remaining = openWindows.filter((w) => w.id !== appId && !w.isMinimized);
                         if (remaining.length > 0) {
@@ -421,6 +434,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                             setActiveWindowId('');
                         }
                     } else {
+                        audio.playWin7Click();
                         bringToFront(appId);
                     }
                 }}
