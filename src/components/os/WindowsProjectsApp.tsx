@@ -290,7 +290,7 @@ export default function WindowsProjectsApp() {
                                 System Overview
                                 <div className="flex-1 h-[1px] bg-gradient-to-r from-[#9ec4e8] to-transparent ml-2" />
                             </div>
-                            <p className="text-[11px] text-[#444444] leading-relaxed">
+                            <p className="text-[11px] text-[#444444] leading-relaxed whitespace-pre-line">
                                 {activeProject.longDescription}
                             </p>
                         </div>

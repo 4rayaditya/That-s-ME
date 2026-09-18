@@ -162,7 +162,7 @@ export default function WindowsWindowFrame({
                 {/* Control Buttons */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
                     <Win7Btn variant="blue" title="Minimize" touch={isMobile}
-                        onClick={(e) => { e.stopPropagation(); audio.playWin7Minimize(); onMinimize(); }}>
+                        onClick={(e) => { e.stopPropagation(); audio.playClick(); onMinimize(); }}>
                         <svg width="10" height="2" viewBox="0 0 10 2">
                             <rect x="0" y="0" width="10" height="2" fill="#1e3a6a" rx="1"/>
                         </svg>
@@ -171,7 +171,7 @@ export default function WindowsWindowFrame({
                         already forced full-screen by mobile layout. */}
                     {!isMobile && (
                         <Win7Btn variant="blue" title={isMaximized ? 'Restore' : 'Maximize'}
-                            onClick={(e) => { e.stopPropagation(); audio.playWin7Maximize(); onMaximizeToggle(); }}>
+                            onClick={(e) => { e.stopPropagation(); audio.playClick(); onMaximizeToggle(); }}>
                             {isMaximized ? (
                                 <svg width="10" height="10" viewBox="0 0 10 10">
                                     <rect x="2" y="0" width="8" height="8" rx="1" fill="none" stroke="#1e3a6a" strokeWidth="1.5"/>

@@ -87,7 +87,6 @@ export default function WindowsStartMenu({
         if (e) {
             e.stopPropagation();
         }
-        audio.playClick();
         onOpenApp(appId);
         onClose();
     };

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Briefcase, FolderGit2, Cpu, FileText, Terminal,
     Code2, Mail, Award, Music, LogOut, RefreshCw,
@@ -130,11 +130,11 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         setActiveWindowId(appId);
         const existingIndex = openWindows.findIndex((w) => w.id === appId);
         if (existingIndex !== -1) {
-            audio.playWin7Maximize();
+            audio.playClick();
             setOpenWindows((prev) => prev.map((win) => win.id === appId ? { ...win, isMinimized: false, zIndex: nextZ } : win));
             return;
         }
-        audio.playWin7Open();
+        audio.playClick();
         let newWindow: WindowState;
         switch (appId) {
             case 'experience': newWindow = { id:'experience', title:'Career Experience — Aditya Narayan Ray', icon:<Briefcase className="w-4 h-4 text-amber-500"/>, subtitle:'Verified Track Record', component:<WindowsExperienceApp/>, isMinimized:false, isMaximized:false, zIndex:nextZ, initialPosition:{x:160,y:50}, initialSize:{width:840,height:580} }; break;
@@ -210,6 +210,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         setContextMenu({ x: Math.min(e.clientX, window.innerWidth - 220), y: Math.min(e.clientY, window.innerHeight - 260), visible: true });
     };
 
+
     const selectLeft = Math.min(selectionBox.startX, selectionBox.currentX);
     const selectTop = Math.min(selectionBox.startY, selectionBox.currentY);
     const selectWidth = Math.abs(selectionBox.currentX - selectionBox.startX);
@@ -251,8 +252,17 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                             <div
                                 key={item.id}
                                 className="desktop-icon"
-                                onClick={(e) => { e.stopPropagation(); audio.playWin7Click(); setSelectedIconId(item.id); if (isMobile) openApp(item.id); }}
-                                onDoubleClick={(e) => { e.stopPropagation(); openApp(item.id); }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedIconId(item.id);
+                                    if (isMobile) {
+                                        openApp(item.id);
+                                    }
+                                }}
+                                onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    openApp(item.id);
+                                }}
                                 title={item.id === 'return' ? 'Return to 3D Room (Double-click)' : `Open ${item.name}${item.ext || ''} (Double-click)`}
                                 style={{
                                     width: iconSize, display: 'flex', flexDirection: 'column',
@@ -362,7 +372,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                         { id: 'terminal', label: 'Open Terminal', icon: <Terminal className="w-3.5 h-3.5 text-emerald-500"/> },
                     ].map(item => (
                         <button key={item.id}
-                            onClick={() => { audio.playClick(); openApp(item.id); setContextMenu({ ...contextMenu, visible: false }); }}
+                            onClick={() => { openApp(item.id); setContextMenu({ ...contextMenu, visible: false }); }}
                             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                                 padding: '5px 16px', cursor: 'pointer', background: 'transparent',
                                 border: 'none', fontSize: 13, color: '#1a2a3a', textAlign: 'left',
@@ -416,7 +426,6 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
             <WindowsTaskbar
                 isStartMenuOpen={isStartMenuOpen}
                 onToggleStartMenu={() => {
-                    audio.playWin7Click();
                     setIsStartMenuOpen(!isStartMenuOpen);
                 }}
                 openWindows={openWindows.map((w) => ({ id: w.id, title: w.title, isMinimized: w.isMinimized, isActive: activeWindowId === w.id }))}
@@ -426,11 +435,11 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                     const win = openWindows.find((w) => w.id === appId);
                     if (!win) { openApp(appId); return; }
                     if (win.isMinimized) {
-                        audio.playWin7Maximize();
+                        audio.playClick();
                         bringToFront(appId);
-                        setOpenWindows((prev) => prev.map((w) => w.id === appId ? { ...w, isMinimized: false } : w));
+                        setOpenWindows((prev) => prev.map((w) => w.id === appId ? { ...w, isMinimized: false } : win));
                     } else if (activeWindowId === appId) {
-                        audio.playWin7Minimize();
+                        audio.playClick();
                         setOpenWindows((prev) => prev.map((w) => w.id === appId ? { ...w, isMinimized: true } : w));
                         const remaining = openWindows.filter((w) => w.id !== appId && !w.isMinimized);
                         if (remaining.length > 0) {
@@ -440,7 +449,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                             setActiveWindowId('');
                         }
                     } else {
-                        audio.playWin7Click();
+                        audio.playClick();
                         bringToFront(appId);
                     }
                 }}

@@ -257,29 +257,27 @@ export default function WindowsResumeViewerApp() {
                                     </ul>
                                 </div>
 
-                                {/* Experience 2: Jitsi GSoC */}
+                                {/* Experience 2: Jitsi (Open Source) */}
                                 <div className="space-y-1 text-xs sm:text-[13px] pt-2">
                                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
                                         <span className="text-sm">Open Source Contributor</span>
                                         <span className="font-normal text-slate-600 text-xs">October 2025 – February 2026</span>
                                     </div>
                                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between italic text-slate-700 text-xs">
-                                        <span>Jitsi – GSoC</span>
+                                        <span>Jitsi (Open Source)</span>
                                         <span className="not-italic text-slate-600 text-[11px]">Remote</span>
                                     </div>
                                     <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
                                         <li>
-                                            Contributed <strong className="font-semibold text-black">merged pull requests</strong> across{' '}
-                                            <strong className="font-semibold text-black">3 repositories</strong> (jitsi-meet, lib-jitsi-meet, jitsi-meet-electron-sdk) in a{' '}
+                                            Contributed and merged <strong className="font-semibold text-black">multiple pull requests</strong> across{' '}
+                                            <strong className="font-semibold text-black">4 core repositories</strong> (jitsi-meet, lib-jitsi-meet, jitsi-meet-electron-sdk, handbook) in a{' '}
                                             <strong className="font-semibold text-black">production WebRTC</strong> platform used by millions globally.
                                         </li>
                                         <li>
-                                            Developed a <strong className="font-semibold text-black">PTZ (Pan-Tilt-Zoom) camera control</strong> feature via the{' '}
-                                            <strong className="font-semibold text-black">WebRTC constraints API</strong>, integrating{' '}
-                                            <strong className="font-semibold text-black">TypeScript</strong> UI components and resolving a critical{' '}
-                                            <strong className="font-semibold text-black">uninitialized field bug</strong> in <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px] text-slate-900 font-mono">JitsiLocalTrack</code>;{' '}
-                                            <strong className="font-semibold text-black">GSoC 2026 proposal</strong> scored{' '}
-                                            <strong className="font-semibold text-black">89/100</strong> after mentor validation.
+                                            Resolved critical <strong className="font-semibold text-black">timeout and memory leaks</strong> across ChatRoom and QualityController, and investigated and addressed <strong className="font-semibold text-black">VP8 simulcast degradation</strong> on low-resolution Chromium clients.
+                                        </li>
+                                        <li>
+                                            Modernized the Electron SDK to fully enforce <strong className="font-semibold text-black">context isolation</strong> using secure <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px] text-slate-900 font-mono">contextBridge</code> IPC handlers, eliminated virtual background aspect ratio distortions, and elevated codebase strictness across TypeScript configurations.
                                         </li>
                                     </ul>
                                 </div>
@@ -291,8 +289,27 @@ export default function WindowsResumeViewerApp() {
                                     Technical Projects
                                 </h2>
 
-                                {/* Project 1: Sentinel AI */}
+                                {/* Project 1: PINN Gamma-Ray Attenuation */}
                                 <div className="space-y-1 text-xs sm:text-[13px] pt-1">
+                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
+                                        <span className="text-sm">
+                                            Physics-Informed Neural Networks (PINNs) in Gamma-Ray Attenuation{' '}
+                                            <span className="text-slate-600 font-normal italic text-xs">| PyTorch, PINNs, Gaussian Process, Monte Carlo, Python</span>
+                                        </span>
+                                        <span className="font-normal text-slate-600 text-xs">2026</span>
+                                    </div>
+                                    <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
+                                        <li>
+                                            Investigated noise robustness of Physics-Informed Neural Networks under extreme data sparsity ($N \in [5,16]$) using experimental Cs-137 narrow-beam transmission data across <strong className="font-semibold text-black">five materials</strong> (Al, Cu, Brass, Steel, Pb).
+                                        </li>
+                                        <li>
+                                            Engineered a bounded <strong className="font-semibold text-black">Softplus map</strong> with Theil-Sen initialization and stationary checkpointing, eliminating vanishing gradients; executed a <strong className="font-semibold text-black">50-cell Monte Carlo suite (1,500 trials)</strong> proving PINNs structurally superior in recovering attenuation and buildup parameters ($\mu$ and $\beta$) with <strong className="font-semibold text-black">0.15% and 0.52% error</strong> at zero noise, where misspecified classical WNLLS had $\approx 60\%$ bias.
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* Project 2: Sentinel AI */}
+                                <div className="space-y-1 text-xs sm:text-[13px] pt-2">
                                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
                                         <span className="text-sm">
                                             Sentinel AI — NGO Rescue Coordination Platform{' '}
@@ -313,7 +330,7 @@ export default function WindowsResumeViewerApp() {
                                     </ul>
                                 </div>
 
-                                {/* Project 2: Ny */}
+                                {/* Project 3: Ny */}
                                 <div className="space-y-1 text-xs sm:text-[13px] pt-2">
                                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
                                         <span className="text-sm">

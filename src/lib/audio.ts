@@ -11,6 +11,7 @@ class AudioManager {
     private stepIndex: number = 0;
     private autoStartInitialized: boolean = false;
     private bgAudio: HTMLAudioElement | null = null;
+    private lastClickTime: number = 0;
 
     constructor() {
         if (typeof window !== 'undefined') {
@@ -417,6 +418,9 @@ class AudioManager {
 
         try {
             const now = ctx.currentTime;
+            // Debounce click within 35ms to prevent double sound phasing
+            if (now - this.lastClickTime < 0.035) return;
+            this.lastClickTime = now;
 
             // Dual micro-impulse mimicking the physical Windows 7 navigation tap
             [
@@ -694,70 +698,19 @@ class AudioManager {
     }
 
     /**
-     * Windows 7 Window Close (crisp glass dismiss tick)
+     * Windows 7 Window Close / Tab Dismiss (same clean click sound)
      */
     public playWin7Close() {
-        if (this.isMuted) return;
-        const ctx = this.getContext();
-        if (!ctx) return;
-
-        try {
-            const now = ctx.currentTime;
-            const dur = 0.09;
-
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(440, now);
-            osc.frequency.exponentialRampToValueAtTime(180, now + dur);
-
-            gain.gain.setValueAtTime(0.04, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-
-            osc.connect(gain);
-            gain.connect(this.getDest(ctx));
-
-            osc.start(now);
-            osc.stop(now + dur);
-        } catch {
-            // Graceful fallback
-        }
+        this.playClick();
     }
 
     /**
-     * Windows 7 App Launch / Open Sound (subtle uplifting harmonic chime)
+     * Windows 7 App Launch / Open Sound (clean crisp click)
      */
     public playWin7Open() {
-        if (this.isMuted) return;
-        const ctx = this.getContext();
-        if (!ctx) return;
-
-        try {
-            const now = ctx.currentTime;
-            [523.25, 783.99].forEach((freq, idx) => { // C5 -> G5
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                const time = now + idx * 0.045;
-                const dur = 0.22;
-
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, time);
-
-                gain.gain.setValueAtTime(0.001, time);
-                gain.gain.linearRampToValueAtTime(0.03, time + 0.015);
-                gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
-
-                osc.connect(gain);
-                gain.connect(this.getDest(ctx));
-
-                osc.start(time);
-                osc.stop(time + dur);
-            });
-        } catch {
-            // Graceful fallback
-        }
+        this.playClick();
     }
+
 
     /**
      * Mechanical Wall Toggle Light Switch click sound

@@ -61,7 +61,7 @@ export const PERSONAL_INFO = {
     stats: [
         { label: 'CGPA', value: '9.82', change: 'Top 1%' },
         { label: 'Dean\'s List', value: '4 Sems', change: 'Academic' },
-        { label: 'WebRTC Scale', value: 'Millions', change: 'GSoC' },
+        { label: 'WebRTC Scale', value: 'Millions', change: 'Open Source' },
         { label: 'Pipeline Precision', value: '91%', change: '50K+ Records' },
     ],
     principles: [
@@ -72,6 +72,48 @@ export const PERSONAL_INFO = {
 };
 
 export const PROJECTS: Project[] = [
+    {
+        id: 'pinn-gamma-ray',
+        title: 'Physics-Informed Neural Networks (PINNs) in Gamma-Ray Attenuation',
+        subtitle: 'Summer Research Internship — NISER',
+        category: 'systems',
+        categoryLabel: 'Physics AI & Computational Research',
+        description: 'Investigated the noise robustness of Physics-Informed Neural Networks (PINNs) under conditions of extreme data sparsity and heavy perturbation (N in [5,16]) using experimental Cs-137 transmission data across 5 materials.',
+        longDescription: 'Summer Research Internship at the National Institute of Science Education and Research (NISER).\n\nOverview:\nThis project investigates the noise robustness of Physics-Informed Neural Networks (PINNs) under conditions of extreme data sparsity and heavy perturbation (N ∈ [5, 16]). Using experimental narrow-beam gamma-ray transmission data (Cs-137, 661.7 keV) for five materials—aluminium, copper, brass, carbon steel, and lead—the research benchmarks a custom-engineered "Rectified PINN" against classical weighted log-linear least squares (WNLLS) and Gaussian process regression.\n\nKey Contributions & Architecture:\n• Architectural Rectification: Identified a critical vanishing-gradient trap in conventional PINN formulations caused by the standard exponential positivity map (∂L_phys / ∂z ∝ μ).\n• Enhanced Network Stability: Engineered a robust solution replacing the exponential map with a bounded Softplus map, paired with Theil-Sen initialization and stationary pre-step checkpointing to decouple model evaluation from non-stationary physics loss weights.\n• Comprehensive Benchmarking: Designed and executed a 50-cell Monte Carlo suite comprising 1,500 network training trials (3,000 epochs each) across five log-normal noise tiers (up to σ = 56.23%) to rigorously test algorithm limits.\n• Broad-Beam Buildup Identification: Proved the PINN\'s structural superiority in regimes lacking a closed-form inverse by jointly recovering attenuation and buildup parameters (μ and β) with 0.15% and 0.52% error at zero noise, whereas misspecified classical WNLLS maintained an irreducible ≈ 60% bias.\n\nResults & Impact:\n• Eliminated all divergent modes in the neural network, completing 1,500 high-noise trials with zero non-physical estimates and no errors above 200%.\n• Demonstrated that classical WNLLS is prone to fatal statistical failure at maximum noise (reversing sign in ~10% of trials), but remains computationally superior (~0.04 ms vs ~10.3 s) and more accurate in zero-noise regimes.\n• Established a definitive deployment criterion: PINNs are strictly warranted for complex physical models where closed-form estimators do not exist (e.g., multi-dimensional transport or beam hardening), rather than as a universal noise-mitigation tool.\n• Open-sourced the entire benchmark suite, PyTorch implementations, and experimental datasets for community use.',
+        tags: ['PyTorch', 'PINNs', 'Gaussian Process', 'Monte Carlo', 'Python', 'Physics AI'],
+        image: '/images/projects/hyperverse.jpg',
+        metrics: [
+            { label: 'Trials', value: '1,500 Monte Carlo' },
+            { label: 'Zero-Noise Error', value: '0.15% (μ)' },
+            { label: 'Noise Tiers', value: 'Up to 56.2%' },
+        ],
+        architecture: ['Rectified PINN (Softplus Map)', 'Theil-Sen Robust Initialization', 'Stationary Pre-Step Checkpointing', '50-Cell Monte Carlo Benchmark'],
+        liveUrl: 'https://github.com/4rayaditya/PINN-for-gamma-rays',
+        githubUrl: 'https://github.com/4rayaditya/PINN-for-gamma-rays',
+        featured: true,
+        year: '2026',
+    },
+    {
+        id: 'jitsi-oss',
+        title: 'Jitsi Open Source Contributions',
+        subtitle: 'Production WebRTC & Core Ecosystem',
+        category: 'systems',
+        categoryLabel: 'WebRTC & Systems',
+        description: 'Over a four-month period, contributed and merged multiple pull requests across 4 core Jitsi repositories to enhance system reliability, security, and developer experience.',
+        longDescription: 'Over a four-month period, contributed and merged multiple pull requests across four core Jitsi repositories (jitsi-meet, lib-jitsi-meet, jitsi-meet-electron-sdk, and handbook) to enhance system reliability, security, and developer experience:\n\n• WebRTC & Media Routing (lib-jitsi-meet): Resolved critical timeout leaks within ChatRoom, QualityController, and XmppConnection to prevent memory degradation during extended conferences; investigated and resolved VP8 simulcast degradation on low-resolution Chromium clients by optimizing encoding order, SDP munging, and dynamic layer configuration.\n\n• Desktop SDK Security & Stability (jitsi-meet-electron-sdk): Modernized and refactored the SDK to fully enforce Electron context isolation, implementing contextBridge and secure IPC handlers to harden application security; diagnosed and patched a critical race condition where rapid screen-share toggling triggered a null callback crash.\n\n• Application Enhancements & Type Safety (jitsi-meet): Corrected aspect ratio distortions in the image resize pipeline to ensure custom virtual background images render accurately without stretching; elevated codebase strictness by enabling strictPropertyInitialization across web and native TypeScript configurations.\n\n• Technical Documentation (handbook): Authored previously missing API documentation for receiver constraints and effect configuration, providing clear parameter guidelines and usage examples for downstream developers.',
+        tags: ['TypeScript', 'WebRTC', 'Electron', 'VP8 Simulcast', 'WebSockets', 'JavaScript', 'Jitsi Meet'],
+        image: '/images/projects/vortexgl.jpg',
+        metrics: [
+            { label: 'Repositories', value: '4 Core' },
+            { label: 'Contributions', value: 'Multiple PRs Merged' },
+            { label: 'Ecosystem Scale', value: 'Millions of Users' },
+        ],
+        architecture: ['WebRTC Media Routing', 'Electron Context Isolation', 'SDP Munging & VP8', 'TypeScript Strict Typing'],
+        liveUrl: 'https://github.com/jitsi',
+        githubUrl: 'https://github.com/jitsi',
+        featured: true,
+        year: '2025 - 2026',
+    },
     {
         id: 'sentinel-ai',
         title: 'Sentinel AI',
@@ -102,7 +144,7 @@ export const PROJECTS: Project[] = [
         description: 'Automated document categorization and hybrid vector similarity retrieval pipeline parsing court transcripts across 50,000+ records at 91% precision.',
         longDescription: 'Developed an automated document categorization pipeline using Python and FastAPI to securely parse and map court transcripts, processing a dataset of 50,000+ records with 91% precision. Implemented a hybrid retrieval architecture combining vector similarity search and relational PostgreSQL queries (RAG pipeline), reducing system response times to under 200ms and improving data accuracy by 35%.',
         tags: ['Python', 'FastAPI', 'PostgreSQL', 'RAG', 'Vector Search'],
-        image: '/images/projects/hyper-vis.jpg',
+        image: '/images/projects/aerosphere.jpg',
         metrics: [
             { label: 'Dataset Size', value: '50,000+' },
             { label: 'Precision', value: '91%' },
@@ -113,27 +155,6 @@ export const PROJECTS: Project[] = [
         githubUrl: 'https://github.com/4rayaditya',
         featured: true,
         year: '2025',
-    },
-    {
-        id: 'jitsi-ptz',
-        title: 'Jitsi WebRTC PTZ Camera Control',
-        subtitle: 'Production Open Source Contribution',
-        category: 'systems',
-        categoryLabel: 'WebRTC & Systems',
-        description: 'Contributed merged pull requests across 3 repositories in a production WebRTC platform used by millions globally.',
-        longDescription: 'Contributed merged pull requests across 3 repositories (jitsi-meet, lib-jitsi-meet, jitsi-meet-electron-sdk) in a production WebRTC platform used by millions globally. Developed a PTZ (Pan-Tilt-Zoom) camera control feature via the WebRTC constraints API, integrating TypeScript UI components and resolving a critical uninitialized field bug in JitsiLocalTrack; GSoC 2026 proposal scored 89/100 after mentor validation.',
-        tags: ['TypeScript', 'WebRTC', 'React', 'Electron', 'Jitsi Meet'],
-        image: '/images/projects/aether-kernel.jpg',
-        metrics: [
-            { label: 'Repositories', value: '3 Merged' },
-            { label: 'Reach', value: 'Millions' },
-            { label: 'Proposal Score', value: '89/100' },
-        ],
-        architecture: ['WebRTC Constraints API', 'lib-jitsi-meet Core', 'jitsi-meet Web UI', 'Electron SDK'],
-        liveUrl: 'https://github.com/jitsi',
-        githubUrl: 'https://github.com/4rayaditya',
-        featured: true,
-        year: '2025 - 2026',
     },
 ];
 
@@ -166,7 +187,7 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
             { name: 'React.js', level: 94, icon: '⚛️', highlight: 'Modern UI & Hooks' },
             { name: 'Tailwind CSS', level: 95, icon: '🎨', highlight: 'Responsive Design' },
             { name: 'WebSockets', level: 90, icon: '📡', highlight: 'Bi-Directional Streaming' },
-            { name: 'WebRTC', level: 92, icon: '📹', highlight: 'Real-Time Media & PTZ' },
+            { name: 'WebRTC', level: 92, icon: '📹', highlight: 'Real-Time Media & Streaming' },
         ],
     },
     {
@@ -206,17 +227,18 @@ export const EXPERIENCES: ExperienceItem[] = [
         technologies: ['Python', 'PINNs', 'Gaussian Process', 'WNLLS', 'Scientific Computing', 'Physics AI'],
     },
     {
-        id: 'jitsi-gsoc',
+        id: 'jitsi-oss',
         role: 'Open Source Contributor',
-        company: 'Jitsi - GSoC',
+        company: 'Jitsi (Open Source)',
         period: 'October 2025 - February 2026',
         location: 'Remote',
-        description: 'Contributed production WebRTC code and PTZ camera features to globally utilized video conferencing repositories.',
+        description: 'Contributed and merged multiple pull requests across 4 core Jitsi repositories, improving WebRTC media routing, Electron SDK security, and TypeScript architecture.',
         achievements: [
-            'Contributed merged pull requests across 3 repositories (jitsi-meet, lib-jitsi-meet, jitsi-meet-electron-sdk) in a production WebRTC platform used by millions globally.',
-            'Developed a PTZ (Pan-Tilt-Zoom) camera control feature via the WebRTC constraints API, integrating TypeScript UI components and resolving a critical uninitialized field bug in JitsiLocalTrack; GSoC 2026 proposal scored 89/100 after mentor validation.',
+            'Contributed and merged multiple pull requests across 4 core repositories (jitsi-meet, lib-jitsi-meet, jitsi-meet-electron-sdk, handbook) in a production WebRTC platform used by millions globally.',
+            'Resolved critical timeout and memory leaks across ChatRoom and QualityController, investigated and resolved VP8 simulcast degradation on low-resolution Chromium clients, and enforced Electron context isolation with secure contextBridge IPC handlers.',
+            'Corrected image aspect ratio distortions in virtual background rendering, elevated codebase type safety by enabling strictPropertyInitialization across TypeScript configurations, and authored missing API documentation in the handbook.',
         ],
-        technologies: ['TypeScript', 'WebRTC', 'React', 'JitsiLocalTrack', 'Electron', 'Camera API'],
+        technologies: ['TypeScript', 'WebRTC', 'Electron', 'VP8 Simulcast', 'React', 'WebSockets', 'JavaScript'],
     },
 ];
 
