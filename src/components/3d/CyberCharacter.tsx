@@ -92,17 +92,8 @@ export default function CyberCharacter({
         // STATE 1: CODING AT DESK (Sitting upright in ergonomic chair)
         // ============================================================
         if (r === 'coding') {
-            const isAtDesk = group.position.distanceTo(DESK_POS) < 0.04;
-            if (isAtDesk) {
-                group.position.copy(DESK_POS);
-                group.rotation.set(0, Math.PI, 0);
-            } else {
-                group.position.lerp(DESK_POS, damp(6));
-                let diff = Math.PI - group.rotation.y;
-                while (diff < -Math.PI) diff += Math.PI * 2;
-                while (diff > Math.PI) diff -= Math.PI * 2;
-                group.rotation.y += diff * damp(6);
-            }
+            group.position.copy(DESK_POS);
+            group.rotation.set(0, Math.PI, 0);
 
             // Natural sitting height and posture on bodyRoot
             bodyRoot.position.y = THREE.MathUtils.lerp(bodyRoot.position.y, 0.48, damp(8));

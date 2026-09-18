@@ -196,9 +196,6 @@ export default function StoryController() {
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(0);
     const [discoveryHint, setDiscoveryHint] = useState<string | null>(null);
 
-    // Pending jack-in when returning to battlestation
-    const pendingJackInRef = useRef(false);
-
     // Tour telemetry state
     const [currentTourName, setCurrentTourName] = useState<string>('BATTLESTATION // WORKSPACE');
     const [currentTourIndex, setCurrentTourIndex] = useState<number>(0);
@@ -354,27 +351,15 @@ export default function StoryController() {
     }, []);
 
     // Setup / Code button action:
-    // If character is already on setup -> immediately enter portfolio
-    // If character is away from setup -> go to setup and open portfolio upon arrival
+    // Enter portfolio directly without disturbing the character's routine
     const handleSelectSetup = useCallback(() => {
         audio.playClick();
-        if (currentRoutine === 'coding') {
-            handleJackIn();
-        } else {
-            pendingJackInRef.current = true;
-            setCurrentRoutine('returning_to_desk');
-            setDiscoveryHint('Returning to battlestation to launch portfolio...');
-            setTimeout(() => setDiscoveryHint(null), 4000);
-        }
-    }, [currentRoutine, handleJackIn]);
+        handleJackIn();
+    }, [handleJackIn]);
 
     const handleRoutineChange = useCallback((routine: CharacterRoutine) => {
         setCurrentRoutine(routine);
-        if (routine === 'coding' && pendingJackInRef.current) {
-            pendingJackInRef.current = false;
-            handleJackIn();
-        }
-    }, [handleJackIn]);
+    }, []);
 
     // Title menu selection dispatcher
     const handleTitleSelect = (option: 'portfolio' | 'explore' | 'walk' | 'tour') => {
@@ -382,7 +367,6 @@ export default function StoryController() {
         setShowTitleMenu(false);
 
         if (option === 'portfolio') {
-            setCurrentRoutine('coding');
             setCameraMode('dolly_in');
         } else if (option === 'tour') {
             setForcedTourIndex(0);
@@ -447,7 +431,6 @@ export default function StoryController() {
     // Character routine transitions
     const handleSelectRoutine = (target: 'coding' | 'brewing' | 'bed' | 'fridge') => {
         audio.playClick();
-        pendingJackInRef.current = false;
         if (target === 'coding') {
             if (currentRoutine === 'coding') return;
             setCurrentRoutine('returning_to_desk');
