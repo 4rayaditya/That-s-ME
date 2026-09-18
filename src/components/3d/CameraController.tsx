@@ -291,7 +291,7 @@ export default function CameraController({
             const pitchSensitivity = yawSensitivity * 0.82;
 
             targetYawRef.current -= dx * yawSensitivity;
-            targetPitchRef.current -= dy * pitchSensitivity;
+            targetPitchRef.current += dy * pitchSensitivity;
             // Vertical pitch clamp: -75° to +75°
             targetPitchRef.current = THREE.MathUtils.clamp(targetPitchRef.current, -1.3, 1.3);
         };

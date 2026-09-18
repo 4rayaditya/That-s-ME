@@ -816,7 +816,7 @@ const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow({
     useEffect(() => {
         const loader = new THREE.TextureLoader();
         loader.load(
-            '/images/window-skyline.jpg',
+            '/images/window-skyline.jpg?v=2',
             (tex) => {
                 tex.colorSpace = THREE.SRGBColorSpace;
                 tex.minFilter = THREE.LinearFilter;
@@ -1260,6 +1260,7 @@ const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow({
         if (centerSeamRef.current) {
             centerSeamRef.current.visible = p < 0.05;
         }
+
         // Zero-Lag: Completely disable GPU rendering of outside backdrop & rain when closed!
         if (viewGroupRef.current) {
             viewGroupRef.current.visible = p > 0.005;
@@ -1308,7 +1309,7 @@ const DynamicAtmosphereWindow = React.memo(function DynamicAtmosphereWindow({
 
             {/* EXTERIOR TOKYO NIGHT SKYLINE & RAIN GLASS (CULL TO 0% DRAW-CALLS WHEN CLOSED) */}
             <group ref={viewGroupRef} visible={false}>
-                {/* A. Distant Anime Skyline Panorama (strictly bounded within the window frame) */}
+                {/* A. Distant Anime Skyline Panorama (cleanly framed inside window casing) */}
                 <mesh position={[0, 1.90, -3.50]}>
                     <planeGeometry args={[3.72, 2.02]} />
                     <meshBasicMaterial map={downloadedTexture || tokyoSkylineTexture || undefined} toneMapped={false} />
