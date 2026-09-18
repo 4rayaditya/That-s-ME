@@ -96,7 +96,7 @@ export default function WindowsStartMenu({
         if (e) {
             e.stopPropagation();
         }
-        audio.playWarpOut();
+        audio.playArcadeShutdown();
         onClose();
         onReturnToRoom();
     };
@@ -342,10 +342,10 @@ export default function WindowsStartMenu({
                                 type="button"
                                 onClick={(e) => handleSwitchOff(e)}
                                 className="flex-1 h-7 rounded-l-[3px] bg-gradient-to-b from-[#2d6296] via-[#1f4873] to-[#123152] hover:from-[#d94848] hover:via-[#b92b2b] hover:to-[#8a1c1c] text-white border border-[#4882b5] hover:border-[#e26b6b] text-xs font-semibold flex items-center justify-center gap-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] cursor-pointer transition-colors"
-                                title="Switch Off Desktop & Return to 3D Room"
+                                title="Shut down & Return to 3D Room"
                             >
                                 <Power className="w-3.5 h-3.5 text-white drop-shadow" />
-                                <span>Switch off</span>
+                                <span>Shut down</span>
                             </button>
 
                             {/* Split Menu Arrow */}

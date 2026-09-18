@@ -106,6 +106,10 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
     ]);
 
     useEffect(() => {
+        audio.startLofi(true);
+    }, []);
+
+    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') { audio.playWarpOut(); onReturnToRoom(); }
         };
@@ -115,7 +119,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
 
     const openApp = (rawAppId: string) => {
         const appId = rawAppId === 'about' ? 'notepad' : rawAppId === 'files' ? 'resume' : rawAppId;
-        if (appId === 'return') { audio.playWarpOut(); onReturnToRoom(); return; }
+        if (appId === 'return') { audio.playArcadeShutdown(); onReturnToRoom(); return; }
         audio.playClick();
         const nextZ = topZIndex + 1;
         setTopZIndex(nextZ);
@@ -373,7 +377,7 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
                     </button>
                     <div style={{ height: 1, background: 'rgba(130,175,230,0.5)', margin: '4px 0' }} />
                     <button
-                        onClick={() => { audio.playWarpOut(); onReturnToRoom(); }}
+                        onClick={() => { audio.playArcadeShutdown(); onReturnToRoom(); }}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                             padding: '5px 16px', cursor: 'pointer', background: 'transparent',
                             border: 'none', fontSize: 13, color: '#c0392b', textAlign: 'left',

@@ -183,15 +183,25 @@ class AudioManager {
     // REAL BACKGROUND MUSIC PLAYER (GOOD MUSIC)
     // -------------------------------------------------------------
     public startLofi(forceUnmute = false) {
-        if (forceUnmute && this.isMuted) {
+        if (forceUnmute) {
+            this.isMuted = false;
             this.setMuted(false);
+            if (this.volume < 0.15) {
+                this.setVolume(0.75);
+            }
         }
         if (this.isMuted) return;
         const audioEl = this.getBgAudio();
         if (audioEl) {
+            if (this.volume < 0.15) {
+                this.volume = 0.75;
+            }
             audioEl.volume = this.isMuted ? 0 : this.volume;
             audioEl.play().then(() => {
                 this.isLofiPlaying = true;
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('portfolio_music_play', { detail: { isPlaying: true } }));
+                }
             }).catch(() => {
                 // Browser autoplay waiting for user interaction
             });
@@ -377,7 +387,7 @@ class AudioManager {
 
     public toggleLofi(): boolean {
         const audioEl = this.getBgAudio();
-        if (this.isLofiPlaying && audioEl && !audioEl.paused) {
+        if (audioEl && !audioEl.paused) {
             this.stopLofi();
             return false;
         } else {
@@ -567,6 +577,19 @@ class AudioManager {
 
             osc.start(now);
             osc.stop(now + 1.2);
+        } catch {
+            // Graceful fallback
+        }
+    }
+
+    public playArcadeShutdown() {
+        try {
+            if (typeof window !== 'undefined') {
+                const sound = new Audio('/arcade-shutdown.wav');
+                sound.volume = 0.06; // Ultra-soft subtle exit volume
+                sound.currentTime = 0;
+                sound.play().catch(() => {});
+            }
         } catch {
             // Graceful fallback
         }
