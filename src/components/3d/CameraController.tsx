@@ -158,6 +158,14 @@ export default function CameraController({
         onTourCompleteRef.current = onTourComplete;
     });
 
+    const onReturnCompleteRef = useRef(onReturnComplete);
+    useEffect(() => {
+        onReturnCompleteRef.current = onReturnComplete;
+    });
+
+    const hasReturnedRef = useRef(false);
+    const prevModeRef = useRef(mode);
+
     const lastHandledForcedIndexRef = useRef<number | null>(null);
     const lastProgressReportRef = useRef<number>(0);
 
@@ -217,6 +225,7 @@ export default function CameraController({
             startTargetRef.current.copy(ROOM_TARGET);
         } else if (mode === 'dolly_out') {
             transitionProgressRef.current = 0;
+            hasReturnedRef.current = false;
             startCamPosRef.current.copy(camera.position);
             startTargetRef.current.copy(ROOM_TARGET);
             currentTourTargetPosRef.current.copy(ROOM_TARGET);
@@ -386,6 +395,17 @@ export default function CameraController({
     useFrame((_, delta) => {
         const dt = Math.min(0.05, delta);
 
+        if (prevModeRef.current !== mode) {
+            if (mode === 'dolly_out') {
+                transitionProgressRef.current = 0;
+                hasReturnedRef.current = false;
+                startCamPosRef.current.copy(camera.position);
+                startTargetRef.current.copy(ROOM_TARGET);
+                currentTourTargetPosRef.current.copy(ROOM_TARGET);
+            }
+            prevModeRef.current = mode;
+        }
+
         // ============================================================
         // 1. FIXED 4TH WALL VIEW: SMOOTH SLOW ZOOM-OUT ON LOAD
         // ============================================================
@@ -454,7 +474,9 @@ export default function CameraController({
                 tourTimeInStopRef.current = 0;
                 const nextIndex = tourIndexRef.current + 1;
                 if (nextIndex >= TOUR_STOPS.length) {
-                    // Guided tour finished all showcase stops!
+                    // Guided tour finished all showcase stops! Reset and return to menu
+                    tourIndexRef.current = 0;
+                    tourTimeInStopRef.current = 0;
                     onTourCompleteRef.current?.();
                 } else {
                     tourIndexRef.current = nextIndex;
@@ -638,8 +660,9 @@ export default function CameraController({
                 camera.updateProjectionMatrix();
             }
 
-            if (p >= 1) {
-                onReturnComplete();
+            if (p >= 1 && !hasReturnedRef.current) {
+                hasReturnedRef.current = true;
+                onReturnCompleteRef.current?.();
             }
         }
     });

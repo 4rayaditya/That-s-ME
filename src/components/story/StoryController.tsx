@@ -408,9 +408,10 @@ export default function StoryController() {
                 if (e.key === 'Escape') {
                     audio.playClick();
                     if (cameraMode === 'tour') {
-                        setCameraMode('dolly_out');
+                        handleTourComplete();
                     } else {
                         setCameraMode('orbit');
+                        setShowTitleMenu(true);
                     }
                     return;
                 } else if (e.code === 'Space' || e.key === 'Enter') {
@@ -468,28 +469,9 @@ export default function StoryController() {
 
     const handleRoutineChange = useCallback((routine: CharacterRoutine) => {
         setCurrentRoutine(routine);
-        // Automatically activate Dark Mode (Stealth blackout) only when character reaches the bed and lays down
+        // Automatically switch to dark mode (stealth) just as he reaches the bed and lays down
         if (routine === 'resting_bed') {
-            setRoomMood((prev) => {
-                if (prev !== 'stealth') {
-                    previousMoodRef.current = prev;
-                }
-                return 'stealth';
-            });
-        } else if (
-            routine === 'returning_to_desk' ||
-            routine === 'coding' ||
-            routine === 'walking_to_coffee' ||
-            routine === 'walking_to_tv' ||
-            routine === 'walking_to_fridge'
-        ) {
-            // Restore warm ambient room lighting when character wakes up
-            setRoomMood((prev) => {
-                if (prev === 'stealth') {
-                    return previousMoodRef.current || 'cyberpunk';
-                }
-                return prev;
-            });
+            setRoomMood('stealth');
         }
     }, []);
 
@@ -516,6 +498,8 @@ export default function StoryController() {
             }
             if (option === 'tour') {
                 setForcedTourIndex(0);
+                setCurrentTourIndex(0);
+                setTourProgress(0);
                 setCameraMode('tour');
             } else if (option === 'walk') {
                 setCameraMode('walk');
@@ -561,12 +545,20 @@ export default function StoryController() {
 
     const handleTourComplete = useCallback(() => {
         audio.playClick();
+        setForcedTourIndex(null);
+        setCurrentTourIndex(0);
+        setTourProgress(0);
         setCameraMode('dolly_out');
+        setShowTitleMenu(true);
     }, []);
 
     const handleNextTourAngle = () => {
         audio.playClick();
-        const nextIdx = (currentTourIndex + 1) % TOUR_STOPS.length;
+        const nextIdx = currentTourIndex + 1;
+        if (nextIdx >= TOUR_STOPS.length) {
+            handleTourComplete();
+            return;
+        }
         setForcedTourIndex(nextIdx);
         setCurrentTourIndex(nextIdx);
         setCurrentTourName(TOUR_STOPS[nextIdx].name);
@@ -814,9 +806,7 @@ export default function StoryController() {
                                 </div>
 
                                 <button
-                                    onClick={() => {
-                                        setCameraMode('dolly_out');
-                                    }}
+                                    onClick={handleTourComplete}
                                     className="px-2.5 py-1 sm:py-0.5 rounded border border-zinc-600 hover:border-zinc-200 bg-white/5 hover:bg-white/15 text-zinc-200 hover:text-white transition-all text-[10px] tracking-wider uppercase cursor-pointer flex items-center gap-1"
                                 >
                                     <span className="hidden sm:inline">[ESC]</span>
