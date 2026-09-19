@@ -5,7 +5,6 @@ import {
     ArrowLeft,
     ArrowRight,
     Search,
-    ExternalLink,
     Sparkles,
     FolderGit2,
     CheckCircle2,
@@ -13,6 +12,7 @@ import {
     ChevronLeft,
     Layers,
     Calendar,
+    Clock,
 } from 'lucide-react';
 import { GithubIcon } from '@/components/ui/Icons';
 import { PROJECTS, Project } from '@/data/portfolioData';
@@ -262,16 +262,13 @@ export default function WindowsProjectsApp() {
 
                         {/* Action Buttons: Windows 7 Push Buttons */}
                         <div className="flex items-center gap-2 pt-1">
-                            <a
-                                href={activeProject.liveUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={() => audio.playClick()}
-                                className="flex-1 py-1.5 px-3 rounded-[3px] bg-gradient-to-b from-[#f7f8fa] to-[#e4e8ee] hover:from-[#eef6fe] hover:to-[#d4e8f8] border border-[#a8b4c2] hover:border-[#4a82b5] text-[#1e395b] font-bold text-xs flex items-center justify-center gap-1.5 shadow-[inset_0_1px_0_#ffffff] cursor-pointer transition-colors"
+                            <div
+                                title="Live link coming soon"
+                                className="flex-1 py-1.5 px-3 rounded-[3px] bg-gradient-to-b from-[#f2f3f5] to-[#e4e6ea] border border-[#c4cbd5] text-[#7a869a] font-semibold text-xs flex items-center justify-center gap-1.5 shadow-[inset_0_1px_0_#ffffff] cursor-not-allowed select-none"
                             >
-                                <ExternalLink className="w-3.5 h-3.5 text-[#0066cc]" />
-                                Live Demo
-                            </a>
+                                <Clock className="w-3.5 h-3.5 text-[#8895a7]" />
+                                Link Coming Soon
+                            </div>
                             <a
                                 href={activeProject.githubUrl}
                                 target="_blank"
