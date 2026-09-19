@@ -105,22 +105,27 @@ export default function WindowsDesktop({ onReturnToRoom }: WindowsDesktopProps) 
         },
     ]);
 
+    const onReturnToRoomRef = useRef(onReturnToRoom);
     useEffect(() => {
-        // Room music stops precisely as the Windows entry startup sound begins
-        const timer = setTimeout(() => {
-            audio.stopLofi();
-            audio.playWin7Startup();
-        }, 80);
+        onReturnToRoomRef.current = onReturnToRoom;
+    }, [onReturnToRoom]);
 
+    // Handle Escape key to return to room
+    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') { onReturnToRoom(); }
+            if (e.key === 'Escape') {
+                onReturnToRoomRef.current?.();
+            }
         };
         window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            clearTimeout(timer);
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [onReturnToRoom]);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
+    // Authentic Windows 7 startup chime & stop outside room music on desktop initialize
+    useEffect(() => {
+        audio.stopLofi();
+        audio.playWin7Startup();
+    }, []);
 
     const openApp = (rawAppId: string) => {
         const appId = rawAppId === 'about' ? 'notepad' : rawAppId === 'files' ? 'resume' : rawAppId;

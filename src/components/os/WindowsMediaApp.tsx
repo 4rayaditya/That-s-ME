@@ -534,7 +534,10 @@ export default function WindowsMediaApp() {
                             const newVol = Math.max(0, Math.min(100, (clickX / rect.width) * 100));
                             setVolume(newVol);
                             audio.setVolume(newVol / 100);
-                            if (isMuted) handleToggleMute();
+                            if (isMuted && newVol > 0) {
+                                audio.setMuted(false);
+                                setIsMuted(false);
+                            }
                         }}
                         className="w-16 h-1.5 rounded-full bg-[#102236] border border-[#23456b] cursor-pointer relative overflow-hidden hidden sm:block shadow-inner"
                         title={`Volume: ${Math.round(isMuted ? 0 : volume)}%`}

@@ -515,11 +515,12 @@ export default function StoryController() {
     };
 
     const handleDollyComplete = () => {
+        audio.stopLofi();
         setShowHologram(true);
         setCameraMode('at_screen');
     };
 
-    const handleReturnToRoom = () => {
+    const handleReturnToRoom = useCallback(() => {
         audio.playClick();
         isEnteringPortfolioRef.current = false;
         setShowHologram(false);
@@ -527,7 +528,7 @@ export default function StoryController() {
         if (!userDisabledMusicRef.current) {
             audio.startLofi();
         }
-    };
+    }, []);
 
     const handleReturnComplete = () => {
         setCameraMode('orbit');

@@ -1095,6 +1095,9 @@ export default function WindowsTaskbar({
                                     max={100}
                                     value={isMuted ? 0 : volume}
                                     onChange={(e) => handleVolumeChange(Number(e.target.value))}
+                                    onPointerUp={() => audio.playWin7Ding()}
+                                    onMouseUp={() => audio.playWin7Ding()}
+                                    onTouchEnd={() => audio.playWin7Ding()}
                                     style={{
                                         width: 108,
                                         height: 5,

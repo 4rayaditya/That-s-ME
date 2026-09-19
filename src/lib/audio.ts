@@ -154,6 +154,16 @@ class AudioManager {
                     window.dispatchEvent(new CustomEvent('portfolio_music_play', { detail: { isPlaying: false } }));
                 }
             });
+            this.bgAudio.addEventListener('error', (e) => {
+                console.warn('Primary music path error, attempting fallback:', e);
+                if (this.bgAudio && this.bgAudio.src.indexOf('good') === -1) {
+                    this.bgAudio.src = '/contents/good%20music.mp3';
+                    this.bgAudio.load();
+                    if (this.isLofiPlaying) {
+                        this.bgAudio.play().catch(() => {});
+                    }
+                }
+            });
         }
         return this.bgAudio;
     }
@@ -162,7 +172,9 @@ class AudioManager {
     // REAL BACKGROUND MUSIC PLAYER (GOOD MUSIC)
     // -------------------------------------------------------------
     public startLofi(forceUnmute = false) {
-        this.isMuted = false;
+        if (forceUnmute || this.isMuted) {
+            this.setMuted(false);
+        }
         if (this.volume < 0.15) {
             this.setVolume(0.75);
         }
@@ -350,10 +362,33 @@ class AudioManager {
         }
     }
 
-    public stopLofi() {
+    public stopLofi(fadeMs: number = 0) {
         this.isLofiPlaying = false;
         if (this.bgAudio) {
-            this.bgAudio.pause();
+            if (fadeMs > 0 && !this.bgAudio.paused && this.bgAudio.volume > 0.05) {
+                const startVol = this.bgAudio.volume;
+                const steps = 8;
+                const stepTime = fadeMs / steps;
+                let step = 0;
+                const fadeInterval = setInterval(() => {
+                    step++;
+                    if (this.bgAudio) {
+                        this.bgAudio.volume = Math.max(0, startVol * (1 - step / steps));
+                    }
+                    if (step >= steps) {
+                        clearInterval(fadeInterval);
+                        if (this.bgAudio) {
+                            this.bgAudio.pause();
+                            this.bgAudio.volume = this.isMuted ? 0 : this.volume;
+                        }
+                    }
+                }, stepTime);
+            } else {
+                this.bgAudio.pause();
+            }
+        }
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('portfolio_music_play', { detail: { isPlaying: false } }));
         }
     }
 
@@ -462,13 +497,16 @@ class AudioManager {
      * Iconic 4-note Windows 7 Startup Chime with lush warm harmonic bells & ambient swell
      */
     public playWin7Startup() {
-        if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
 
+        if (this.volume < 0.2) {
+            this.volume = 0.75;
+        }
+
         const executeStartup = () => {
             try {
-                const now = ctx.currentTime + 0.05;
+                const now = ctx.currentTime + 0.03;
 
                 // 1. Warm ambient synth bed / riser
                 const padOsc1 = ctx.createOscillator();
@@ -487,7 +525,7 @@ class AudioManager {
                 padFilter.frequency.exponentialRampToValueAtTime(400, now + 3.4);
 
                 padGain.gain.setValueAtTime(0.001, now);
-                padGain.gain.linearRampToValueAtTime(0.08, now + 0.9);
+                padGain.gain.linearRampToValueAtTime(0.16 * Math.max(0.3, this.volume), now + 0.9);
                 padGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
 
                 padOsc1.connect(padFilter);
@@ -502,10 +540,10 @@ class AudioManager {
 
                 // 2. The iconic 4-note sequence: Db5 -> Ab4 -> Eb5 -> F5
                 const notes = [
-                    { freq: 554.37, time: now + 0.10, dur: 2.2, vel: 0.12 }, // Db5
-                    { freq: 415.30, time: now + 0.44, dur: 2.2, vel: 0.11 }, // Ab4
-                    { freq: 622.25, time: now + 0.78, dur: 2.5, vel: 0.13 }, // Eb5
-                    { freq: 698.46, time: now + 1.12, dur: 3.0, vel: 0.15 }, // F5 (resolving long chime)
+                    { freq: 554.37, time: now + 0.08, dur: 2.2, vel: 0.28 }, // Db5
+                    { freq: 415.30, time: now + 0.42, dur: 2.2, vel: 0.26 }, // Ab4
+                    { freq: 622.25, time: now + 0.76, dur: 2.5, vel: 0.30 }, // Eb5
+                    { freq: 698.46, time: now + 1.10, dur: 3.2, vel: 0.35 }, // F5 (resolving long chime)
                 ];
 
                 notes.forEach(({ freq, time, dur, vel }) => {
@@ -518,7 +556,7 @@ class AudioManager {
                         osc.type = hIdx === 0 ? 'sine' : 'triangle';
                         osc.frequency.setValueAtTime(hFreq, time);
 
-                        const hVel = vel / (hIdx + 1);
+                        const hVel = (vel * Math.max(0.3, this.volume)) / (hIdx + 1);
                         gain.gain.setValueAtTime(0.0001, time);
                         gain.gain.linearRampToValueAtTime(hVel, time + 0.015);
                         gain.gain.exponentialRampToValueAtTime(0.0001, time + dur / (hIdx === 0 ? 1 : 1.8));
@@ -530,17 +568,54 @@ class AudioManager {
                         osc.stop(time + dur);
                     });
                 });
-            } catch {
-                // Graceful fallback
+            } catch (err) {
+                console.warn('Startup chime error:', err);
             }
         };
 
         if (ctx.state === 'suspended') {
-            ctx.resume().then(() => {
-                executeStartup();
-            }).catch(() => {});
+            ctx.resume().then(executeStartup).catch(() => {});
         } else {
             executeStartup();
+        }
+    }
+
+    /**
+     * Authentic Windows 7 "Ding" (Volume slider feedback & Default Beep chime)
+     * Dual crystal bell chime at 830.6Hz (G#5) and 1046.5Hz harmonic with smooth decay
+     */
+    public playWin7Ding() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            const dur = 0.35;
+
+            [
+                { freq: 830.61, gainVal: 0.08, type: 'sine' as const },
+                { freq: 1661.22, gainVal: 0.024, type: 'sine' as const },
+                { freq: 2491.83, gainVal: 0.012, type: 'triangle' as const },
+            ].forEach(({ freq, gainVal, type }) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, now);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(gainVal * Math.max(0.2, this.volume), now + 0.008);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+                osc.connect(gain);
+                gain.connect(this.getDest(ctx));
+
+                osc.start(now);
+                osc.stop(now + dur);
+            });
+        } catch {
+            // Graceful fallback
         }
     }
 
