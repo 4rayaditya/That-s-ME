@@ -102,7 +102,7 @@ export default function WindowsResumeViewerApp() {
                 ) : (
                     <div className="w-full h-full overflow-y-auto p-2 sm:p-5 md:p-8 custom-scrollbar bg-[#d5dbe4]">
                         {/* Pure White Clean Paper Sheet - Block layout with mx-auto so it covers 100% of height */}
-                        <div className="mx-auto max-w-3xl bg-white text-slate-900 p-4 sm:p-8 md:p-12 space-y-5 shadow-[0_2px_15px_rgba(0,0,0,0.12)] font-sans min-h-full">
+                        <div className="mx-auto max-w-3xl bg-white text-slate-900 p-4 sm:p-8 md:p-12 space-y-4 shadow-[0_2px_15px_rgba(0,0,0,0.12)] font-sans min-h-full">
                             {/* Header Section */}
                             <div className="text-center pb-2 border-b border-slate-400">
                                 <h1 className="text-2xl sm:text-3xl font-bold tracking-wide uppercase text-black font-serif">
@@ -155,17 +155,7 @@ export default function WindowsResumeViewerApp() {
                                 </div>
                             </div>
 
-                            {/* Section 1: Professional Summary */}
-                            <div className="space-y-1">
-                                <h2 className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-black font-serif border-b border-slate-400 pb-1">
-                                    Professional Summary
-                                </h2>
-                                <p className="text-xs sm:text-[13px] text-slate-800 leading-relaxed text-justify pt-1">
-                                    Computer Science undergraduate (<strong className="font-semibold text-black">9.82 CGPA</strong>) pursuing a <strong className="font-semibold text-black">Software Engineer, Intern</strong> position, with a solid foundation in data structures, algorithms, and backend system design. Track record of shipping production code: merged pull requests to a WebRTC platform used by millions, a document-processing backend handling 50,000+ records at 91% precision, and a full-stack system exposing 30+ REST endpoints. Effective at collaborating cross-functionally, incorporating code review feedback, and learning new systems quickly.
-                                </p>
-                            </div>
-
-                            {/* Section 2: Technical Skills */}
+                            {/* Section 1: Technical Skills */}
                             <div className="space-y-1">
                                 <h2 className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-black font-serif border-b border-slate-400 pb-1">
                                     Technical Skills
@@ -177,20 +167,67 @@ export default function WindowsResumeViewerApp() {
                                     </div>
                                     <div>
                                         <strong className="font-semibold text-black">Backend &amp; Systems:</strong>{' '}
-                                        <span>FastAPI, Node.js, Kafka, REST APIs</span>
+                                        <span>FastAPI, Node.js, Supabase, REST APIs</span>
                                     </div>
                                     <div>
                                         <strong className="font-semibold text-black">Frontend Technologies:</strong>{' '}
-                                        <span>React.js, Tailwind CSS, WebSockets, WebRTC</span>
+                                        <span>React.js, Tailwind CSS, WebSockets, WebRTC, Three.js</span>
                                     </div>
                                     <div>
                                         <strong className="font-semibold text-black">Databases and Storage:</strong>{' '}
-                                        <span>PostgreSQL, MySQL, MongoDB, Redis</span>
+                                        <span>PostgreSQL, MySQL, MongoDB, Google Drive API</span>
                                     </div>
                                     <div>
                                         <strong className="font-semibold text-black">Tools &amp; Practices:</strong>{' '}
-                                        <span>Git, GitHub, Docker, CI/CD, System Design</span>
+                                        <span>Git, GitHub, Docker</span>
                                     </div>
+                                </div>
+                            </div>
+
+                            {/* Section 2: Professional Experience */}
+                            <div className="space-y-1">
+                                <h2 className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-black font-serif border-b border-slate-400 pb-1">
+                                    Professional Experience
+                                </h2>
+
+                                {/* Experience 1: Jitsi */}
+                                <div className="space-y-1 text-xs sm:text-[13px] pt-1">
+                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
+                                        <span className="text-sm">Open Source Contributor</span>
+                                        <span className="font-normal text-slate-600 text-xs">Oct 2025 – Feb 2026</span>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between italic text-slate-700 text-xs">
+                                        <span>Jitsi</span>
+                                        <span className="not-italic text-slate-600 text-[11px]">Remote</span>
+                                    </div>
+                                    <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
+                                        <li>
+                                            Contributed <strong className="font-semibold text-black">7 merged pull requests</strong> across <strong className="font-semibold text-black">3 repositories</strong> (jitsi-meet, lib-jitsi-meet, jitsi-meet-electron-sdk) in a <strong className="font-semibold text-black">production WebRTC</strong> platform used by millions globally.
+                                        </li>
+                                        <li>
+                                            Developed a <strong className="font-semibold text-black">PTZ (Pan-Tilt-Zoom)</strong> camera control feature via the WebRTC constraints API, integrating TypeScript UI components and resolving a critical uninitialized field bug in JitsiLocalTrack.
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* Experience 2: NISER */}
+                                <div className="space-y-1 text-xs sm:text-[13px] pt-2">
+                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
+                                        <span className="text-sm">Summer Research Intern</span>
+                                        <span className="font-normal text-slate-600 text-xs">May 2026 – Jun 2026</span>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between italic text-slate-700 text-xs">
+                                        <span>NISER (National Institute of Science Education and Research)</span>
+                                        <span className="not-italic text-slate-600 text-[11px]">Bhubaneswar, Odisha</span>
+                                    </div>
+                                    <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
+                                        <li>
+                                            Benchmarked <strong className="font-semibold text-black">Weighted Nonlinear Least Squares (WNLLS)</strong>, <strong className="font-semibold text-black">Gaussian Process regression</strong>, and <strong className="font-semibold text-black">Physics-Informed Neural Networks (PINNs)</strong> for estimating photon mass attenuation coefficients from <strong className="font-semibold text-black">Cs-137 gamma-ray transmission data</strong>; co-authoring a comparative methodology paper on the tradeoffs.
+                                        </li>
+                                        <li>
+                                            Built and iteratively debugged PINN training pipelines across <strong className="font-semibold text-black">five materials</strong> (Al, Cu, Brass, Steel, Pb).
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
 
@@ -210,100 +247,36 @@ export default function WindowsResumeViewerApp() {
                                     </div>
                                     <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-1">
                                         <li>
-                                            CGPA: <strong className="font-semibold text-black">9.82/10.0</strong> |{' '}
-                                            <strong className="font-semibold text-black">Dean's List</strong> Recipient for{' '}
-                                            <strong className="font-semibold text-black">4 Semesters</strong> |{' '}
-                                            <span className="font-medium text-slate-900">9.67, 10, 9.72, 9.90</span>
+                                            CGPA: <strong className="font-semibold text-black">9.82/10.0</strong> — <strong className="font-semibold text-black">Dean's List</strong> Recipient for <strong className="font-semibold text-black">4 Semesters</strong> — <span className="font-medium text-slate-900">9.67, 10, 9.72, 9.90</span>
                                         </li>
                                         <li>
-                                            Relevant Coursework:{' '}
-                                            <strong className="font-semibold text-black">Data Structures &amp; Algorithms</strong>,{' '}
-                                            <strong className="font-semibold text-black">Object-Oriented Programming</strong>,{' '}
-                                            <strong className="font-semibold text-black">Database Management Systems</strong>,{' '}
-                                            Design and Analysis of Algorithms
+                                            Relevant Coursework: <strong className="font-semibold text-black">Data Structures &amp; Algorithms</strong>, <strong className="font-semibold text-black">Object-Oriented Programming</strong>, <strong className="font-semibold text-black">Database Management Systems</strong>, Design and Analysis of Algorithms
                                         </li>
                                     </ul>
                                 </div>
                             </div>
 
-                            {/* Section 4: Professional Experience */}
-                            <div className="space-y-1">
-                                <h2 className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-black font-serif border-b border-slate-400 pb-1">
-                                    Professional Experience
-                                </h2>
-
-                                {/* Experience 1: NISER */}
-                                <div className="space-y-1 text-xs sm:text-[13px] pt-1">
-                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
-                                        <span className="text-sm">Summer Research Intern</span>
-                                        <span className="font-normal text-slate-600 text-xs">May 2026 – June 2026</span>
-                                    </div>
-                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between italic text-slate-700 text-xs">
-                                        <span>NISER (National Institute of Science Education and Research)</span>
-                                        <span className="not-italic text-slate-600 text-[11px]">Bhubaneswar, Odisha</span>
-                                    </div>
-                                    <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
-                                        <li>
-                                            Benchmarked <strong className="font-semibold text-black">Weighted Nonlinear Least Squares (WNLLS)</strong>,{' '}
-                                            <strong className="font-semibold text-black">Gaussian Process regression</strong>, and{' '}
-                                            <strong className="font-semibold text-black">Physics-Informed Neural Networks (PINNs)</strong> for estimating photon mass attenuation coefficients from{' '}
-                                            <strong className="font-semibold text-black">Cs-137 gamma-ray transmission data</strong>; co-authoring a comparative methodology paper on the tradeoffs.
-                                        </li>
-                                        <li>
-                                            Built and iteratively debugged PINN training pipelines across{' '}
-                                            <strong className="font-semibold text-black">five materials</strong> (Al, Cu, Brass, Steel, Pb), achieving{' '}
-                                            <strong className="font-semibold text-black">R² &gt; 0.99</strong> on Aluminum.
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                {/* Experience 2: Jitsi (Open Source) */}
-                                <div className="space-y-1 text-xs sm:text-[13px] pt-2">
-                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
-                                        <span className="text-sm">Open Source Contributor</span>
-                                        <span className="font-normal text-slate-600 text-xs">October 2025 – February 2026</span>
-                                    </div>
-                                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between italic text-slate-700 text-xs">
-                                        <span>Jitsi (Open Source)</span>
-                                        <span className="not-italic text-slate-600 text-[11px]">Remote</span>
-                                    </div>
-                                    <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
-                                        <li>
-                                            Contributed and merged <strong className="font-semibold text-black">multiple pull requests</strong> across{' '}
-                                            <strong className="font-semibold text-black">4 core repositories</strong> (jitsi-meet, lib-jitsi-meet, jitsi-meet-electron-sdk, handbook) in a{' '}
-                                            <strong className="font-semibold text-black">production WebRTC</strong> platform used by millions globally.
-                                        </li>
-                                        <li>
-                                            Resolved critical <strong className="font-semibold text-black">timeout and memory leaks</strong> across ChatRoom and QualityController, and investigated and addressed <strong className="font-semibold text-black">VP8 simulcast degradation</strong> on low-resolution Chromium clients.
-                                        </li>
-                                        <li>
-                                            Modernized the Electron SDK to fully enforce <strong className="font-semibold text-black">context isolation</strong> using secure <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px] text-slate-900 font-mono">contextBridge</code> IPC handlers, eliminated virtual background aspect ratio distortions, and elevated codebase strictness across TypeScript configurations.
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            {/* Section 5: Technical Projects */}
+                            {/* Section 4: Technical Projects */}
                             <div className="space-y-1">
                                 <h2 className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-black font-serif border-b border-slate-400 pb-1">
                                     Technical Projects
                                 </h2>
 
-                                {/* Project 1: PINN Gamma-Ray Attenuation */}
+                                {/* Project 1: Ecolympics */}
                                 <div className="space-y-1 text-xs sm:text-[13px] pt-1">
                                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
                                         <span className="text-sm">
-                                            Physics-Informed Neural Networks (PINNs) in Gamma-Ray Attenuation{' '}
-                                            <span className="text-slate-600 font-normal italic text-xs">| PyTorch, PINNs, Gaussian Process, Monte Carlo, Python</span>
+                                            Ecolympics – Waste Warriors NGO Portal{' '}
+                                            <span className="text-slate-600 font-normal italic text-xs">| React.js, Node.js, Supabase, Google Drive API</span>
                                         </span>
-                                        <span className="font-normal text-slate-600 text-xs">2026</span>
+                                        <span className="font-normal text-slate-600 text-xs">Sep 2026</span>
                                     </div>
                                     <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
                                         <li>
-                                            Investigated noise robustness of Physics-Informed Neural Networks under extreme data sparsity ($N \in [5,16]$) using experimental Cs-137 narrow-beam transmission data across <strong className="font-semibold text-black">five materials</strong> (Al, Cu, Brass, Steel, Pb).
+                                            Developed an <strong className="font-semibold text-black">RBAC-enabled dashboard</strong> during the JPMorgan Chase Code for Good Hackathon, successfully migrating the NGO from manual Google Docs tracking to a centralized evaluation portal.
                                         </li>
                                         <li>
-                                            Engineered a bounded <strong className="font-semibold text-black">Softplus map</strong> with Theil-Sen initialization and stationary checkpointing, eliminating vanishing gradients; executed a <strong className="font-semibold text-black">50-cell Monte Carlo suite (1,500 trials)</strong> proving PINNs structurally superior in recovering attenuation and buildup parameters ($\mu$ and $\beta$) with <strong className="font-semibold text-black">0.15% and 0.52% error</strong> at zero noise, where misspecified classical WNLLS had $\approx 60\%$ bias.
+                                            Architected a zero-cost storage pipeline by utilizing India's free NGO Google Workspace tier, storing raw files in Google Drive while managing metadata and reference links efficiently in Supabase.
                                         </li>
                                     </ul>
                                 </div>
@@ -312,86 +285,76 @@ export default function WindowsResumeViewerApp() {
                                 <div className="space-y-1 text-xs sm:text-[13px] pt-2">
                                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
                                         <span className="text-sm">
-                                            Sentinel AI — NGO Rescue Coordination Platform{' '}
+                                            Sentinel AI – NGO Rescue Coordination Platform{' '}
                                             <span className="text-slate-600 font-normal italic text-xs">| React, FastAPI, PostgreSQL, Docker</span>
                                         </span>
-                                        <span className="font-normal text-slate-600 text-xs">2026</span>
+                                        <span className="font-normal text-slate-600 text-xs">Aug 2026</span>
                                     </div>
                                     <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
                                         <li>
-                                            Built a full-stack platform (React, FastAPI, PostgreSQL) consolidating citizen reports, FIRs, images, and voice notes into a unified case workflow, with{' '}
-                                            <strong className="font-semibold text-black">JWT-based role access control</strong> across citizen, NGO admin, police, and volunteer roles.
+                                            Built a full-stack platform consolidating citizen reports, FIRs, images, and voice notes into a unified case workflow, with <strong className="font-semibold text-black">JWT-based role access control</strong> across citizen, NGO admin, police, and volunteer roles.
                                         </li>
                                         <li>
-                                            Designed a modular backend exposing <strong className="font-semibold text-black">30+ REST endpoints</strong>, integrating{' '}
-                                            <strong className="font-semibold text-black">OCR</strong>, <strong className="font-semibold text-black">speech-to-text</strong>, and{' '}
-                                            <strong className="font-semibold text-black">LLM-based summarization</strong> for AI-assisted case risk prioritization, a rule-based shelter recommendation engine, and a case-tracking dashboard.
+                                            Designed a modular backend exposing <strong className="font-semibold text-black">30+ REST endpoints</strong>, integrating <strong className="font-semibold text-black">Tesseract OCR</strong>, <strong className="font-semibold text-black">OpenAI Whisper</strong> (speech-to-text), and <strong className="font-semibold text-black">Llama-3</strong> for AI-assisted case risk prioritization and a rule-based shelter engine.
                                         </li>
                                     </ul>
                                 </div>
 
-                                {/* Project 3: Ny */}
+                                {/* Project 3: Do LLMs know when they don't know */}
                                 <div className="space-y-1 text-xs sm:text-[13px] pt-2">
                                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-semibold text-black">
                                         <span className="text-sm">
-                                            Ny — Legal Data Platform{' '}
-                                            <span className="text-slate-600 font-normal italic text-xs">| Python, FastAPI, PostgreSQL, RAG, Vector Search</span>
+                                            Do LLMs know when they don’t know{' '}
+                                            <span className="text-slate-600 font-normal italic text-xs">| Python, Llama, Qwen</span>
                                         </span>
-                                        <span className="font-normal text-slate-600 text-xs">October 2025</span>
+                                        <span className="font-normal text-slate-600 text-xs">Oct 2026</span>
                                     </div>
                                     <ul className="list-disc list-outside ml-4 space-y-1 text-slate-800 text-xs sm:text-[12px] pt-0.5 leading-relaxed">
                                         <li>
-                                            Developed an automated <strong className="font-semibold text-black">document categorization pipeline</strong> using{' '}
-                                            <strong className="font-semibold text-black">Python</strong> and <strong className="font-semibold text-black">FastAPI</strong> to securely parse and map court transcripts, processing a dataset of{' '}
-                                            <strong className="font-semibold text-black">50,000+ records</strong> with <strong className="font-semibold text-black">91% precision</strong>.
+                                            Architected an experimental evaluation pipeline testing 160 benchmark questions across 4 conditions, processing 640 responses to quantify LLM epistemic overconfidence.
                                         </li>
                                         <li>
-                                            Implemented a <strong className="font-semibold text-black">hybrid retrieval architecture</strong> combining{' '}
-                                            <strong className="font-semibold text-black">vector similarity search</strong> and relational{' '}
-                                            <strong className="font-semibold text-black">PostgreSQL</strong> queries (<strong className="font-semibold text-black">RAG pipeline</strong>), reducing system response times to under{' '}
-                                            <strong className="font-semibold text-black">200ms</strong> and improving data accuracy by{' '}
-                                            <strong className="font-semibold text-black">35%</strong>.
+                                            Engineered a <strong className="font-semibold text-black">Logprob Probe Gate</strong> intervention that slashed hallucination rates by <strong className="font-semibold text-black">89%</strong> (from 57.5% down to 6.2%) and increased overall accuracy to 78.8%.
+                                        </li>
+                                        <li>
+                                            Implemented explicit abstention prompting, achieving a statistically significant (McNemar’s test, p=0.002) hallucination reduction while maintaining a 0.0% false abstention rate on verifiable facts.
                                         </li>
                                     </ul>
                                 </div>
                             </div>
 
-                            {/* Section 6: Honors, Awards & Certifications */}
+                            {/* Section 5: Honors, Awards & Certifications */}
                             <div className="space-y-1">
                                 <h2 className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-black font-serif border-b border-slate-400 pb-1">
                                     Honors, Awards &amp; Certifications
                                 </h2>
                                 <div className="space-y-1.5 text-xs sm:text-[13px] leading-relaxed text-slate-800 pt-1">
                                     <div>
+                                        <strong className="font-semibold text-black">Problem Solving:</strong>{' '}
+                                        <span>LeetCode Rating: 1510</span>
+                                    </div>
+                                    <div>
                                         <strong className="font-semibold text-black">Competition Awards:</strong>{' '}
                                         <span>
-                                            Secured <strong className="font-semibold text-black">1st Place</strong> out of{' '}
-                                            <strong className="font-semibold text-black">100+ competing engineering teams</strong> at the Bug Monopoly Competition,{' '}
-                                            <strong className="font-semibold text-black">Evoque 2025</strong>; Finalist at{' '}
-                                            <strong className="font-semibold text-black">JPMorganChase Code For Good 2026</strong>
+                                            Secured <strong className="font-semibold text-black">1st Place</strong> out of 100+ competing engineering teams at a Bug Fixing Competition, <strong className="font-semibold text-black">Evoque 2025</strong>. Finalist at <strong className="font-semibold text-black">JPMorgan Chase Code for Good Hackathon</strong>.
                                         </span>
                                     </div>
                                     <div>
                                         <strong className="font-semibold text-black">Academic Honors:</strong>{' '}
                                         <span>
-                                            Awarded <strong className="font-semibold text-black">Dean's List</strong> status for maintaining a{' '}
-                                            <strong className="font-semibold text-black">top 1% academic ranking</strong> across{' '}
-                                            <strong className="font-semibold text-black">4 consecutive semesters</strong>
+                                            Awarded <strong className="font-semibold text-black">Dean's List</strong> status for maintaining a <strong className="font-semibold text-black">top 1% academic ranking</strong> across 4 consecutive semesters
                                         </span>
                                     </div>
                                     <div>
                                         <strong className="font-semibold text-black">Certifications:</strong>{' '}
                                         <span>
-                                            <strong className="font-semibold text-black">Machine Learning Specialization</strong> (Andrew Ng / DeepLearning.AI),{' '}
-                                            <strong className="font-semibold text-black">Microsoft Azure AI Fundamentals</strong>
+                                            <strong className="font-semibold text-black">Machine Learning Specialization</strong> (Andrew Ng / DeepLearning.AI), <strong className="font-semibold text-black">Microsoft Azure AI Fundamentals</strong>
                                         </span>
                                     </div>
                                     <div>
                                         <strong className="font-semibold text-black">Leadership:</strong>{' '}
                                         <span>
-                                            <strong className="font-semibold text-black">Web Development Head</strong>, ACM MUJ SIGAI — lead and mentor a team of{' '}
-                                            <strong className="font-semibold text-black">40+ students</strong>;{' '}
-                                            <strong className="font-semibold text-black">Buddy Mentor</strong> for undergraduates
+                                            <strong className="font-semibold text-black">Web Development Head</strong>, ACM MUJ SIGAI – lead and mentor a team of 40+ students; Buddy Mentor for undergraduates
                                         </span>
                                     </div>
                                 </div>

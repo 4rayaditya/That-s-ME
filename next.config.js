@@ -40,6 +40,60 @@ const nextConfig = {
     experimental: {
         optimizePackageImports: ['@react-three/fiber', '@react-three/drei'],
     },
+
+    // Rewrite /resume and /cv directly to the PDF file
+    async rewrites() {
+        return [
+            {
+                source: '/resume',
+                destination: '/resume.pdf',
+            },
+            {
+                source: '/cv',
+                destination: '/resume.pdf',
+            },
+        ];
+    },
+
+    // Ensure correct content-type and inline disposition headers so browsers render PDF inline
+    async headers() {
+        return [
+            {
+                source: '/resume.pdf',
+                headers: [
+                    {
+                        key: 'Content-Type',
+                        value: 'application/pdf',
+                    },
+                    {
+                        key: 'Content-Disposition',
+                        value: 'inline; filename="Aditya_Narayan_Ray_Resume.pdf"',
+                    },
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=3600, must-revalidate',
+                    },
+                ],
+            },
+            {
+                source: '/resume',
+                headers: [
+                    {
+                        key: 'Content-Type',
+                        value: 'application/pdf',
+                    },
+                    {
+                        key: 'Content-Disposition',
+                        value: 'inline; filename="Aditya_Narayan_Ray_Resume.pdf"',
+                    },
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=3600, must-revalidate',
+                    },
+                ],
+            },
+        ];
+    },
 };
 
 module.exports = nextConfig;
